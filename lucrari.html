@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070906">
+  <title>Lucrări | ArtLife Design</title>
+  <meta name="description" content="Portofoliu ArtLife Design SRL - poligrafie, litere în volum, standuri, P.O.S.M. și branding auto.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="site-navbar nav-scrolled" id="navbarTop">
+    <div class="container nav-wrap">
+      <a href="index.html#home" class="logo-link" aria-label="ArtLife Design">
+        <img src="images/LOGO-antracit-grey.svg" alt="ArtLife Design" class="logo-svg">
+      </a>
+      <button class="nav-menu icon-btn" id="navMenu" type="button" aria-label="Deschide meniul" aria-expanded="false"><i class="bi bi-list"></i></button>
+      <div class="nav-links-wrap" id="navLinksWrap">
+        <a href="index.html#about" class="nav-link">Despre noi</a>
+        <a href="index.html#services" class="nav-link">Servicii</a>
+        <a href="lucrari.html" class="nav-link active">Lucrări</a>
+        <a href="index.html#contact" class="nav-link">Contact</a>
+      </div>
+      <a href="index.html#contact" class="nav-cta btn-arrow">Solicită ofertă <i class="bi bi-arrow-right"></i></a>
+    </div>
+  </nav>
+
+  <header class="portfolio-header">
+    <div class="container">
+      <a href="index.html#works" class="back-link"><i class="bi bi-arrow-left"></i> Înapoi la pagina principală</a>
+      <span class="section-label">Portofoliu</span>
+      <h1>Lucrări realizate</h1>
+      <p>Explorează proiectele Art Life Design și filtrează după tipul de lucrare.</p>
+
+      <div class="portfolio-tools">
+        <div class="portfolio-search">
+          <i class="bi bi-search"></i>
+          <input type="search" id="workSearch" placeholder="Caută în portofoliu...">
+        </div>
+        <div class="portfolio-filters">
+          <button class="filter-btn active" type="button" data-filter="all">Toate</button>
+          <button class="filter-btn" type="button" data-filter="poligrafie">Poligrafie</button>
+          <button class="filter-btn" type="button" data-filter="volum">Litere & Standuri</button>
+          <button class="filter-btn" type="button" data-filter="posm">P.O.S.M.</button>
+          <button class="filter-btn" type="button" data-filter="auto">Branding Auto</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="portfolio-section">
+    <div class="container">
+      <div class="portfolio-grid" id="portfolioGrid"></div>
+      <p class="no-results" id="noResults">Nu am găsit lucrări după această căutare.</p>
+    </div>
+  </main>
+
+  <section class="portfolio-contact">
+    <div class="container">
+      <div class="portfolio-contact-inner reveal">
+        <div>
+          <span class="section-label">Ai găsit ceva apropiat de proiectul tău?</span>
+          <h2>Trimite-ne un mesaj și discutăm detaliile.</h2>
+        </div>
+        <a href="index.html#contact" class="btn-main btn-arrow">Contact <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <div class="gallery-modal" id="galleryModal">
+    <button class="gallery-nav gallery-prev icon-btn" id="galleryPrev" type="button" aria-label="Imaginea precedentă"><i class="bi bi-chevron-left"></i></button>
+    <button class="gallery-nav gallery-next icon-btn" id="galleryNext" type="button" aria-label="Imaginea următoare"><i class="bi bi-chevron-right"></i></button>
+    <button class="gallery-close icon-btn" id="galleryModalClose" type="button" aria-label="Închide">&times;</button>
+    <div class="gallery-box">
+      <div class="gallery-image-wrap"><img src="" alt="" id="galleryModalImage"></div>
+      <div class="gallery-details">
+        <span id="galleryModalDate"></span>
+        <h3 id="galleryModalTitle"></h3>
+        <p id="galleryModalService"></p>
+        <div class="gallery-tags" id="galleryModalTags"></div>
+        <small id="galleryModalDesc"></small>
+        <a href="index.html#contact" class="gallery-order-btn btn-arrow" id="galleryOrderBtn">Produs similar <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <a href="index.html#home" class="footer-logo-link"><img src="images/LOGO-antracit-grey.svg" alt="ArtLife Design" class="footer-logo"></a>
+        <p>Publicitate vizuală pentru branduri care vor să iasă în evidență.</p>
+      </div>
+      <div class="footer-nav-block">
+        <h4>Navigare</h4>
+        <div class="footer-links">
+          <a href="index.html#about">Despre noi</a><a href="index.html#services">Servicii</a><a href="lucrari.html">Lucrări</a><a href="index.html#contact">Contact</a>
+        </div>
+      </div>
+      <div class="footer-social-block">
+        <h4>Urmărește-ne</h4>
+        <div class="footer-links">
+          <a href="https://www.instagram.com/design.artlife/" target="_blank">Instagram ↗</a>
+          <a href="https://www.tiktok.com/@art.life.design" target="_blank">TikTok ↗</a>
+          <a href="https://www.facebook.com/p/Art-Life-Design-100063504763244/" target="_blank">Facebook ↗</a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom"><p>© 2026 Art Life Design. Toate drepturile rezervate.</p><span>Chișinău, Moldova</span></div>
+  </footer>
+
+  <!-- Colțul dreapta-jos rămâne intenționat liber pentru viitorul chat AI. -->
+  <div class="site-toast" id="siteToast"></div>
+  <script src="js/script.js"></script>
+</body>
+</html>
