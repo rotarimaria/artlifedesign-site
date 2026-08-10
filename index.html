@@ -256,9 +256,6 @@
 </style>
 
 <script>
-  window.addEventListener("load", function () {
-    if (!window.botpress) return;
-    
 window.addEventListener("load", function () {
   const navigationEntry = performance.getEntriesByType("navigation")[0];
   const isReload = navigationEntry && navigationEntry.type === "reload";
