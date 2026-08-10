@@ -187,6 +187,24 @@
   .artlife-chat-entrance {
     animation: artLifeChatEntrance 1.15s cubic-bezier(.22, 1, .36, 1) both;
   }
+
+  /* Chat mai compact pe desktop */
+  iframe[src*="botpress"],
+  iframe[title*="Botpress"],
+  iframe[title*="Webchat"] {
+    max-width: 380px !important;
+    max-height: 620px !important;
+    border-radius: 22px !important;
+  }
+
+  @media (max-width: 768px) {
+    iframe[src*="botpress"],
+    iframe[title*="Botpress"],
+    iframe[title*="Webchat"] {
+      max-width: calc(100vw - 20px) !important;
+      max-height: calc(100dvh - 20px) !important;
+    }
+  }
 </style>
 
 <script>
