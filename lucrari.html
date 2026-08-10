@@ -407,52 +407,145 @@
 <script>
 window.addEventListener("load", function () {
   /*
-    Art Life Design / Botpress:
-    - fiecare încărcare a paginii începe cu o sesiune curată;
-    - chatul se deschide automat după 5 secunde;
-    - la prima deschidere pornește meniul de intrare;
-    - dacă utilizatorul închide fereastra chatului, conversația curentă
-      este încheiată; la redeschidere pornește din nou de la început.
+    Art Life Design / Botpress Webchat
+    ----------------------------------
+    Reguli de sesiune:
+    1) Fiecare încărcare/reîncărcare a paginii pornește o conversație nouă.
+    2) Dacă utilizatorul închide doar fereastra chatului (X) și o redeschide
+       pe aceeași pagină, conversația curentă rămâne.
+    3) Chatul se deschide automat și declanșează meniul de intrare fără ca
+       vizitatorul să tasteze ceva.
+    4) Mesajele sunt memorate temporar numai în sesiunea paginii și sunt
+       expuse botului în user.data.artlifeTranscript.
   */
 
   try {
+    /*
+      Site-ul nu folosește sessionStorage pentru alte funcții.
+      Curățarea completă elimină și cheia de sesiune Webchat la refresh.
+    */
     sessionStorage.clear();
   } catch (error) {
-    console.warn("Nu s-a putut curăța sesiunea paginii:", error);
+    console.warn("Nu s-a putut curăța sesiunea Art Life Design:", error);
   }
 
   let initialized = false;
-  let webchatReady = false;
-  let welcomePending = true;
-  let welcomeSending = false;
-  let resetPromise = Promise.resolve();
+  let ready = false;
+  let freshConversationPrepared = false;
+  let automaticStartSent = false;
+  let currentConversationId = "";
+  let transcript = [];
+  let transcriptUpdateTimer = null;
   const startedAt = Date.now();
 
-  async function sendWelcomeTrigger() {
+  function extractText(message) {
+    if (!message) return "";
+
+    const payload = message.payload || {};
+
+    if (typeof payload.text === "string") return payload.text.trim();
+    if (typeof payload.title === "string") return payload.title.trim();
+    if (typeof payload.message === "string") return payload.message.trim();
+
+    if (Array.isArray(payload.options)) {
+      return payload.options
+        .map(function (option) {
+          if (typeof option === "string") return option;
+          return option && (option.label || option.value || "");
+        })
+        .filter(Boolean)
+        .join(" / ");
+    }
+
+    try {
+      const compact = JSON.stringify(payload);
+      return compact === "{}" ? "" : compact;
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function formatTranscript() {
+    return transcript
+      .map(function (entry) {
+        return entry.speaker + ": " + entry.text;
+      })
+      .join("\n");
+  }
+
+  function saveTranscriptForBot() {
+    const formatted = formatTranscript();
+
+    try {
+      sessionStorage.setItem("artlife_chat_transcript", formatted);
+      if (currentConversationId) {
+        sessionStorage.setItem("artlife_chat_conversation", currentConversationId);
+      }
+    } catch (error) {
+      console.warn("Transcriptul nu a putut fi salvat în sesiune:", error);
+    }
+
     if (
-      !webchatReady ||
-      !welcomePending ||
-      welcomeSending ||
-      !window.botpress ||
-      typeof window.botpress.sendMessage !== "function"
+      window.botpress &&
+      typeof window.botpress.updateUser === "function"
+    ) {
+      window.clearTimeout(transcriptUpdateTimer);
+
+      transcriptUpdateTimer = window.setTimeout(function () {
+        window.botpress.updateUser({
+          data: {
+            artlifeTranscript: formatted,
+            artlifeConversationId: currentConversationId || ""
+          }
+        }).catch(function (error) {
+          console.warn("Transcriptul nu a putut fi sincronizat cu Botpress:", error);
+        });
+      }, 180);
+    }
+  }
+
+  async function prepareFreshConversationAndStart() {
+    if (
+      !ready ||
+      freshConversationPrepared ||
+      !window.botpress
     ) {
       return;
     }
 
-    welcomeSending = true;
+    freshConversationPrepared = true;
 
-    try {
-      /*
-        În Vibe folosim mesajul "De la început" ca trigger pentru
-        Service Menu. Botul trebuie să răspundă imediat cu mesajul
-        și opțiunile sale de intrare.
-      */
-      await window.botpress.sendMessage("De la început");
-      welcomePending = false;
-    } catch (error) {
-      console.warn("Mesajul de intrare Botpress nu a putut fi pornit:", error);
-    } finally {
-      welcomeSending = false;
+    /*
+      restartConversation() garantează un fir nou la fiecare încărcare a paginii.
+      Nu îl apelăm la webchat:closed, pentru ca X -> redeschidere să păstreze discuția.
+    */
+    if (typeof window.botpress.restartConversation === "function") {
+      try {
+        await window.botpress.restartConversation();
+      } catch (error) {
+        console.warn("Nu s-a putut porni o conversație Botpress nouă:", error);
+      }
+    }
+
+    transcript = [];
+    saveTranscriptForBot();
+
+    if (
+      !automaticStartSent &&
+      typeof window.botpress.sendMessage === "function"
+    ) {
+      automaticStartSent = true;
+
+      try {
+        /*
+          În Vibe, acesta este triggerul automat pentru Service Menu.
+          Vizitatorul nu trebuie să tasteze nimic.
+        */
+        await window.botpress.sendMessage("De la început");
+      } catch (error) {
+        automaticStartSent = false;
+        console.warn("Pornirea automată a meniului nu a reușit:", error);
+      }
     }
   }
 
@@ -470,6 +563,9 @@ window.addEventListener("load", function () {
       });
 
       window.botpress.on("webchat:initialized", function () {
+        /*
+          Deschidere automată după 5 secunde.
+        */
         window.setTimeout(function () {
           if (
             window.botpress &&
@@ -481,41 +577,72 @@ window.addEventListener("load", function () {
       });
 
       window.botpress.on("webchat:ready", function () {
-        webchatReady = true;
-        welcomePending = true;
+        ready = true;
 
         window.setTimeout(function () {
-          sendWelcomeTrigger();
-        }, 300);
+          prepareFreshConversationAndStart();
+        }, 120);
       });
 
-      window.botpress.on("webchat:opened", async function () {
-        if (!webchatReady) return;
+      window.botpress.on("conversation", function (conversationId) {
+        currentConversationId =
+          typeof conversationId === "string"
+            ? conversationId
+            : "";
 
-        try {
-          await resetPromise;
-        } catch (error) {
-          console.warn("Resetarea conversației nu s-a finalizat:", error);
-        }
-
-        window.setTimeout(function () {
-          sendWelcomeTrigger();
-        }, 250);
+        saveTranscriptForBot();
       });
 
-      window.botpress.on("webchat:closed", function () {
-        welcomePending = true;
+      window.botpress.on("message", function (message) {
+        const text = extractText(message);
+        if (!text) return;
 
+        /*
+          Nu includem triggerul tehnic automat "De la început" în transcriptul
+          trimis echipei. Restul mesajelor utilizatorului și ale botului rămân.
+        */
         if (
-          window.botpress &&
-          typeof window.botpress.restartConversation === "function"
+          automaticStartSent &&
+          message &&
+          message.direction === "incoming" &&
+          text === "De la început" &&
+          transcript.length === 0
         ) {
-          resetPromise = window.botpress
-            .restartConversation()
-            .catch(function (error) {
-              console.warn("Conversația Botpress nu a putut fi resetată:", error);
-            });
+          return;
         }
+
+        const speaker =
+          message && message.direction === "outgoing"
+            ? "Art Life Design"
+            : "Client";
+
+        const last = transcript[transcript.length - 1];
+
+        /*
+          Protecție suplimentară împotriva evenimentelor duplicate.
+        */
+        if (
+          last &&
+          last.speaker === speaker &&
+          last.text === text
+        ) {
+          return;
+        }
+
+        transcript.push({
+          speaker: speaker,
+          text: text
+        });
+
+        saveTranscriptForBot();
+      });
+
+      /*
+        Intenționat NU resetăm conversația la webchat:closed.
+        Astfel, X -> redeschidere pe aceeași pagină păstrează istoricul.
+      */
+      window.botpress.on("webchat:closed", function () {
+        saveTranscriptForBot();
       });
     }
 
