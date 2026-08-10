@@ -324,22 +324,206 @@
   </style>
 
 
-  <!-- Botpress Webchat -->
+  
+  <!-- =========================================================
+       TYPOGRAPHY — 4 SCĂRI MAXIM
+       ========================================================= -->
+  <style>
+    :root {
+      --fs-small: 15px;
+      --fs-body: 17px;
+      --fs-title: 28px;
+      --fs-display: clamp(44px, 6vw, 64px);
+    }
+
+    body,
+    button,
+    input,
+    select,
+    textarea {
+      font-size: var(--fs-body);
+    }
+
+    p,
+    a,
+    label,
+    li,
+    .nav-link,
+    .nav-cta,
+    .btn-main,
+    .btn-ghost,
+    .about-btn,
+    .service-example,
+    .work-order-btn,
+    .gallery-order-btn,
+    .filter-btn,
+    .service-filter {
+      font-size: var(--fs-body);
+      line-height: 1.62;
+    }
+
+    small,
+    .section-label,
+    .hero-kicker,
+    .service-index,
+    .about-image-note,
+    .work-status,
+    .privacy-note,
+    .footer-bottom,
+    .gallery-details > span,
+    .gallery-tags span {
+      font-size: var(--fs-small);
+      line-height: 1.5;
+    }
+
+    h2,
+    h3,
+    .services-heading h2,
+    .contact-intro h2,
+    .works-head h2,
+    .portfolio-header h1 {
+      font-size: var(--fs-title);
+      line-height: 1.18;
+    }
+
+    .hero h1 {
+      font-size: var(--fs-display);
+      line-height: 0.98;
+    }
+
+    @media (max-width: 768px) {
+      :root {
+        --fs-small: 15px;
+        --fs-body: 17px;
+        --fs-title: 27px;
+        --fs-display: 46px;
+      }
+    }
+  </style>
+
+<!-- Botpress Webchat -->
 <script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
 
 <script>
-  window.addEventListener('load', function () {
-    if (!window.botpress) return;
+window.addEventListener("load", function () {
+  /*
+    Art Life Design / Botpress:
+    - fiecare încărcare a paginii începe cu o sesiune curată;
+    - chatul se deschide automat după 5 secunde;
+    - la prima deschidere pornește meniul de intrare;
+    - dacă utilizatorul închide fereastra chatului, conversația curentă
+      este încheiată; la redeschidere pornește din nou de la început.
+  */
 
-    window.botpress.init({
-      clientId: '5f16efb4-a4db-46f0-a01b-df2f36f2f4a7'
-    });
+  try {
+    sessionStorage.clear();
+  } catch (error) {
+    console.warn("Nu s-a putut curăța sesiunea paginii:", error);
+  }
 
-    window.botpress.on('webchat:initialized', function () {
-      window.botpress.open();
-    });
-  });
-  
+  let initialized = false;
+  let webchatReady = false;
+  let welcomePending = true;
+  let welcomeSending = false;
+  let resetPromise = Promise.resolve();
+  const startedAt = Date.now();
+
+  async function sendWelcomeTrigger() {
+    if (
+      !webchatReady ||
+      !welcomePending ||
+      welcomeSending ||
+      !window.botpress ||
+      typeof window.botpress.sendMessage !== "function"
+    ) {
+      return;
+    }
+
+    welcomeSending = true;
+
+    try {
+      /*
+        În Vibe folosim mesajul "De la început" ca trigger pentru
+        Service Menu. Botul trebuie să răspundă imediat cu mesajul
+        și opțiunile sale de intrare.
+      */
+      await window.botpress.sendMessage("De la început");
+      welcomePending = false;
+    } catch (error) {
+      console.warn("Mesajul de intrare Botpress nu a putut fi pornit:", error);
+    } finally {
+      welcomeSending = false;
+    }
+  }
+
+  const checkBotpress = window.setInterval(function () {
+    if (
+      window.botpress &&
+      typeof window.botpress.init === "function" &&
+      !initialized
+    ) {
+      initialized = true;
+      window.clearInterval(checkBotpress);
+
+      window.botpress.init({
+        clientId: "5f16efb4-a4db-46f0-a01b-df2f36f2f4a7"
+      });
+
+      window.botpress.on("webchat:initialized", function () {
+        window.setTimeout(function () {
+          if (
+            window.botpress &&
+            typeof window.botpress.open === "function"
+          ) {
+            window.botpress.open();
+          }
+        }, 5000);
+      });
+
+      window.botpress.on("webchat:ready", function () {
+        webchatReady = true;
+        welcomePending = true;
+
+        window.setTimeout(function () {
+          sendWelcomeTrigger();
+        }, 300);
+      });
+
+      window.botpress.on("webchat:opened", async function () {
+        if (!webchatReady) return;
+
+        try {
+          await resetPromise;
+        } catch (error) {
+          console.warn("Resetarea conversației nu s-a finalizat:", error);
+        }
+
+        window.setTimeout(function () {
+          sendWelcomeTrigger();
+        }, 250);
+      });
+
+      window.botpress.on("webchat:closed", function () {
+        welcomePending = true;
+
+        if (
+          window.botpress &&
+          typeof window.botpress.restartConversation === "function"
+        ) {
+          resetPromise = window.botpress
+            .restartConversation()
+            .catch(function (error) {
+              console.warn("Conversația Botpress nu a putut fi resetată:", error);
+            });
+        }
+      });
+    }
+
+    if (Date.now() - startedAt > 20000) {
+      window.clearInterval(checkBotpress);
+    }
+  }, 250);
+});
 </script>
 
 </head>

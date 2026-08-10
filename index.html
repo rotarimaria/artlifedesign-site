@@ -157,6 +157,207 @@
   </style>
 
 
+
+  <!-- =========================================================
+       TYPOGRAPHY — 4 SCĂRI MAXIM
+       ========================================================= -->
+  <style>
+    :root {
+      --fs-small: 15px;
+      --fs-body: 17px;
+      --fs-title: 28px;
+      --fs-display: clamp(44px, 6vw, 64px);
+    }
+
+    body,
+    button,
+    input,
+    select,
+    textarea {
+      font-size: var(--fs-body);
+    }
+
+    p,
+    a,
+    label,
+    li,
+    .nav-link,
+    .nav-cta,
+    .btn-main,
+    .btn-ghost,
+    .about-btn,
+    .service-example,
+    .work-order-btn,
+    .gallery-order-btn,
+    .filter-btn,
+    .service-filter {
+      font-size: var(--fs-body);
+      line-height: 1.62;
+    }
+
+    small,
+    .section-label,
+    .hero-kicker,
+    .service-index,
+    .about-image-note,
+    .work-status,
+    .privacy-note,
+    .footer-bottom,
+    .gallery-details > span,
+    .gallery-tags span {
+      font-size: var(--fs-small);
+      line-height: 1.5;
+    }
+
+    h2,
+    h3,
+    .services-heading h2,
+    .contact-intro h2,
+    .works-head h2,
+    .portfolio-header h1 {
+      font-size: var(--fs-title);
+      line-height: 1.18;
+    }
+
+    .hero h1 {
+      font-size: var(--fs-display);
+      line-height: 0.98;
+    }
+
+    @media (max-width: 768px) {
+      :root {
+        --fs-small: 15px;
+        --fs-body: 17px;
+        --fs-title: 27px;
+        --fs-display: 46px;
+      }
+    }
+  </style>
+
+
+  <!-- =========================================================
+       DETALII SERVICII — apar doar la alegerea unei categorii
+       ========================================================= -->
+  <style>
+    .service-details-wrap {
+      margin-top: 28px;
+    }
+
+    .service-detail-panel {
+      display: none;
+      grid-template-columns: minmax(0, 1.05fr) minmax(300px, .95fr);
+      gap: 28px;
+      padding: 28px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .service-detail-panel.active {
+      display: grid;
+    }
+
+    .service-detail-copy {
+      min-width: 0;
+    }
+
+    .service-detail-copy h3 {
+      margin: 8px 0 14px;
+    }
+
+    .service-detail-copy p {
+      margin: 0 0 18px;
+      max-width: 68ch;
+    }
+
+    .service-detail-examples {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .service-detail-example {
+      padding: 12px 14px;
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .03);
+      font-size: var(--fs-small);
+      line-height: 1.45;
+    }
+
+    .service-detail-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .service-detail-gallery {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      align-content: start;
+    }
+
+    .service-detail-gallery figure {
+      margin: 0;
+      min-width: 0;
+      overflow: hidden;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, .1);
+      background: #0b0e0b;
+    }
+
+    .service-detail-gallery figure:first-child {
+      grid-column: 1 / -1;
+    }
+
+    .service-detail-gallery img {
+      display: block;
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+    }
+
+    .service-detail-gallery figure:first-child img {
+      height: 250px;
+    }
+
+    .service-detail-gallery figcaption {
+      padding: 10px 12px 12px;
+      font-size: var(--fs-small);
+      line-height: 1.45;
+    }
+
+    @media (max-width: 900px) {
+      .service-detail-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .service-detail-panel {
+        padding: 18px;
+        border-radius: 18px;
+      }
+
+      .service-detail-examples,
+      .service-detail-gallery {
+        grid-template-columns: 1fr;
+      }
+
+      .service-detail-gallery figure:first-child {
+        grid-column: auto;
+      }
+
+      .service-detail-gallery img,
+      .service-detail-gallery figure:first-child img {
+        height: 210px;
+      }
+    }
+  </style>
+
 <!-- =========================================================
      BOTPRESS WEBCHAT
      ========================================================= -->
@@ -257,63 +458,123 @@
 
 <script>
 window.addEventListener("load", function () {
+  /*
+    Art Life Design / Botpress:
+    - fiecare încărcare a paginii începe cu o sesiune curată;
+    - chatul se deschide automat după 5 secunde;
+    - la prima deschidere pornește meniul de intrare;
+    - dacă utilizatorul închide fereastra chatului, conversația curentă
+      este încheiată; la redeschidere pornește din nou de la început.
+  */
 
-  const navigationEntry = performance.getEntriesByType("navigation")[0];
-  const isReload = navigationEntry && navigationEntry.type === "reload";
+  try {
+    sessionStorage.clear();
+  } catch (error) {
+    console.warn("Nu s-a putut curăța sesiunea paginii:", error);
+  }
 
-  if (isReload) {
+  let initialized = false;
+  let webchatReady = false;
+  let welcomePending = true;
+  let welcomeSending = false;
+  let resetPromise = Promise.resolve();
+  const startedAt = Date.now();
+
+  async function sendWelcomeTrigger() {
+    if (
+      !webchatReady ||
+      !welcomePending ||
+      welcomeSending ||
+      !window.botpress ||
+      typeof window.botpress.sendMessage !== "function"
+    ) {
+      return;
+    }
+
+    welcomeSending = true;
+
     try {
-      sessionStorage.clear();
+      /*
+        În Vibe folosim mesajul "De la început" ca trigger pentru
+        Service Menu. Botul trebuie să răspundă imediat cu mesajul
+        și opțiunile sale de intrare.
+      */
+      await window.botpress.sendMessage("De la început");
+      welcomePending = false;
     } catch (error) {
-      console.warn("Nu s-a putut curăța sesiunea:", error);
+      console.warn("Mesajul de intrare Botpress nu a putut fi pornit:", error);
+    } finally {
+      welcomeSending = false;
     }
   }
 
-  let botpressInitialized = false;
-  let firstMessageSent = false;
-
-  const startTime = Date.now();
-
-  const checkBotpress = setInterval(function () {
-
+  const checkBotpress = window.setInterval(function () {
     if (
       window.botpress &&
       typeof window.botpress.init === "function" &&
-      !botpressInitialized
+      !initialized
     ) {
-      botpressInitialized = true;
-      clearInterval(checkBotpress);
+      initialized = true;
+      window.clearInterval(checkBotpress);
 
       window.botpress.init({
         clientId: "5f16efb4-a4db-46f0-a01b-df2f36f2f4a7"
       });
 
       window.botpress.on("webchat:initialized", function () {
-
-        setTimeout(function () {
-          window.botpress.open();
+        window.setTimeout(function () {
+          if (
+            window.botpress &&
+            typeof window.botpress.open === "function"
+          ) {
+            window.botpress.open();
+          }
         }, 5000);
-
       });
 
       window.botpress.on("webchat:ready", function () {
+        webchatReady = true;
+        welcomePending = true;
 
-        if (firstMessageSent) return;
-        firstMessageSent = true;
+        window.setTimeout(function () {
+          sendWelcomeTrigger();
+        }, 300);
+      });
 
-        setTimeout(function () {
-          window.botpress.sendMessage("De la început");
-        }, 5200);
+      window.botpress.on("webchat:opened", async function () {
+        if (!webchatReady) return;
 
+        try {
+          await resetPromise;
+        } catch (error) {
+          console.warn("Resetarea conversației nu s-a finalizat:", error);
+        }
+
+        window.setTimeout(function () {
+          sendWelcomeTrigger();
+        }, 250);
+      });
+
+      window.botpress.on("webchat:closed", function () {
+        welcomePending = true;
+
+        if (
+          window.botpress &&
+          typeof window.botpress.restartConversation === "function"
+        ) {
+          resetPromise = window.botpress
+            .restartConversation()
+            .catch(function (error) {
+              console.warn("Conversația Botpress nu a putut fi resetată:", error);
+            });
+        }
       });
     }
 
-    if (Date.now() - startTime > 20000) {
-      clearInterval(checkBotpress);
+    if (Date.now() - startedAt > 20000) {
+      window.clearInterval(checkBotpress);
     }
-
   }, 250);
-
 });
 </script>
 </head>
@@ -862,6 +1123,220 @@ window.addEventListener("load", function () {
               <i class="bi bi-arrow-up-right"></i>
             </a>
 
+          </article>
+
+        </div>
+
+
+        <!-- Detalii suplimentare: "Toate" rămâne neschimbat.
+             Panoul apare numai când este selectat un serviciu aparte. -->
+        <div class="service-details-wrap" id="serviceDetailsWrap">
+
+          <article class="service-detail-panel" data-service-detail="poligrafie">
+            <div class="service-detail-copy">
+              <span class="section-label">Poligrafie</span>
+              <h3>Materiale tipărite pentru prezentare, promovare și vânzare</h3>
+              <p>
+                Potrivit pentru afaceri care au nevoie de informație clară și vizibilă:
+                de la etichete și stickere până la meniuri, fișe de preț și bannere.
+                Alegerea formatului se face în funcție de locul în care materialul va fi folosit.
+              </p>
+
+              <div class="service-detail-examples">
+                <span class="service-detail-example">Etichete și stickere pentru produse</span>
+                <span class="service-detail-example">Meniuri și fișe de preț</span>
+                <span class="service-detail-example">Bannere și materiale promoționale</span>
+                <span class="service-detail-example">Print personalizat pentru campanii</span>
+              </div>
+
+              <div class="service-detail-actions">
+                <a href="lucrari.html?filter=poligrafie" class="btn-ghost btn-arrow">
+                  Vezi exemple <i class="bi bi-arrow-right"></i>
+                </a>
+                <a href="#contact" class="btn-main btn-arrow service-to-form" data-order-service="Poligrafie">
+                  Solicită o ofertă <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+
+            <div class="service-detail-gallery">
+              <figure>
+                <img src="images/fise_pret.jpg" alt="Fișe de preț realizate de Art Life Design" loading="lazy">
+                <figcaption>Fișe de preț și materiale de prezentare</figcaption>
+              </figure>
+              <figure>
+                <img src="images/inghetata_uv.jpg" alt="Etichete de produs realizate de Art Life Design" loading="lazy">
+                <figcaption>Etichete personalizate</figcaption>
+              </figure>
+              <figure>
+                <img src="images/plotter-2.jpg" alt="Stickere personalizate realizate de Art Life Design" loading="lazy">
+                <figcaption>Stickere și decupare</figcaption>
+              </figure>
+            </div>
+          </article>
+
+          <article class="service-detail-panel" data-service-detail="volum">
+            <div class="service-detail-copy">
+              <span class="section-label">Litere în volum & Standuri</span>
+              <h3>Elemente vizuale care fac brandul ușor de observat</h3>
+              <p>
+                Pentru fațade, recepții, spații comerciale sau zone de prezentare.
+                Putem porni de la logo-ul și identitatea vizuală a brandului pentru a crea
+                o soluție clară, proporționată și potrivită spațiului.
+              </p>
+
+              <div class="service-detail-examples">
+                <span class="service-detail-example">Litere volumetrice pentru fațadă</span>
+                <span class="service-detail-example">Light box-uri și casete luminoase</span>
+                <span class="service-detail-example">Logo-uri pentru interior</span>
+                <span class="service-detail-example">Standuri și elemente de prezentare</span>
+              </div>
+
+              <div class="service-detail-actions">
+                <a href="lucrari.html?filter=volum" class="btn-ghost btn-arrow">
+                  Vezi exemple <i class="bi bi-arrow-right"></i>
+                </a>
+                <a href="#contact" class="btn-main btn-arrow service-to-form" data-order-service="Litere în volum & Standuri">
+                  Solicită o ofertă <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+
+            <div class="service-detail-gallery">
+              <figure>
+                <img src="images/BonjourLightBox.jpg" alt="Light box realizat de Art Life Design" loading="lazy">
+                <figcaption>Light box pentru promovare vizuală</figcaption>
+              </figure>
+              <figure>
+                <img src="images/good-break.jpg" alt="Reclamă luminoasă realizată de Art Life Design" loading="lazy">
+                <figcaption>Reclamă luminoasă de fațadă</figcaption>
+              </figure>
+              <figure>
+                <img src="images/litere_volum1.jpg" alt="Litere volumetrice Art Life Design" loading="lazy">
+                <figcaption>Logo volumetric pentru interior</figcaption>
+              </figure>
+            </div>
+          </article>
+
+          <article class="service-detail-panel" data-service-detail="posm">
+            <div class="service-detail-copy">
+              <span class="section-label">P.O.S.M.</span>
+              <h3>Materiale pentru expunere, retail și campanii promoționale</h3>
+              <p>
+                Soluții vizuale folosite direct în punctul de vânzare sau în cadrul
+                unei campanii. Scopul lor este să prezinte produsul, mesajul sau oferta
+                într-un mod ușor de observat și de înțeles.
+              </p>
+
+              <div class="service-detail-examples">
+                <span class="service-detail-example">Display-uri și suporturi</span>
+                <span class="service-detail-example">Urne și box-uri personalizate</span>
+                <span class="service-detail-example">Standuri promoționale</span>
+                <span class="service-detail-example">Elemente pentru campanii și retail</span>
+              </div>
+
+              <div class="service-detail-actions">
+                <a href="lucrari.html?filter=posm" class="btn-ghost btn-arrow">
+                  Vezi exemple <i class="bi bi-arrow-right"></i>
+                </a>
+                <a href="#contact" class="btn-main btn-arrow service-to-form" data-order-service="P.O.S.M.">
+                  Solicită o ofertă <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+
+            <div class="service-detail-gallery">
+              <figure>
+                <img src="images/box.jpg" alt="Urnă personalizată realizată de Art Life Design" loading="lazy">
+                <figcaption>Urnă personalizată pentru campanie</figcaption>
+              </figure>
+              <figure>
+                <img src="images/cub-sticla.jpg" alt="Cub promoțional realizat de Art Life Design" loading="lazy">
+                <figcaption>Cub promoțional</figcaption>
+              </figure>
+              <figure>
+                <img src="images/cub-sticla0.jpg" alt="Stand promoțional realizat de Art Life Design" loading="lazy">
+                <figcaption>Stand pentru expunere</figcaption>
+              </figure>
+            </div>
+          </article>
+
+          <article class="service-detail-panel" data-service-detail="auto">
+            <div class="service-detail-copy">
+              <span class="section-label">Branding Auto</span>
+              <h3>Transformă transportul companiei într-un suport vizibil de promovare</h3>
+              <p>
+                Brandingul auto ajută marca să fie observată în trafic și în deplasările zilnice.
+                Grafica poate include logo, date de contact, servicii sau alte elemente vizuale
+                relevante pentru companie.
+              </p>
+
+              <div class="service-detail-examples">
+                <span class="service-detail-example">Automobile pentru companii</span>
+                <span class="service-detail-example">Microbuze și transport comercial</span>
+                <span class="service-detail-example">Elemente grafice și date de contact</span>
+                <span class="service-detail-example">Branding pentru mai multe unități din flotă</span>
+              </div>
+
+              <div class="service-detail-actions">
+                <a href="lucrari.html?filter=auto" class="btn-ghost btn-arrow">
+                  Vezi exemple <i class="bi bi-arrow-right"></i>
+                </a>
+                <a href="#contact" class="btn-main btn-arrow service-to-form" data-order-service="Branding Auto">
+                  Solicită o ofertă <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+
+            <div class="service-detail-gallery">
+              <figure>
+                <img src="images/brand_auto1.jpg" alt="Branding auto Art Life Design" loading="lazy">
+                <figcaption>Colantare pentru transport comercial</figcaption>
+              </figure>
+              <figure>
+                <img src="images/brand_auto2.jpg" alt="Branding microbuz Art Life Design" loading="lazy">
+                <figcaption>Grafică aplicată pe microbuz</figcaption>
+              </figure>
+              <figure>
+                <img src="images/lux-tavene.jpg" alt="Branding auto pentru servicii locale" loading="lazy">
+                <figcaption>Promovare vizuală pe automobil</figcaption>
+              </figure>
+            </div>
+          </article>
+
+          <article class="service-detail-panel" data-service-detail="laser">
+            <div class="service-detail-copy">
+              <span class="section-label">Laser / Plotter</span>
+              <h3>Tăiere, gravare și decupare pentru proiecte personalizate</h3>
+              <p>
+                Potrivit pentru elemente grafice și forme care trebuie tăiate sau decupate
+                cu precizie. Pentru alegerea soluției potrivite, echipa poate verifica
+                proiectul și cerințele înainte de producție.
+              </p>
+
+              <div class="service-detail-examples">
+                <span class="service-detail-example">Stickere și elemente decupate</span>
+                <span class="service-detail-example">Forme și inscripții personalizate</span>
+                <span class="service-detail-example">Elemente promoționale și decorative</span>
+                <span class="service-detail-example">Proiecte care necesită tăiere sau gravare</span>
+              </div>
+
+              <div class="service-detail-actions">
+                <a href="lucrari.html?search=plotter" class="btn-ghost btn-arrow">
+                  Vezi exemple <i class="bi bi-arrow-right"></i>
+                </a>
+                <a href="#contact" class="btn-main btn-arrow service-to-form" data-order-service="Laser / Plotter">
+                  Solicită o ofertă <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+
+            <div class="service-detail-gallery">
+              <figure>
+                <img src="images/plotter-2.jpg" alt="Decupare plotter și stickere Art Life Design" loading="lazy">
+                <figcaption>Exemplu de decupare și stickere personalizate</figcaption>
+              </figure>
+            </div>
           </article>
 
         </div>
@@ -1655,6 +2130,32 @@ window.addEventListener("load", function () {
   <!-- =========================================================
        SITE JAVASCRIPT
        ========================================================= -->
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const serviceButtons = document.querySelectorAll(".service-filter");
+      const detailPanels = document.querySelectorAll("[data-service-detail]");
+
+      function showServiceDetail(service) {
+        detailPanels.forEach(function (panel) {
+          panel.classList.toggle(
+            "active",
+            service !== "all" && panel.dataset.serviceDetail === service
+          );
+        });
+      }
+
+      serviceButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          showServiceDetail(button.dataset.service || "all");
+        });
+      });
+
+      showServiceDetail("all");
+    });
+  </script>
+
 
   <script src="js/script.js"></script>
 
