@@ -1,5 +1,42 @@
 <!DOCTYPE html>
 <html lang="ro">
+  <!-- Botpress AI Webchat -->
+<script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
+
+<script
+  src="https://files.bpcontent.cloud/2026/08/10/03/20/260810033235-TCUYA0VP.js"
+  defer>
+</script>
+
+<script>
+  window.addEventListener("load", function () {
+
+    const startTime = Date.now();
+
+    const checkBotpress = setInterval(function () {
+
+      if (window.botpress && typeof window.botpress.open === "function") {
+
+        clearInterval(checkBotpress);
+
+        setTimeout(function () {
+          try {
+            window.botpress.open();
+          } catch (error) {
+            console.warn("Botpress Webchat nu s-a putut deschide automat.", error);
+          }
+        }, 5000);
+
+      }
+
+      if (Date.now() - startTime > 20000) {
+        clearInterval(checkBotpress);
+      }
+
+    }, 250);
+
+  });
+</script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
