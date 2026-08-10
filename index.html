@@ -263,7 +263,14 @@
       clientId: "5f16efb4-a4db-46f0-a01b-df2f36f2f4a7"
     });
 
-    window.botpress.on("webchat:initialized", function () {
+    window.botpress.on("webchat:initialized", async function () {
+
+      try {
+        await window.botpress.restartConversation();
+      } catch (error) {
+        console.warn("Botpress conversation reset failed:", error);
+      }
+
       setTimeout(function () {
         window.botpress.open();
 
