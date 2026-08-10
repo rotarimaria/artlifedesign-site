@@ -3072,3 +3072,191 @@ p{
     transform:none;
   }
 }
+
+/* =========================================================
+   NAVBAR / LOGO — FINAL SIZE & NEON OVERRIDE
+   ========================================================= */
+
+/* Mai mult spațiu pentru logo și meniu pe desktop */
+.site-navbar {
+  height: 102px !important;
+}
+
+.site-navbar.nav-scrolled {
+  height: 90px !important;
+}
+
+/* Logo vizibil mai mare */
+.logo-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.logo-svg {
+  width: auto !important;
+  height: 72px !important;
+  max-height: none !important;
+  transform-origin: center;
+  transition:
+    transform .28s cubic-bezier(.22,1,.36,1),
+    filter .28s ease,
+    opacity .28s ease !important;
+}
+
+.site-navbar.nav-scrolled .logo-svg {
+  height: 66px !important;
+}
+
+/* Halo verde-neon în spatele logo-ului */
+.logo-link::before {
+  content: "";
+  position: absolute;
+  inset: 8% -18%;
+  z-index: -1;
+  border-radius: 999px;
+  background:
+    radial-gradient(
+      circle,
+      rgba(146,255,34,.34) 0%,
+      rgba(146,255,34,.15) 35%,
+      rgba(146,255,34,0) 72%
+    );
+  opacity: 0;
+  transform: scale(.78);
+  filter: blur(13px);
+  transition:
+    opacity .28s ease,
+    transform .28s ease;
+}
+
+.logo-link:hover::before {
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.logo-link:hover .logo-svg {
+  transform: scale(1.10);
+  filter:
+    brightness(1.30)
+    drop-shadow(0 0 4px rgba(146,255,34,.95))
+    drop-shadow(0 0 11px rgba(146,255,34,.70))
+    drop-shadow(0 0 22px rgba(146,255,34,.42)) !important;
+}
+
+/* Meniul devine mai lizibil */
+.nav-links-wrap {
+  gap: 2rem !important;
+}
+
+.nav-link {
+  font-size: 18px !important;
+  line-height: 1.2 !important;
+  font-weight: 800 !important;
+  letter-spacing: .005em !important;
+  color: rgba(247,244,235,.95) !important;
+}
+
+.nav-link::after {
+  height: 2px !important;
+  bottom: -3px !important;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #92ff22 !important;
+  text-shadow:
+    0 0 8px rgba(146,255,34,.20),
+    0 0 16px rgba(146,255,34,.12);
+}
+
+/* CTA puțin mai mare ca să rămână proporționat cu meniul */
+.nav-cta {
+  min-height: 50px !important;
+  padding-inline: 1.35rem !important;
+  font-size: 17px !important;
+  font-weight: 800 !important;
+}
+
+/* Tabletă */
+@media (max-width: 1100px) {
+  .site-navbar {
+    height: 94px !important;
+  }
+
+  .site-navbar.nav-scrolled {
+    height: 84px !important;
+  }
+
+  .logo-svg {
+    height: 64px !important;
+  }
+
+  .site-navbar.nav-scrolled .logo-svg {
+    height: 58px !important;
+  }
+
+  .nav-links-wrap {
+    gap: 1.35rem !important;
+  }
+
+  .nav-link {
+    font-size: 16px !important;
+  }
+
+  .nav-cta {
+    font-size: 15px !important;
+  }
+}
+
+/* Telefon */
+@media (max-width: 768px) {
+  .site-navbar,
+  .site-navbar.nav-scrolled {
+    height: 80px !important;
+  }
+
+  .logo-svg,
+  .site-navbar.nav-scrolled .logo-svg {
+    height: 58px !important;
+  }
+
+  .nav-menu {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 1.45rem !important;
+  }
+
+  .nav-links-wrap .nav-link {
+    font-size: 17px !important;
+    font-weight: 800 !important;
+  }
+}
+
+/* Telefon mic */
+@media (max-width: 480px) {
+  .site-navbar,
+  .site-navbar.nav-scrolled {
+    height: 76px !important;
+  }
+
+  .logo-svg,
+  .site-navbar.nav-scrolled .logo-svg {
+    height: 54px !important;
+  }
+}
+
+/* Pe dispozitive touch nu forțăm efect de hover */
+@media (hover: none) {
+  .logo-link:hover .logo-svg {
+    transform: none;
+    filter: none !important;
+  }
+
+  .logo-link:hover::before {
+    opacity: 0;
+  }
+}
