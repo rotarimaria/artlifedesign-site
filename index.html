@@ -1,64 +1,238 @@
 <!DOCTYPE html>
 <html lang="ro">
-  <!-- Botpress AI Webchat -->
-<script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
-
-<script
-  src="https://files.bpcontent.cloud/2026/08/10/03/20/260810033235-TCUYA0VP.js"
-  defer>
-</script>
-
-<script>
-  window.addEventListener("load", function () {
-
-    const startTime = Date.now();
-
-    const checkBotpress = setInterval(function () {
-
-      if (window.botpress && typeof window.botpress.open === "function") {
-
-        clearInterval(checkBotpress);
-
-        setTimeout(function () {
-          try {
-            window.botpress.open();
-          } catch (error) {
-            console.warn("Botpress Webchat nu s-a putut deschide automat.", error);
-          }
-        }, 5000);
-
-      }
-
-      if (Date.now() - startTime > 20000) {
-        clearInterval(checkBotpress);
-      }
-
-    }, 250);
-
-  });
-</script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#070906">
+
   <title>ArtLife Design | Publicitate vizuală</title>
-  <meta name="description" content="ArtLife Design SRL - publicitate vizuală, poligrafie, litere în volum, standuri, P.O.S.M. și branding auto în Chișinău.">
+
+  <meta
+    name="description"
+    content="ArtLife Design SRL - publicitate vizuală, poligrafie, litere în volum, standuri, P.O.S.M. și branding auto în Chișinău."
+  >
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css" rel="stylesheet">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css"
+    rel="stylesheet"
+  >
+
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- =========================================================
+       MOBILE / SCROLL FIXES
+       ========================================================= -->
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    html,
+    body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    /*
+      Galerie / card deschis pe telefon:
+      permite scroll vertical în interiorul modalului.
+    */
+    .gallery-modal {
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .gallery-box,
+    .gallery-details {
+      min-width: 0;
+    }
+
+    /*
+      Botpress:
+      păstrăm widgetul utilizabil pe ecrane mici.
+      Clasele sunt doar override-uri de siguranță.
+    */
+    .bpContainer {
+      max-height: 100dvh !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /*
+        Când se deschide o lucrare pe telefon,
+        modalul poate fi derulat de sus până jos.
+      */
+      .gallery-modal {
+        position: fixed;
+        inset: 0;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+        align-items: flex-start !important;
+        padding: 68px 12px 24px !important;
+      }
+
+      .gallery-box {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        margin: 0 auto 24px !important;
+        overflow: visible !important;
+      }
+
+      .gallery-image-wrap {
+        width: 100%;
+        min-height: 0;
+      }
+
+      .gallery-image-wrap img {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: 55vh;
+        object-fit: contain;
+      }
+
+      .gallery-details {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        padding-bottom: 24px;
+      }
+
+      /*
+        Butoanele de filtrare pot fi derulate
+        orizontal pe telefon fără să rupă layout-ul.
+      */
+      .services-tabs,
+      .portfolio-filters {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 8px;
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        padding-bottom: 8px;
+      }
+
+      .services-tabs > *,
+      .portfolio-filters > * {
+        flex: 0 0 auto;
+      }
+
+      /*
+        Webchat: limitează fereastra la viewport-ul telefonului.
+      */
+      .bpWebchat,
+      .bpContainer {
+        max-width: 100vw !important;
+        max-height: 100dvh !important;
+      }
+    }
+  </style>
+
+
+  <!-- =========================================================
+       BOTPRESS WEBCHAT
+       ========================================================= -->
+
+  <script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
+
+  <script
+    src="https://files.bpcontent.cloud/2026/08/10/03/20/260810033235-TCUYA0VP.js"
+    defer>
+  </script>
+
+  <!--
+    Deschide automat Webchat-ul la aproximativ 5 secunde
+    după ce Botpress este disponibil.
+  -->
+  <script>
+    window.addEventListener("load", function () {
+      const startedAt = Date.now();
+
+      const checkBotpress = window.setInterval(function () {
+        if (
+          window.botpress &&
+          typeof window.botpress.open === "function"
+        ) {
+          window.clearInterval(checkBotpress);
+
+          window.setTimeout(function () {
+            try {
+              window.botpress.open();
+            } catch (error) {
+              console.warn(
+                "Botpress Webchat nu s-a putut deschide automat.",
+                error
+              );
+            }
+          }, 5000);
+        }
+
+        /*
+          Nu verificăm la infinit dacă serviciul nu se încarcă.
+        */
+        if (Date.now() - startedAt > 20000) {
+          window.clearInterval(checkBotpress);
+        }
+      }, 250);
+    });
+  </script>
 </head>
+
+
 <body>
+
+  <!-- =========================================================
+       NAVIGATION
+       ========================================================= -->
+
   <nav class="site-navbar" id="navbarTop">
     <div class="scroll-progress" id="scrollProgress"></div>
+
     <div class="container nav-wrap">
+
       <a href="#home" class="logo-link" aria-label="ArtLife Design">
-        <img src="images/LOGO-antracit-grey.svg" alt="ArtLife Design" class="logo-svg">
+        <img
+          src="images/LOGO-antracit-grey.svg"
+          alt="ArtLife Design"
+          class="logo-svg"
+        >
       </a>
 
-      <button class="nav-menu icon-btn" id="navMenu" type="button" aria-label="Deschide meniul" aria-expanded="false">
+      <button
+        class="nav-menu icon-btn"
+        id="navMenu"
+        type="button"
+        aria-label="Deschide meniul"
+        aria-expanded="false"
+      >
         <i class="bi bi-list"></i>
       </button>
 
@@ -70,336 +244,1307 @@
       </div>
 
       <a href="#contact" class="nav-cta btn-arrow">
-        Solicită ofertă <i class="bi bi-arrow-right"></i>
+        Solicită ofertă
+        <i class="bi bi-arrow-right"></i>
       </a>
+
     </div>
   </nav>
 
+
+  <!-- =========================================================
+       MAIN
+       ========================================================= -->
+
   <main>
+
+
+    <!-- =======================================================
+         HERO
+         ======================================================= -->
+
     <section class="hero" id="home">
-      <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="images/fise_pret.jpg">
+
+      <video
+        class="hero-video"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        poster="images/fise_pret.jpg"
+      >
         <source src="images/homeslider.mp4" type="video/mp4">
       </video>
+
       <div class="hero-shade"></div>
 
       <div class="container hero-content">
-        <span class="hero-kicker reveal">Producție publicitară · Chișinău</span>
-        <h1 class="reveal">ArtLife <span>Design</span></h1>
-        <p class="reveal">Publicitate vizuală și producție personalizată pentru branduri care vor să fie remarcate.</p>
+
+        <span class="hero-kicker reveal">
+          Producție publicitară · Chișinău
+        </span>
+
+        <h1 class="reveal">
+          ArtLife <span>Design</span>
+        </h1>
+
+        <p class="reveal">
+          Publicitate vizuală și producție personalizată pentru
+          branduri care vor să fie remarcate.
+        </p>
+
         <div class="hero-actions reveal">
+
           <a href="lucrari.html" class="btn-main btn-arrow">
-            Vezi lucrările <i class="bi bi-arrow-right"></i>
+            Vezi lucrările
+            <i class="bi bi-arrow-right"></i>
           </a>
+
           <a href="#contact" class="btn-ghost btn-arrow">
-            Solicită o ofertă <i class="bi bi-chat-dots"></i>
+            Solicită o ofertă
+            <i class="bi bi-chat-dots"></i>
           </a>
+
         </div>
       </div>
 
       <div class="container hero-bottom">
+
         <span>Art Life Design</span>
+
         <div class="hero-socials">
-          <a href="https://www.instagram.com/design.artlife/" target="_blank" rel="noopener"><i class="bi bi-instagram"></i> Instagram</a>
-          <a href="https://www.tiktok.com/@art.life.design" target="_blank" rel="noopener"><i class="bi bi-tiktok"></i> TikTok</a>
-          <a href="https://www.facebook.com/p/Art-Life-Design-100063504763244/" target="_blank" rel="noopener"><i class="bi bi-facebook"></i> Facebook</a>
+
+          <a
+            href="https://www.instagram.com/design.artlife/"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="bi bi-instagram"></i>
+            Instagram
+          </a>
+
+          <a
+            href="https://www.tiktok.com/@art.life.design"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="bi bi-tiktok"></i>
+            TikTok
+          </a>
+
+          <a
+            href="https://www.facebook.com/p/Art-Life-Design-100063504763244/"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="bi bi-facebook"></i>
+            Facebook
+          </a>
+
         </div>
       </div>
+
     </section>
+
+
+    <!-- =======================================================
+         SERVICE STRIP
+         ======================================================= -->
 
     <section class="service-strip" aria-label="Servicii">
+
       <div class="strip-track">
-        <span>Poligrafie</span><span>Litere în volum</span><span>Standuri</span><span>P.O.S.M.</span><span>Branding Auto</span><span>Gravare laser</span><span>Tipar</span><span>Tăiere plotter</span>
-        <span>Poligrafie</span><span>Litere în volum</span><span>Standuri</span><span>P.O.S.M.</span><span>Branding Auto</span><span>Gravare laser</span><span>Tipar</span><span>Tăiere plotter</span>
+
+        <span>Poligrafie</span>
+        <span>Litere în volum</span>
+        <span>Standuri</span>
+        <span>P.O.S.M.</span>
+        <span>Branding Auto</span>
+        <span>Gravare laser</span>
+        <span>Tipar</span>
+        <span>Tăiere plotter</span>
+
+        <span>Poligrafie</span>
+        <span>Litere în volum</span>
+        <span>Standuri</span>
+        <span>P.O.S.M.</span>
+        <span>Branding Auto</span>
+        <span>Gravare laser</span>
+        <span>Tipar</span>
+        <span>Tăiere plotter</span>
+
       </div>
+
     </section>
+
+
+    <!-- =======================================================
+         ABOUT
+         ======================================================= -->
 
     <section class="section about-section" id="about">
+
       <div class="container about-final">
+
         <div class="about-final-copy reveal">
-          <span class="section-label">Despre noi</span>
-          <h2>Publicitate de orice fel, pentru orice buget.</h2>
-          <p class="lead">Art Life Design este o agenție de publicitate dinamică, orientată spre soluții vizuale clare, creative și eficiente pentru fiecare brand.</p>
-          <p>Realizăm proiecte de publicitate vizuală, materiale promoționale și soluții personalizate pentru companii și afaceri locale.</p>
+
+          <span class="section-label">
+            Despre noi
+          </span>
+
+          <h2>
+            Publicitate de orice fel, pentru orice buget.
+          </h2>
+
+          <p class="lead">
+            Art Life Design este o agenție de publicitate dinamică,
+            orientată spre soluții vizuale clare, creative și eficiente
+            pentru fiecare brand.
+          </p>
+
+          <p>
+            Realizăm proiecte de publicitate vizuală, materiale
+            promoționale și soluții personalizate pentru companii
+            și afaceri locale.
+          </p>
 
           <div class="about-final-actions">
-            <a href="#services" class="about-btn about-btn-primary">
-              Vezi serviciile <i class="bi bi-arrow-right"></i>
+
+            <a
+              href="#services"
+              class="about-btn about-btn-primary"
+            >
+              Vezi serviciile
+              <i class="bi bi-arrow-right"></i>
             </a>
-            <a href="lucrari.html" class="about-btn about-btn-secondary">
-              Vezi portofoliul <i class="bi bi-arrow-up-right"></i>
+
+            <a
+              href="lucrari.html"
+              class="about-btn about-btn-secondary"
+            >
+              Vezi portofoliul
+              <i class="bi bi-arrow-up-right"></i>
             </a>
+
           </div>
+
         </div>
+
 
         <figure class="about-final-visual reveal" id="aboutVisual">
-          <img src="images/litere_volum1.jpg" alt="Lucrare Art Life Design" loading="lazy">
-          <span class="about-image-note">Art Life Design · Proiecte realizate</span>
+
+          <img
+            src="images/litere_volum1.jpg"
+            alt="Lucrare Art Life Design"
+            loading="lazy"
+          >
+
+          <span class="about-image-note">
+            Art Life Design · Proiecte realizate
+          </span>
+
         </figure>
+
       </div>
+
     </section>
+
+
+    <!-- =======================================================
+         SERVICES
+         ======================================================= -->
 
     <section class="section services-section" id="services">
+
       <div class="container">
+
         <div class="services-heading reveal">
-          <span class="section-label">Servicii</span>
-          <h2>Ce putem realiza</h2>
-          <p>Alege serviciul care te interesează sau explorează lucrările realizate.</p>
+
+          <span class="section-label">
+            Servicii
+          </span>
+
+          <h2>
+            Ce putem realiza
+          </h2>
+
+          <p>
+            Alege serviciul care te interesează sau explorează
+            lucrările realizate.
+          </p>
+
         </div>
+
 
         <div class="services-tabs reveal">
-          <button class="service-filter active" type="button" data-service="all">Toate</button>
-          <button class="service-filter" type="button" data-service="poligrafie">Poligrafie</button>
-          <button class="service-filter" type="button" data-service="volum">Litere & Standuri</button>
-          <button class="service-filter" type="button" data-service="posm">P.O.S.M.</button>
-          <button class="service-filter" type="button" data-service="auto">Branding Auto</button>
-          <button class="service-filter" type="button" data-service="laser">Laser / Plotter</button>
+
+          <button
+            class="service-filter active"
+            type="button"
+            data-service="all"
+          >
+            Toate
+          </button>
+
+          <button
+            class="service-filter"
+            type="button"
+            data-service="poligrafie"
+          >
+            Poligrafie
+          </button>
+
+          <button
+            class="service-filter"
+            type="button"
+            data-service="volum"
+          >
+            Litere & Standuri
+          </button>
+
+          <button
+            class="service-filter"
+            type="button"
+            data-service="posm"
+          >
+            P.O.S.M.
+          </button>
+
+          <button
+            class="service-filter"
+            type="button"
+            data-service="auto"
+          >
+            Branding Auto
+          </button>
+
+          <button
+            class="service-filter"
+            type="button"
+            data-service="laser"
+          >
+            Laser / Plotter
+          </button>
+
         </div>
+
 
         <div class="services-list">
-          <article class="service-card-row reveal" data-service-card="poligrafie" data-search-service="poligrafie print tipar stickere etichete bannere meniuri fise pret">
-            <span class="service-index">01</span>
-            <a href="#contact" class="service-copy service-to-form" data-order-service="Poligrafie">
-              <small>Poligrafie</small>
-              <h3>Print, stickere și materiale promoționale</h3>
-              <p>Etichete, bannere, meniuri, fișe de preț și materiale tipărite.</p>
+
+
+          <!-- POLIGRAFIE -->
+
+          <article
+            class="service-card-row reveal"
+            data-service-card="poligrafie"
+            data-search-service="poligrafie print tipar stickere etichete bannere meniuri fise pret"
+          >
+
+            <span class="service-index">
+              01
+            </span>
+
+            <a
+              href="#contact"
+              class="service-copy service-to-form"
+              data-order-service="Poligrafie"
+            >
+
+              <small>
+                Poligrafie
+              </small>
+
+              <h3>
+                Print, stickere și materiale promoționale
+              </h3>
+
+              <p>
+                Etichete, bannere, meniuri, fișe de preț și
+                materiale tipărite.
+              </p>
+
             </a>
-            <a href="lucrari.html?filter=poligrafie" class="service-example">Vezi lucrările <i class="bi bi-arrow-up-right"></i></a>
+
+            <a
+              href="lucrari.html?filter=poligrafie"
+              class="service-example"
+            >
+              Vezi lucrările
+              <i class="bi bi-arrow-up-right"></i>
+            </a>
+
           </article>
 
-          <article class="service-card-row reveal" data-service-card="volum" data-search-service="litere volum standuri light box casete luminoase fatade">
-            <span class="service-index">02</span>
-            <a href="#contact" class="service-copy service-to-form" data-order-service="Litere în volum & Standuri">
-              <small>Litere în volum & Standuri</small>
-              <h3>Elemente vizuale pentru fațade și interior</h3>
-              <p>Litere volumetrice, light box-uri, standuri și casete luminoase.</p>
+
+          <!-- LITERE & STANDURI -->
+
+          <article
+            class="service-card-row reveal"
+            data-service-card="volum"
+            data-search-service="litere volum standuri light box casete luminoase fatade"
+          >
+
+            <span class="service-index">
+              02
+            </span>
+
+            <a
+              href="#contact"
+              class="service-copy service-to-form"
+              data-order-service="Litere în volum & Standuri"
+            >
+
+              <small>
+                Litere în volum & Standuri
+              </small>
+
+              <h3>
+                Elemente vizuale pentru fațade și interior
+              </h3>
+
+              <p>
+                Litere volumetrice, light box-uri, standuri
+                și casete luminoase.
+              </p>
+
             </a>
-            <a href="lucrari.html?filter=volum" class="service-example">Vezi lucrările <i class="bi bi-arrow-up-right"></i></a>
+
+            <a
+              href="lucrari.html?filter=volum"
+              class="service-example"
+            >
+              Vezi lucrările
+              <i class="bi bi-arrow-up-right"></i>
+            </a>
+
           </article>
 
-          <article class="service-card-row reveal" data-service-card="posm" data-search-service="posm display urne suporturi standuri campanii retail">
-            <span class="service-index">03</span>
-            <a href="#contact" class="service-copy service-to-form" data-order-service="P.O.S.M.">
-              <small>P.O.S.M.</small>
-              <h3>Materiale pentru retail și campanii</h3>
-              <p>Display-uri, urne, suporturi, standuri și produse personalizate.</p>
+
+          <!-- POSM -->
+
+          <article
+            class="service-card-row reveal"
+            data-service-card="posm"
+            data-search-service="posm display urne suporturi standuri campanii retail"
+          >
+
+            <span class="service-index">
+              03
+            </span>
+
+            <a
+              href="#contact"
+              class="service-copy service-to-form"
+              data-order-service="P.O.S.M."
+            >
+
+              <small>
+                P.O.S.M.
+              </small>
+
+              <h3>
+                Materiale pentru retail și campanii
+              </h3>
+
+              <p>
+                Display-uri, urne, suporturi, standuri și
+                produse personalizate.
+              </p>
+
             </a>
-            <a href="lucrari.html?filter=posm" class="service-example">Vezi lucrările <i class="bi bi-arrow-up-right"></i></a>
+
+            <a
+              href="lucrari.html?filter=posm"
+              class="service-example"
+            >
+              Vezi lucrările
+              <i class="bi bi-arrow-up-right"></i>
+            </a>
+
           </article>
 
-          <article class="service-card-row reveal" data-service-card="auto" data-search-service="branding auto colantare masini microbuze flote transport">
-            <span class="service-index">04</span>
-            <a href="#contact" class="service-copy service-to-form" data-order-service="Branding Auto">
-              <small>Branding Auto</small>
-              <h3>Promovare vizibilă pe mașini și flote</h3>
-              <p>Colantări auto pentru transport comercial, microbuze și automobile.</p>
+
+          <!-- BRANDING AUTO -->
+
+          <article
+            class="service-card-row reveal"
+            data-service-card="auto"
+            data-search-service="branding auto colantare masini microbuze flote transport"
+          >
+
+            <span class="service-index">
+              04
+            </span>
+
+            <a
+              href="#contact"
+              class="service-copy service-to-form"
+              data-order-service="Branding Auto"
+            >
+
+              <small>
+                Branding Auto
+              </small>
+
+              <h3>
+                Promovare vizibilă pe mașini și flote
+              </h3>
+
+              <p>
+                Colantări auto pentru transport comercial,
+                microbuze și automobile.
+              </p>
+
             </a>
-            <a href="lucrari.html?filter=auto" class="service-example">Vezi lucrările <i class="bi bi-arrow-up-right"></i></a>
+
+            <a
+              href="lucrari.html?filter=auto"
+              class="service-example"
+            >
+              Vezi lucrările
+              <i class="bi bi-arrow-up-right"></i>
+            </a>
+
           </article>
 
-          <article class="service-card-row reveal" data-service-card="laser" data-search-service="laser gravare taiere plotter decupare productie">
-            <span class="service-index">05</span>
-            <a href="#contact" class="service-copy service-to-form" data-order-service="Laser / Plotter">
-              <small>Laser / Plotter</small>
-              <h3>Tăiere, gravare și decupare personalizată</h3>
-              <p>Servicii pentru proiecte promoționale, decorative și tehnice.</p>
+
+          <!-- LASER / PLOTTER -->
+
+          <article
+            class="service-card-row reveal"
+            data-service-card="laser"
+            data-search-service="laser gravare taiere plotter decupare productie"
+          >
+
+            <span class="service-index">
+              05
+            </span>
+
+            <a
+              href="#contact"
+              class="service-copy service-to-form"
+              data-order-service="Laser / Plotter"
+            >
+
+              <small>
+                Laser / Plotter
+              </small>
+
+              <h3>
+                Tăiere, gravare și decupare personalizată
+              </h3>
+
+              <p>
+                Servicii pentru proiecte promoționale,
+                decorative și tehnice.
+              </p>
+
             </a>
-            <a href="lucrari.html?search=plotter" class="service-example">Vezi lucrările <i class="bi bi-arrow-up-right"></i></a>
+
+            <a
+              href="lucrari.html?search=plotter"
+              class="service-example"
+            >
+              Vezi lucrările
+              <i class="bi bi-arrow-up-right"></i>
+            </a>
+
           </article>
+
         </div>
+
       </div>
+
     </section>
+
+
+    <!-- =======================================================
+         WORKS
+         ======================================================= -->
 
     <section class="section works-section" id="works">
+
       <div class="container">
+
         <div class="works-head reveal">
+
           <div>
-            <span class="section-label">Portofoliu selectat</span>
-            <h2>Câteva dintre lucrările noastre</h2>
+
+            <span class="section-label">
+              Portofoliu selectat
+            </span>
+
+            <h2>
+              Câteva dintre lucrările noastre
+            </h2>
+
           </div>
-          <a href="lucrari.html" class="btn-ghost btn-arrow">Vezi toate lucrările <i class="bi bi-arrow-right"></i></a>
+
+          <a
+            href="lucrari.html"
+            class="btn-ghost btn-arrow"
+          >
+            Vezi toate lucrările
+            <i class="bi bi-arrow-right"></i>
+          </a>
+
         </div>
-        <div class="works-grid" id="homeWorksGrid"></div>
+
+        <div
+          class="works-grid"
+          id="homeWorksGrid"
+        ></div>
+
       </div>
+
     </section>
+
+
+    <!-- =======================================================
+         PROJECT CTA
+         ======================================================= -->
 
     <section class="project-cta-section">
+
       <div class="container">
+
         <div class="project-cta reveal">
-          <div class="project-cta-mark"><i class="bi bi-chat-square-text"></i></div>
-          <div>
-            <span class="section-label">Ai un proiect?</span>
-            <h2>Spune-ne ce vrei să realizezi.</h2>
-            <p>Trimite-ne o scurtă descriere, iar echipa Art Life Design revine cu detaliile necesare.</p>
+
+          <div class="project-cta-mark">
+            <i class="bi bi-chat-square-text"></i>
           </div>
-          <a href="#contact" class="btn-main btn-arrow">Trimite o solicitare <i class="bi bi-arrow-right"></i></a>
+
+          <div>
+
+            <span class="section-label">
+              Ai un proiect?
+            </span>
+
+            <h2>
+              Spune-ne ce vrei să realizezi.
+            </h2>
+
+            <p>
+              Trimite-ne o scurtă descriere, iar echipa
+              Art Life Design revine cu detaliile necesare.
+            </p>
+
+          </div>
+
+          <a
+            href="#contact"
+            class="btn-main btn-arrow"
+          >
+            Trimite o solicitare
+            <i class="bi bi-arrow-right"></i>
+          </a>
+
         </div>
+
       </div>
+
     </section>
+
+
+    <!-- =======================================================
+         SOCIAL
+         ======================================================= -->
 
     <section class="social-section" id="social">
+
       <div class="container">
+
         <div class="social-heading reveal">
-          <span class="section-label">Urmărește Art Life Design</span>
-          <h2>Proiecte noi, lucrări și noutăți.</h2>
+
+          <span class="section-label">
+            Urmărește Art Life Design
+          </span>
+
+          <h2>
+            Proiecte noi, lucrări și noutăți.
+          </h2>
+
         </div>
+
+
         <div class="social-grid reveal">
-          <a href="https://www.instagram.com/design.artlife/" target="_blank" rel="noopener" class="social-network">
+
+          <a
+            href="https://www.instagram.com/design.artlife/"
+            target="_blank"
+            rel="noopener"
+            class="social-network"
+          >
+
             <i class="bi bi-instagram"></i>
-            <div><strong>Instagram</strong><span>@design.artlife</span></div>
+
+            <div>
+              <strong>Instagram</strong>
+              <span>@design.artlife</span>
+            </div>
+
             <i class="bi bi-arrow-up-right"></i>
+
           </a>
-          <a href="https://www.tiktok.com/@art.life.design" target="_blank" rel="noopener" class="social-network">
+
+
+          <a
+            href="https://www.tiktok.com/@art.life.design"
+            target="_blank"
+            rel="noopener"
+            class="social-network"
+          >
+
             <i class="bi bi-tiktok"></i>
-            <div><strong>TikTok</strong><span>@art.life.design</span></div>
+
+            <div>
+              <strong>TikTok</strong>
+              <span>@art.life.design</span>
+            </div>
+
             <i class="bi bi-arrow-up-right"></i>
+
           </a>
-          <a href="https://www.facebook.com/p/Art-Life-Design-100063504763244/" target="_blank" rel="noopener" class="social-network">
+
+
+          <a
+            href="https://www.facebook.com/p/Art-Life-Design-100063504763244/"
+            target="_blank"
+            rel="noopener"
+            class="social-network"
+          >
+
             <i class="bi bi-facebook"></i>
-            <div><strong>Facebook</strong><span>Art Life Design</span></div>
+
+            <div>
+              <strong>Facebook</strong>
+              <span>Art Life Design</span>
+            </div>
+
             <i class="bi bi-arrow-up-right"></i>
+
           </a>
+
         </div>
+
       </div>
+
     </section>
 
-<section class="section contact-section" id="contact">
+
+    <!-- =======================================================
+         CONTACT
+         ======================================================= -->
+
+    <section class="section contact-section" id="contact">
+
       <div class="container">
+
         <div class="contact-intro reveal">
-          <span class="section-label">Contact</span>
-          <h2>Ai un proiect în plan?</h2>
-          <p>Trimite-ne un mesaj cu ceea ce vrei să realizezi. Echipa Art Life Design te va contacta pentru detalii.</p>
+
+          <span class="section-label">
+            Contact
+          </span>
+
+          <h2>
+            Ai un proiect în plan?
+          </h2>
+
+          <p>
+            Trimite-ne un mesaj cu ceea ce vrei să realizezi.
+            Echipa Art Life Design te va contacta pentru detalii.
+          </p>
+
         </div>
+
 
         <div class="contact-grid">
+
+
+          <!-- FORMULAR -->
+
           <div class="contact-form-card reveal">
-            <form action="https://formsubmit.co/artlifedesignform@gmail.com" method="POST" class="ajax-form" novalidate>
-              <input type="hidden" name="_subject" value="Cerere nouă de pe site ArtLife Design">
-              <input type="hidden" name="_captcha" value="false">
-              <input type="hidden" name="_template" value="table">
+
+            <form
+              action="https://formsubmit.co/artlifedesignform@gmail.com"
+              method="POST"
+              class="ajax-form"
+              novalidate
+            >
+
+              <input
+                type="hidden"
+                name="_subject"
+                value="Cerere nouă de pe site ArtLife Design"
+              >
+
+              <input
+                type="hidden"
+                name="_captcha"
+                value="false"
+              >
+
+              <input
+                type="hidden"
+                name="_template"
+                value="table"
+              >
+
 
               <div class="form-row">
-                <label>Nume și prenume*<input type="text" name="nume" placeholder="Numele tău"></label>
-                <label>Telefon*<input type="tel" name="telefon" placeholder="+373 ..."></label>
+
+                <label>
+                  Nume și prenume*
+                  <input
+                    type="text"
+                    name="nume"
+                    placeholder="Numele tău"
+                  >
+                </label>
+
+                <label>
+                  Telefon*
+                  <input
+                    type="tel"
+                    name="telefon"
+                    placeholder="+373 ..."
+                  >
+                </label>
+
               </div>
 
-              <label>Email*<input type="email" name="email" placeholder="email@exemplu.com"></label>
 
-              <label>Serviciu
-                <span class="select-wrap">
-                  <select name="serviciu">
-                    <option value="">Alege o opțiune</option>
-                    <option value="Consultare">Consultare</option>
-                    <option value="Poligrafie">Poligrafie</option>
-                    <option value="Litere în volum & Standuri">Litere în volum & Standuri</option>
-                    <option value="P.O.S.M.">P.O.S.M.</option>
-                    <option value="Branding Auto">Branding Auto</option>
-                    <option value="Laser / Plotter">Laser / Plotter</option>
-                  </select>
-                </span>
+              <label>
+                Email*
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="email@exemplu.com"
+                >
               </label>
 
-              <label>Mesaj*<textarea name="mesaj" placeholder="Descrie pe scurt proiectul sau rezultatul pe care îl dorești."></textarea></label>
 
-              <p class="privacy-note">* Prin trimiterea formularului, ești de acord cu prelucrarea datelor personale în scopul contactării ulterioare. Informațiile vor fi păstrate confidențial.</p>
+              <label>
+                Serviciu
 
-              <button type="submit" class="btn-main form-submit btn-arrow">Trimite mesajul <i class="bi bi-arrow-right"></i></button>
-              <div class="form-message" aria-live="polite"></div>
+                <span class="select-wrap">
+
+                  <select name="serviciu">
+
+                    <option value="">
+                      Alege o opțiune
+                    </option>
+
+                    <option value="Consultare">
+                      Consultare
+                    </option>
+
+                    <option value="Poligrafie">
+                      Poligrafie
+                    </option>
+
+                    <option value="Litere în volum & Standuri">
+                      Litere în volum & Standuri
+                    </option>
+
+                    <option value="P.O.S.M.">
+                      P.O.S.M.
+                    </option>
+
+                    <option value="Branding Auto">
+                      Branding Auto
+                    </option>
+
+                    <option value="Laser / Plotter">
+                      Laser / Plotter
+                    </option>
+
+                  </select>
+
+                </span>
+
+              </label>
+
+
+              <label>
+                Mesaj*
+
+                <textarea
+                  name="mesaj"
+                  placeholder="Descrie pe scurt proiectul sau rezultatul pe care îl dorești."
+                ></textarea>
+
+              </label>
+
+
+              <p class="privacy-note">
+                * Prin trimiterea formularului, ești de acord
+                cu prelucrarea datelor personale în scopul
+                contactării ulterioare. Informațiile vor fi
+                păstrate confidențial.
+              </p>
+
+
+              <button
+                type="submit"
+                class="btn-main form-submit btn-arrow"
+              >
+                Trimite mesajul
+                <i class="bi bi-arrow-right"></i>
+              </button>
+
+
+              <div
+                class="form-message"
+                aria-live="polite"
+              ></div>
+
             </form>
+
           </div>
+
+
+          <!-- CONTACT INFO -->
 
           <div class="contact-info reveal">
+
             <div class="contact-info-head">
-              <span>Contact direct</span>
-              <h3>Art Life Design</h3>
+
+              <span>
+                Contact direct
+              </span>
+
+              <h3>
+                Art Life Design
+              </h3>
+
             </div>
 
+
+            <!-- ADRESĂ -->
+
             <div class="contact-line">
-              <a class="contact-icon-link" href="https://www.google.com/maps/search/?api=1&query=Nicolae+Milescu+Spataru+30+Chisinau" target="_blank" aria-label="Deschide adresa"><i class="bi bi-geo-alt"></i></a>
-              <button class="copy-text" type="button" data-copy="str. Nicolae Milescu Spătaru, 30, Chișinău">str. Nicolae Milescu Spătaru, 30, Chișinău</button>
+
+              <a
+                class="contact-icon-link"
+                href="https://www.google.com/maps/search/?api=1&query=Nicolae+Milescu+Spataru+30+Chisinau"
+                target="_blank"
+                rel="noopener"
+                aria-label="Deschide adresa"
+              >
+                <i class="bi bi-geo-alt"></i>
+              </a>
+
+              <button
+                class="copy-text"
+                type="button"
+                data-copy="str. Nicolae Milescu Spătaru, 30, Chișinău"
+              >
+                str. Nicolae Milescu Spătaru, 30, Chișinău
+              </button>
+
             </div>
+
+
+            <!-- TELEFON 1 -->
+
             <div class="contact-line">
-              <a class="contact-icon-link phone-ring" href="tel:+37360980008" title="Sună la +373 609 800 08"><i class="bi bi-telephone"></i></a>
-              <button class="copy-text" type="button" data-copy="+37360980008">+373 609 800 08</button>
+
+              <a
+                class="contact-icon-link phone-ring"
+                href="tel:+37360980008"
+                title="Sună la +373 609 800 08"
+              >
+                <i class="bi bi-telephone"></i>
+              </a>
+
+              <button
+                class="copy-text"
+                type="button"
+                data-copy="+37360980008"
+              >
+                +373 609 800 08
+              </button>
+
             </div>
+
+
+            <!-- TELEFON 2 -->
+
             <div class="contact-line">
-              <a class="contact-icon-link phone-ring" href="tel:+37360800013" title="Sună la +373 608 000 13"><i class="bi bi-telephone"></i></a>
-              <button class="copy-text" type="button" data-copy="+37360800013">+373 608 000 13</button>
+
+              <a
+                class="contact-icon-link phone-ring"
+                href="tel:+37360800013"
+                title="Sună la +373 608 000 13"
+              >
+                <i class="bi bi-telephone"></i>
+              </a>
+
+              <button
+                class="copy-text"
+                type="button"
+                data-copy="+37360800013"
+              >
+                +373 608 000 13
+              </button>
+
             </div>
+
+
+            <!-- EMAIL 1 -->
+
             <div class="contact-line">
-              <a class="contact-icon-link gmail-launch" href="https://mail.google.com/mail/?view=cm&fs=1&to=info.artlifedesign%40gmail.com" target="_blank" rel="noopener" data-email="info.artlifedesign@gmail.com" title="Deschide Gmail"><i class="bi bi-envelope"></i></a>
-              <button class="copy-text" type="button" data-copy="info.artlifedesign@gmail.com">info.artlifedesign@gmail.com</button>
+
+              <a
+                class="contact-icon-link gmail-launch"
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=info.artlifedesign%40gmail.com"
+                target="_blank"
+                rel="noopener"
+                data-email="info.artlifedesign@gmail.com"
+                title="Deschide Gmail"
+              >
+                <i class="bi bi-envelope"></i>
+              </a>
+
+              <button
+                class="copy-text"
+                type="button"
+                data-copy="info.artlifedesign@gmail.com"
+              >
+                info.artlifedesign@gmail.com
+              </button>
+
             </div>
+
+
+            <!-- EMAIL 2 -->
+
             <div class="contact-line">
-              <a class="contact-icon-link gmail-launch" href="https://mail.google.com/mail/?view=cm&fs=1&to=office.artlifedesign%40gmail.com" target="_blank" rel="noopener" data-email="office.artlifedesign@gmail.com" title="Deschide Gmail"><i class="bi bi-envelope"></i></a>
-              <button class="copy-text" type="button" data-copy="office.artlifedesign@gmail.com">office.artlifedesign@gmail.com</button>
+
+              <a
+                class="contact-icon-link gmail-launch"
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=office.artlifedesign%40gmail.com"
+                target="_blank"
+                rel="noopener"
+                data-email="office.artlifedesign@gmail.com"
+                title="Deschide Gmail"
+              >
+                <i class="bi bi-envelope"></i>
+              </a>
+
+              <button
+                class="copy-text"
+                type="button"
+                data-copy="office.artlifedesign@gmail.com"
+              >
+                office.artlifedesign@gmail.com
+              </button>
+
             </div>
+
+
+            <!-- PROGRAM -->
+
             <div class="contact-line">
-              <span class="contact-icon-link static-icon"><i class="bi bi-clock"></i></span>
-              <span>Luni - Vineri: 09:00 - 18:00 <small class="work-status" id="workStatus"></small></span>
+
+              <span class="contact-icon-link static-icon">
+                <i class="bi bi-clock"></i>
+              </span>
+
+              <span>
+                Luni - Vineri: 09:00 - 18:00
+
+                <small
+                  class="work-status"
+                  id="workStatus"
+                ></small>
+              </span>
+
             </div>
+
+
+            <!-- SOCIAL -->
 
             <div class="contact-social-links">
-              <a href="https://www.instagram.com/design.artlife/" target="_blank" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-              <a href="https://www.facebook.com/p/Art-Life-Design-100063504763244/" target="_blank" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-              <a href="https://www.tiktok.com/@art.life.design" target="_blank" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+
+              <a
+                href="https://www.instagram.com/design.artlife/"
+                target="_blank"
+                rel="noopener"
+                aria-label="Instagram"
+              >
+                <i class="bi bi-instagram"></i>
+              </a>
+
+              <a
+                href="https://www.facebook.com/p/Art-Life-Design-100063504763244/"
+                target="_blank"
+                rel="noopener"
+                aria-label="Facebook"
+              >
+                <i class="bi bi-facebook"></i>
+              </a>
+
+              <a
+                href="https://www.tiktok.com/@art.life.design"
+                target="_blank"
+                rel="noopener"
+                aria-label="TikTok"
+              >
+                <i class="bi bi-tiktok"></i>
+              </a>
+
             </div>
 
-            <a class="map-box" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Nicolae+Milescu+Spataru+30+Chisinau">
-              <iframe title="Locația Art Life Design" src="https://www.google.com/maps?q=Nicolae%20Milescu%20Spataru%2030%20Chisinau&output=embed" loading="lazy"></iframe>
-              <span>Deschide locația în Google Maps <i class="bi bi-arrow-up-right"></i></span>
+
+            <!-- MAP -->
+
+            <a
+              class="map-box"
+              target="_blank"
+              rel="noopener"
+              href="https://www.google.com/maps/search/?api=1&query=Nicolae+Milescu+Spataru+30+Chisinau"
+            >
+
+              <iframe
+                title="Locația Art Life Design"
+                src="https://www.google.com/maps?q=Nicolae%20Milescu%20Spataru%2030%20Chisinau&output=embed"
+                loading="lazy"
+              ></iframe>
+
+              <span>
+                Deschide locația în Google Maps
+                <i class="bi bi-arrow-up-right"></i>
+              </span>
+
             </a>
+
           </div>
+
         </div>
+
       </div>
+
     </section>
+
   </main>
 
-  <div class="gallery-modal" id="galleryModal">
-    <button class="gallery-nav gallery-prev icon-btn" id="galleryPrev" type="button" aria-label="Imaginea precedentă"><i class="bi bi-chevron-left"></i></button>
-    <button class="gallery-nav gallery-next icon-btn" id="galleryNext" type="button" aria-label="Imaginea următoare"><i class="bi bi-chevron-right"></i></button>
-    <button class="gallery-close icon-btn" id="galleryModalClose" type="button" aria-label="Închide">&times;</button>
+
+  <!-- =========================================================
+       GALLERY MODAL
+       ========================================================= -->
+
+  <div
+    class="gallery-modal"
+    id="galleryModal"
+  >
+
+    <button
+      class="gallery-nav gallery-prev icon-btn"
+      id="galleryPrev"
+      type="button"
+      aria-label="Imaginea precedentă"
+    >
+      <i class="bi bi-chevron-left"></i>
+    </button>
+
+
+    <button
+      class="gallery-nav gallery-next icon-btn"
+      id="galleryNext"
+      type="button"
+      aria-label="Imaginea următoare"
+    >
+      <i class="bi bi-chevron-right"></i>
+    </button>
+
+
+    <button
+      class="gallery-close icon-btn"
+      id="galleryModalClose"
+      type="button"
+      aria-label="Închide"
+    >
+      &times;
+    </button>
+
+
     <div class="gallery-box">
-      <div class="gallery-image-wrap"><img src="" alt="" id="galleryModalImage"></div>
-      <div class="gallery-details">
-        <span id="galleryModalDate"></span>
-        <h3 id="galleryModalTitle"></h3>
-        <p id="galleryModalService"></p>
-        <div class="gallery-tags" id="galleryModalTags"></div>
-        <small id="galleryModalDesc"></small>
-        <a href="#contact" class="gallery-order-btn btn-arrow" id="galleryOrderBtn">Produs similar <i class="bi bi-arrow-right"></i></a>
+
+      <div class="gallery-image-wrap">
+
+        <img
+          src=""
+          alt=""
+          id="galleryModalImage"
+        >
+
       </div>
+
+
+      <div class="gallery-details">
+
+        <span id="galleryModalDate"></span>
+
+        <h3 id="galleryModalTitle"></h3>
+
+        <p id="galleryModalService"></p>
+
+        <div
+          class="gallery-tags"
+          id="galleryModalTags"
+        ></div>
+
+        <small id="galleryModalDesc"></small>
+
+        <a
+          href="#contact"
+          class="gallery-order-btn btn-arrow"
+          id="galleryOrderBtn"
+        >
+          Produs similar
+          <i class="bi bi-arrow-right"></i>
+        </a>
+
+      </div>
+
     </div>
+
   </div>
 
+
+  <!-- =========================================================
+       FOOTER
+       ========================================================= -->
+
   <footer class="site-footer">
+
     <div class="container footer-inner">
+
+
       <div class="footer-brand">
-        <a href="#home" class="footer-logo-link"><img src="images/LOGO-antracit-grey.svg" alt="ArtLife Design" class="footer-logo"></a>
-        <p>Publicitate vizuală pentru branduri care vor să iasă în evidență.</p>
+
+        <a
+          href="#home"
+          class="footer-logo-link"
+        >
+
+          <img
+            src="images/LOGO-antracit-grey.svg"
+            alt="ArtLife Design"
+            class="footer-logo"
+          >
+
+        </a>
+
+        <p>
+          Publicitate vizuală pentru branduri care vor
+          să iasă în evidență.
+        </p>
+
       </div>
+
+
       <div class="footer-nav-block">
-        <h4>Navigare</h4>
+
+        <h4>
+          Navigare
+        </h4>
+
         <div class="footer-links">
-          <a href="#about">Despre noi</a><a href="#services">Servicii</a><a href="#works">Lucrări</a><a href="#contact">Contact</a>
+
+          <a href="#about">
+            Despre noi
+          </a>
+
+          <a href="#services">
+            Servicii
+          </a>
+
+          <a href="#works">
+            Lucrări
+          </a>
+
+          <a href="#contact">
+            Contact
+          </a>
+
         </div>
+
       </div>
+
+
       <div class="footer-social-block">
-        <h4>Urmărește-ne</h4>
+
+        <h4>
+          Urmărește-ne
+        </h4>
+
         <div class="footer-links">
-          <a href="https://www.instagram.com/design.artlife/" target="_blank">Instagram ↗</a>
-          <a href="https://www.tiktok.com/@art.life.design" target="_blank">TikTok ↗</a>
-          <a href="https://www.facebook.com/p/Art-Life-Design-100063504763244/" target="_blank">Facebook ↗</a>
+
+          <a
+            href="https://www.instagram.com/design.artlife/"
+            target="_blank"
+            rel="noopener"
+          >
+            Instagram ↗
+          </a>
+
+          <a
+            href="https://www.tiktok.com/@art.life.design"
+            target="_blank"
+            rel="noopener"
+          >
+            TikTok ↗
+          </a>
+
+          <a
+            href="https://www.facebook.com/p/Art-Life-Design-100063504763244/"
+            target="_blank"
+            rel="noopener"
+          >
+            Facebook ↗
+          </a>
+
         </div>
+
       </div>
+
     </div>
+
+
     <div class="container footer-bottom">
-      <p>© 2026 Art Life Design. Toate drepturile rezervate.</p>
-      <span>Chișinău, Moldova</span>
+
+      <p>
+        © 2026 Art Life Design. Toate drepturile rezervate.
+      </p>
+
+      <span>
+        Chișinău, Moldova
+      </span>
+
     </div>
+
   </footer>
 
-  <!-- Colțul dreapta-jos rămâne intenționat liber pentru viitorul chat AI. -->
-  <div class="site-toast" id="siteToast"></div>
+
+  <!-- =========================================================
+       SITE TOAST
+       ========================================================= -->
+
+  <div
+    class="site-toast"
+    id="siteToast"
+  ></div>
+
+
+  <!-- =========================================================
+       SITE JAVASCRIPT
+       ========================================================= -->
+
   <script src="js/script.js"></script>
+
 </body>
 </html>
