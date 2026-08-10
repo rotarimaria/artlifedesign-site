@@ -164,21 +164,28 @@
 <script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
 
 <style>
-  /* Efect discret de apariție pentru Webchat */
-  @keyframes artlifeChatAppear {
-    from {
+  @keyframes artLifeChatEntrance {
+    0% {
       opacity: 0;
-      transform: translateY(18px) scale(0.98);
+      transform: translateY(40px) scale(0.94);
+      filter: blur(4px);
     }
 
-    to {
+    60% {
+      opacity: 1;
+      transform: translateY(-6px) scale(1.015);
+      filter: blur(0);
+    }
+
+    100% {
       opacity: 1;
       transform: translateY(0) scale(1);
+      filter: blur(0);
     }
   }
 
-  .artlife-chat-visible {
-    animation: artlifeChatAppear 0.45s ease-out both;
+  .artlife-chat-entrance {
+    animation: artLifeChatEntrance 1.15s cubic-bezier(.22, 1, .36, 1) both;
   }
 </style>
 
@@ -191,19 +198,16 @@
     });
 
     window.botpress.on("webchat:initialized", function () {
-      window.botpress.open();
-    });
-
-    window.botpress.on("webchat:opened", function () {
       setTimeout(function () {
-        const possibleChatElements = document.querySelectorAll(
-          "[class*='bp'], iframe"
-        );
+        window.botpress.open();
 
-        possibleChatElements.forEach(function (element) {
-          element.classList.add("artlife-chat-visible");
-        });
-      }, 50);
+        setTimeout(function () {
+          document.querySelectorAll("iframe").forEach(function (element) {
+            element.classList.add("artlife-chat-entrance");
+          });
+        }, 80);
+
+      }, 5000);
     });
   });
 </script>
