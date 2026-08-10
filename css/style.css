@@ -119,7 +119,7 @@ h1,h2,h3,h4,p{margin-top:0}
 .nav-wrap{height:100%;display:flex;align-items:center;justify-content:space-between;gap:1rem}
 .logo-link{display:inline-flex;align-items:center}
 .logo-svg{width:auto;height:48px;transition:var(--speed)}
-.site-navbar.nav-scrolled .logo-svg{height:44px}
+.site-navbar.nav-scrolled .logo-svg{height:60px}
 .nav-links-wrap{display:flex;align-items:center;gap:1.45rem}
 .nav-link{position:relative;padding:.5rem 0;color:rgba(247,244,235,.82);font-size:.92rem;font-weight:700}
 .nav-link::after{content:"";position:absolute;left:0;right:100%;bottom:2px;height:1px;background:var(--green);transition:var(--speed)}
