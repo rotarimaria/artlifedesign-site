@@ -257,35 +257,66 @@
 
 <script>
 window.addEventListener("load", function () {
+
+  // Detectăm dacă pagina a fost reîncărcată prin F5 / Refresh
   const navigationEntry = performance.getEntriesByType("navigation")[0];
   const isReload = navigationEntry && navigationEntry.type === "reload";
 
+  // La F5 încercăm să eliminăm sesiunea existentă
   if (isReload) {
     try {
       sessionStorage.clear();
-    } catch (e) {
-      console.warn("Session storage clear failed:", e);
+      console.log("Sesiunea a fost curățată la refresh.");
+    } catch (error) {
+      console.warn("Nu s-a putut curăța sessionStorage:", error);
     }
   }
 
-  if (!window.botpress) return;
+  let botpressInitialized = false;
+  const startTime = Date.now();
 
-  window.botpress.init({
-    clientId: "5f16efb4-a4db-46f0-a01b-df2f36f2f4a7"
-  });
+  // Așteptăm până când Botpress este disponibil
+  const checkBotpress = setInterval(function () {
 
-  window.botpress.on("webchat:initialized", function () {
-    setTimeout(function () {
-      window.botpress.open();
+    if (
+      window.botpress &&
+      typeof window.botpress.init === "function" &&
+      !botpressInitialized
+    ) {
+      botpressInitialized = true;
+      clearInterval(checkBotpress);
 
-      setTimeout(function () {
-        document.querySelectorAll("iframe").forEach(function (element) {
-          element.classList.add("artlife-chat-entrance");
-        });
-      }, 80);
+      // Inițializare Botpress
+      window.botpress.init({
+        clientId: "5f16efb4-a4db-46f0-a01b-df2f36f2f4a7"
+      });
 
-    }, 5000);
-  });
+      // După inițializare, deschide chatul după 5 secunde
+      window.botpress.on("webchat:initialized", function () {
+
+        setTimeout(function () {
+
+          window.botpress.open();
+
+          // Animația de apariție
+          setTimeout(function () {
+            document.querySelectorAll("iframe").forEach(function (element) {
+              element.classList.add("artlife-chat-entrance");
+            });
+          }, 80);
+
+        }, 5000);
+
+      });
+    }
+
+    // Oprim verificarea după 20 secunde dacă Botpress nu se încarcă
+    if (Date.now() - startTime > 20000) {
+      clearInterval(checkBotpress);
+    }
+
+  }, 250);
+
 });
 </script>
 </head>
