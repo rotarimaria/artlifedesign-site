@@ -161,49 +161,22 @@
        BOTPRESS WEBCHAT
        ========================================================= -->
 
+  <!-- 1) Motorul Botpress -->
   <script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
 
+  <!-- 2) Deschide chatul imediat ce Webchat este inițializat -->
+  <script>
+    window.botpress.on('webchat:initialized', function () {
+      window.botpress.open();
+    });
+  </script>
+
+  <!-- 3) Configurația Webchat Art Life Design -->
   <script
     src="https://files.bpcontent.cloud/2026/08/10/03/20/260810033235-TCUYA0VP.js"
     defer>
   </script>
 
-  <!--
-    Deschide automat Webchat-ul la aproximativ 5 secunde
-    după ce Botpress este disponibil.
-  -->
-  <script>
-    window.addEventListener("load", function () {
-      const startedAt = Date.now();
-
-      const checkBotpress = window.setInterval(function () {
-        if (
-          window.botpress &&
-          typeof window.botpress.open === "function"
-        ) {
-          window.clearInterval(checkBotpress);
-
-          window.setTimeout(function () {
-            try {
-              window.botpress.open();
-            } catch (error) {
-              console.warn(
-                "Botpress Webchat nu s-a putut deschide automat.",
-                error
-              );
-            }
-          }, 5000);
-        }
-
-        /*
-          Nu verificăm la infinit dacă serviciul nu se încarcă.
-        */
-        if (Date.now() - startedAt > 20000) {
-          window.clearInterval(checkBotpress);
-        }
-      }, 250);
-    });
-  </script>
 </head>
 
 
