@@ -704,78 +704,6 @@ window.addEventListener("load", function () {
   }, 250);
 });
 </script>
-
-<style>
-  /* =========================================================
-     SERVICII — FIX MOD DETALIAT
-     ========================================================= */
-
-  /* Când este ales un serviciu separat, lista compactă de sus dispare complet. */
-  .services-list.is-detail-mode {
-    display: none !important;
-  }
-
-  /* Panoul detaliat rămâne singurul conținut vizibil sub filtre. */
-  .service-detail-panel {
-    grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr);
-    gap: 42px;
-    padding: 42px;
-  }
-
-  /* Galeria este doar vizuală — fără text sub fotografii. */
-  .service-detail-gallery figure {
-    position: relative;
-    margin: 0;
-    overflow: hidden;
-    border-radius: 18px;
-    border: 1px solid rgba(247, 244, 235, .11);
-    background: #0b0e0b;
-  }
-
-  .service-detail-gallery figcaption {
-    display: none !important;
-  }
-
-  .service-detail-gallery img {
-    width: 100%;
-    height: 205px;
-    object-fit: cover;
-    transition: transform .35s ease, filter .35s ease;
-  }
-
-  .service-detail-gallery figure:first-child img {
-    height: 290px;
-  }
-
-  .service-detail-gallery figure:hover img {
-    transform: scale(1.035);
-  }
-
-  @media (max-width: 900px) {
-    .service-detail-panel {
-      grid-template-columns: 1fr;
-      padding: 30px;
-      gap: 28px;
-    }
-  }
-
-  @media (max-width: 560px) {
-    .service-detail-panel {
-      padding: 20px;
-      border-radius: 20px;
-    }
-
-    .service-detail-gallery {
-      grid-template-columns: 1fr;
-    }
-
-    .service-detail-gallery img,
-    .service-detail-gallery figure:first-child img {
-      height: 220px;
-    }
-  }
-</style>
-
 </head>
 
 
@@ -1362,12 +1290,15 @@ window.addEventListener("load", function () {
             <div class="service-detail-gallery">
               <figure>
                 <img src="images/fise_pret.jpg" alt="Fișe de preț realizate de Art Life Design" loading="lazy">
+                <figcaption>Fișe de preț și materiale de prezentare</figcaption>
               </figure>
               <figure>
                 <img src="images/inghetata_uv.jpg" alt="Etichete de produs realizate de Art Life Design" loading="lazy">
+                <figcaption>Etichete personalizate</figcaption>
               </figure>
               <figure>
                 <img src="images/tipar_mare.jpg" alt="Exemplu de producție tipărită Art Life Design" loading="lazy">
+                <figcaption>Exemplu de producție și print personalizat</figcaption>
               </figure>
             </div>
           </article>
@@ -1403,12 +1334,15 @@ window.addEventListener("load", function () {
             <div class="service-detail-gallery">
               <figure>
                 <img src="images/BonjourLightBox.jpg" alt="Light box realizat de Art Life Design" loading="lazy">
+                <figcaption>Light box pentru promovare vizuală</figcaption>
               </figure>
               <figure>
                 <img src="images/good-break.jpg" alt="Reclamă luminoasă realizată de Art Life Design" loading="lazy">
+                <figcaption>Reclamă luminoasă de fațadă</figcaption>
               </figure>
               <figure>
                 <img src="images/litere_volum1.jpg" alt="Litere volumetrice Art Life Design" loading="lazy">
+                <figcaption>Logo volumetric pentru interior</figcaption>
               </figure>
             </div>
           </article>
@@ -1444,12 +1378,15 @@ window.addEventListener("load", function () {
             <div class="service-detail-gallery">
               <figure>
                 <img src="images/box.jpg" alt="Urnă personalizată realizată de Art Life Design" loading="lazy">
+                <figcaption>Urnă personalizată pentru campanie</figcaption>
               </figure>
               <figure>
                 <img src="images/cub-sticla.jpg" alt="Cub promoțional realizat de Art Life Design" loading="lazy">
+                <figcaption>Cub promoțional</figcaption>
               </figure>
               <figure>
                 <img src="images/stand sticla.jpg" alt="Stand promoțional realizat de Art Life Design" loading="lazy">
+                <figcaption>Stand și element de expunere</figcaption>
               </figure>
             </div>
           </article>
@@ -1485,12 +1422,15 @@ window.addEventListener("load", function () {
             <div class="service-detail-gallery">
               <figure>
                 <img src="images/brand_auto1.jpg" alt="Branding auto Art Life Design" loading="lazy">
+                <figcaption>Colantare pentru transport comercial</figcaption>
               </figure>
               <figure>
                 <img src="images/brand_auto2.jpg" alt="Branding microbuz Art Life Design" loading="lazy">
+                <figcaption>Grafică aplicată pe microbuz</figcaption>
               </figure>
               <figure>
                 <img src="images/lux-tavene.jpg" alt="Branding auto pentru servicii locale" loading="lazy">
+                <figcaption>Promovare vizuală pe automobil</figcaption>
               </figure>
             </div>
           </article>
@@ -1526,12 +1466,15 @@ window.addEventListener("load", function () {
             <div class="service-detail-gallery">
               <figure>
                 <img src="images/taiere_laser.jpg" alt="Exemplu de tăiere laser Art Life Design" loading="lazy">
+                <figcaption>Tăiere laser pentru elemente personalizate</figcaption>
               </figure>
               <figure>
                 <img src="images/taiere_plotter.jpg" alt="Exemplu de tăiere plotter Art Life Design" loading="lazy">
+                <figcaption>Decupare plotter pentru grafică și stickere</figcaption>
               </figure>
               <figure>
                 <img src="images/plotter-2.jpg" alt="Stickere personalizate Art Life Design" loading="lazy">
+                <figcaption>Elemente grafice și stickere personalizate</figcaption>
               </figure>
             </div>
           </article>
