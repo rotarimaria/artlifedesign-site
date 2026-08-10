@@ -164,6 +164,54 @@
 <script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
 
 <style>
+  /* Desktop */
+  .bpWebchat {
+    width: 390px !important;
+    height: 620px !important;
+    max-height: calc(100vh - 110px) !important;
+    right: 18px !important;
+    bottom: 82px !important;
+    border-radius: 22px !important;
+    overflow: hidden !important;
+  }
+
+  /* Mobil */
+  @media (max-width: 768px) {
+    .bpWebchat {
+      width: calc(100vw - 24px) !important;
+      height: 68vh !important;
+      max-height: 560px !important;
+
+      left: 12px !important;
+      right: 12px !important;
+      bottom: 76px !important;
+      top: auto !important;
+
+      border-radius: 20px !important;
+      overflow: hidden !important;
+    }
+
+    .bpFabContainer {
+      right: 14px !important;
+      bottom: 14px !important;
+    }
+  }
+
+  /* Telefoane mici */
+  @media (max-width: 480px) {
+    .bpWebchat {
+      width: calc(100vw - 20px) !important;
+      height: 64vh !important;
+      max-height: 520px !important;
+
+      left: 10px !important;
+      right: 10px !important;
+      bottom: 72px !important;
+
+      border-radius: 18px !important;
+    }
+  }
+
   @keyframes artLifeChatEntrance {
     0% {
       opacity: 0;
