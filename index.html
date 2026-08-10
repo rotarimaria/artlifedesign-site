@@ -157,26 +157,22 @@
   </style>
 
 
-  <!-- =========================================================
-       BOTPRESS WEBCHAT
-       ========================================================= -->
+  <!-- Botpress Webchat -->
+<script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
 
-  <!-- 1) Motorul Botpress -->
-  <script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
+<script>
+  window.addEventListener('load', function () {
+    if (!window.botpress) return;
 
-  <!-- 2) Deschide chatul imediat ce Webchat este inițializat -->
-  <script>
+    window.botpress.init({
+      clientId: '5f16efb4-a4db-46f0-a01b-df2f36f2f4a7'
+    });
+
     window.botpress.on('webchat:initialized', function () {
       window.botpress.open();
     });
-  </script>
-
-  <!-- 3) Configurația Webchat Art Life Design -->
-  <script
-    src="https://files.bpcontent.cloud/2026/08/10/03/20/260810033235-TCUYA0VP.js"
-    defer>
-  </script>
-
+  });
+</script>
 </head>
 
 
