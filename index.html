@@ -258,31 +258,38 @@
 <script>
   window.addEventListener("load", function () {
     if (!window.botpress) return;
+    
+window.addEventListener("load", function () {
+  const navigationEntry = performance.getEntriesByType("navigation")[0];
+  const isReload = navigationEntry && navigationEntry.type === "reload";
 
-    window.botpress.init({
-      clientId: "5f16efb4-a4db-46f0-a01b-df2f36f2f4a7"
-    });
+  if (isReload) {
+    try {
+      sessionStorage.clear();
+    } catch (e) {
+      console.warn("Session storage clear failed:", e);
+    }
+  }
 
-    window.botpress.on("webchat:initialized", async function () {
+  if (!window.botpress) return;
 
-      try {
-        await window.botpress.restartConversation();
-      } catch (error) {
-        console.warn("Botpress conversation reset failed:", error);
-      }
+  window.botpress.init({
+    clientId: "5f16efb4-a4db-46f0-a01b-df2f36f2f4a7"
+  });
+
+  window.botpress.on("webchat:initialized", function () {
+    setTimeout(function () {
+      window.botpress.open();
 
       setTimeout(function () {
-        window.botpress.open();
+        document.querySelectorAll("iframe").forEach(function (element) {
+          element.classList.add("artlife-chat-entrance");
+        });
+      }, 80);
 
-        setTimeout(function () {
-          document.querySelectorAll("iframe").forEach(function (element) {
-            element.classList.add("artlife-chat-entrance");
-          });
-        }, 80);
-
-      }, 5000);
-    });
+    }, 5000);
   });
+});
 </script>
 </head>
 
