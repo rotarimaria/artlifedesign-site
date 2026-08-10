@@ -355,20 +355,38 @@ document.addEventListener("DOMContentLoaded", () => {
     const search = $("#serviceSearch");
     const cards = $$("[data-service-card]");
     const buttons = $$(".service-filter");
+    const servicesList = $(".services-list");
+    const detailPanels = $$("[data-service-detail]");
+
     let active = "all";
 
     function render() {
       const query = search ? search.value.toLowerCase().trim() : "";
+      const detailMode = active !== "all";
+
+      if (servicesList) {
+        servicesList.classList.toggle("is-detail-mode", detailMode);
+        servicesList.style.display = detailMode ? "none" : "";
+      }
 
       cards.forEach((card) => {
-        const category = card.dataset.serviceCard;
         const text = `${card.dataset.searchService || ""} ${card.textContent}`.toLowerCase();
 
         const visible =
-          (active === "all" || active === category) &&
+          active === "all" &&
           (!query || text.includes(query));
 
         card.classList.toggle("hidden", !visible);
+        card.style.display = visible ? "" : "none";
+      });
+
+      detailPanels.forEach((panel) => {
+        const visible =
+          detailMode &&
+          panel.dataset.serviceDetail === active;
+
+        panel.classList.toggle("active", visible);
+        panel.setAttribute("aria-hidden", visible ? "false" : "true");
       });
     }
 
@@ -383,7 +401,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    if (search) search.addEventListener("input", render);
+    if (search) {
+      search.addEventListener("input", render);
+    }
 
     render();
   }

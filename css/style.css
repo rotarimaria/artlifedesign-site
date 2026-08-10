@@ -2094,3 +2094,196 @@ body{font-size:17px}
     font-size:.64rem;
   }
 }
+
+/* =========================================================
+   SERVICII — MOD DETALIAT FINAL
+   "Toate" rămâne lista compactă existentă.
+   La o categorie selectată apare doar panoul detaliat.
+   ========================================================= */
+
+.services-list.is-detail-mode {
+  display: none !important;
+}
+
+.service-details-wrap {
+  margin-top: 28px;
+}
+
+.service-detail-panel {
+  display: none;
+  grid-template-columns: minmax(0, 1.04fr) minmax(380px, 0.96fr);
+  gap: 42px;
+  padding: 42px;
+  border: 1px solid rgba(247, 244, 235, 0.12);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 88% 12%, rgba(146, 255, 34, 0.08), transparent 30%),
+    rgba(247, 244, 235, 0.03);
+}
+
+.service-detail-panel.active {
+  display: grid;
+  animation: servicePanelIn 0.32s ease both;
+}
+
+@keyframes servicePanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.service-detail-copy {
+  min-width: 0;
+  align-self: center;
+}
+
+.service-detail-copy .section-label {
+  display: inline-block;
+  margin-bottom: 14px;
+}
+
+.service-detail-copy h3 {
+  max-width: 760px;
+  margin: 0 0 20px;
+  font-size: clamp(32px, 3.2vw, 48px);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.service-detail-copy > p {
+  max-width: 68ch;
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.72;
+  color: rgba(247, 244, 235, 0.8);
+}
+
+.service-detail-examples {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.service-detail-example {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  padding: 13px 15px;
+  border: 1px solid rgba(247, 244, 235, 0.12);
+  border-radius: 14px;
+  background: rgba(247, 244, 235, 0.035);
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.service-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.service-detail-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-content: start;
+}
+
+.service-detail-gallery figure {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(247, 244, 235, 0.11);
+  border-radius: 18px;
+  background: #090c09;
+}
+
+.service-detail-gallery figure:first-child {
+  grid-column: 1 / -1;
+}
+
+.service-detail-gallery img {
+  display: block;
+  width: 100%;
+  height: 205px;
+  object-fit: cover;
+  transition: transform 0.35s ease, filter 0.35s ease;
+}
+
+.service-detail-gallery figure:first-child img {
+  height: 290px;
+}
+
+.service-detail-gallery figure:hover img {
+  transform: scale(1.035);
+}
+
+.service-detail-gallery figcaption {
+  display: none !important;
+}
+
+@media (max-width: 980px) {
+  .service-detail-panel {
+    grid-template-columns: 1fr;
+    padding: 32px;
+    gap: 30px;
+  }
+
+  .service-detail-copy h3 {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 768px) {
+  .service-detail-panel {
+    padding: 24px;
+    border-radius: 22px;
+  }
+
+  .service-detail-copy h3 {
+    font-size: 32px;
+  }
+
+  .service-detail-copy > p {
+    font-size: 17px;
+  }
+
+  .service-detail-examples {
+    grid-template-columns: 1fr;
+  }
+
+  .service-detail-gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .service-detail-gallery figure:first-child {
+    grid-column: auto;
+  }
+
+  .service-detail-gallery img,
+  .service-detail-gallery figure:first-child img {
+    height: 230px;
+  }
+}
+
+@media (max-width: 480px) {
+  .service-detail-panel {
+    padding: 20px;
+  }
+
+  .service-detail-copy h3 {
+    font-size: 29px;
+  }
+
+  .service-detail-gallery img,
+  .service-detail-gallery figure:first-child img {
+    height: 210px;
+  }
+}
