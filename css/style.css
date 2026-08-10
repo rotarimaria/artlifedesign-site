@@ -20,7 +20,7 @@ body{
   margin:0;
   background:var(--bg);
   color:var(--white);
-  font-family:"Space Grotesk",Arial,sans-serif;
+  font-family:"Manrope",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
   overflow-x:hidden;
   font-size:16px;
 }
@@ -879,6 +879,7 @@ body{font-size:17px}
   line-height:1.5;
   display:-webkit-box;
   -webkit-line-clamp:2;line-clamp:2;
+  line-clamp: 2;
   -webkit-box-orient:vertical;
   overflow:hidden;
 }
@@ -927,6 +928,7 @@ body{font-size:17px}
 .portfolio-content p{
   display:-webkit-box;
   -webkit-line-clamp:2;line-clamp:2;
+  line-clamp: 2;
   -webkit-box-orient:vertical;
   overflow:hidden;
 }
@@ -1634,6 +1636,7 @@ body{font-size:17px}
   .work-info p{
     display:-webkit-box;
     -webkit-line-clamp:2;line-clamp:2;
+    line-clamp: 2;
     -webkit-box-orient:vertical;
     overflow:hidden;
     font-size:.76rem;
@@ -1734,6 +1737,7 @@ body{font-size:17px}
   min-height:2.36em;
   display:-webkit-box;
   -webkit-line-clamp:2;line-clamp:2;
+  line-clamp: 2;
   -webkit-box-orient:vertical;
   overflow:hidden;
 }
@@ -1743,6 +1747,7 @@ body{font-size:17px}
   min-height:2.9em;
   display:-webkit-box;
   -webkit-line-clamp:2;line-clamp:2;
+  line-clamp: 2;
   -webkit-box-orient:vertical;
   overflow:hidden;
 }
@@ -1812,6 +1817,7 @@ body{font-size:17px}
     line-height:1.38;
     min-height:2.76em;
     -webkit-line-clamp:2;line-clamp:2;
+    line-clamp: 2;
   }
   .portfolio-content .work-actions{
     margin-top:auto;
@@ -2036,6 +2042,7 @@ body{font-size:17px}
     min-height:2.4em;
     display:-webkit-box;
     -webkit-line-clamp:2;line-clamp:2;
+    line-clamp: 2;
     -webkit-box-orient:vertical;
     overflow:hidden;
   }
@@ -2046,6 +2053,7 @@ body{font-size:17px}
     min-height:2.7em;
     display:-webkit-box;
     -webkit-line-clamp:2;line-clamp:2;
+    line-clamp: 2;
     -webkit-box-orient:vertical;
     overflow:hidden;
   }
@@ -2285,5 +2293,782 @@ body{font-size:17px}
   .service-detail-gallery img,
   .service-detail-gallery figure:first-child img {
     height: 210px;
+  }
+}
+
+/* =========================================================
+   ART LIFE DESIGN — FINAL PREMIUM UI PASS
+   Logo / navigation / typography / services / responsive / footer
+   ========================================================= */
+
+:root{
+  --ald-neon:#92ff22;
+  --ald-neon-soft:rgba(146,255,34,.18);
+  --ald-neon-glow:rgba(146,255,34,.42);
+  --ald-text:#f7f4eb;
+  --ald-text-soft:rgba(247,244,235,.76);
+  --ald-panel:rgba(247,244,235,.035);
+  --ald-line:rgba(247,244,235,.12);
+
+  /* 4 trepte tipografice principale */
+  --ald-fs-small:14px;
+  --ald-fs-body:17px;
+  --ald-fs-title:clamp(30px,3vw,46px);
+  --ald-fs-display:clamp(54px,8vw,118px);
+}
+
+html{
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+body,
+button,
+input,
+textarea,
+select{
+  font-family:"Manrope",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+}
+
+body{
+  font-size:var(--ald-fs-body);
+  line-height:1.62;
+}
+
+p,
+li,
+label,
+input,
+textarea,
+select,
+button,
+a{
+  font-size:var(--ald-fs-body);
+}
+
+.section-label,
+.hero-kicker,
+.service-index,
+small,
+.footer-bottom{
+  font-size:var(--ald-fs-small);
+}
+
+h2,
+h3,
+.portfolio-header h1{
+  font-size:var(--ald-fs-title);
+}
+
+.hero h1{
+  font-size:var(--ald-fs-display);
+}
+
+/* ---------------------------------------------------------
+   NAVIGATION
+   --------------------------------------------------------- */
+
+.site-navbar{
+  height:92px;
+}
+
+.site-navbar.nav-scrolled{
+  height:82px;
+}
+
+.nav-wrap{
+  gap:1.4rem;
+}
+
+.logo-link{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  isolation:isolate;
+  transition:transform .3s cubic-bezier(.22,1,.36,1);
+}
+
+.logo-link::before{
+  content:"";
+  position:absolute;
+  inset:16% -10%;
+  z-index:-1;
+  border-radius:999px;
+  background:radial-gradient(circle,rgba(146,255,34,.22),transparent 68%);
+  opacity:0;
+  transform:scale(.84);
+  filter:blur(12px);
+  transition:opacity .3s ease,transform .3s ease;
+}
+
+.logo-svg{
+  width:auto;
+  height:60px;
+  transform-origin:left center;
+  transition:
+    transform .3s cubic-bezier(.22,1,.36,1),
+    filter .3s ease,
+    opacity .3s ease;
+}
+
+.site-navbar.nav-scrolled .logo-svg{
+  height:54px;
+}
+
+.logo-link:hover{
+  transform:translateY(-1px);
+}
+
+.logo-link:hover::before{
+  opacity:1;
+  transform:scale(1);
+}
+
+.logo-link:hover .logo-svg{
+  transform:scale(1.065);
+  filter:
+    brightness(1.18)
+    drop-shadow(0 0 5px rgba(146,255,34,.58))
+    drop-shadow(0 0 15px rgba(146,255,34,.30));
+}
+
+.nav-links-wrap{
+  gap:1.75rem;
+}
+
+.nav-link{
+  position:relative;
+  color:rgba(247,244,235,.92);
+  font-size:16px;
+  font-weight:700;
+  letter-spacing:.01em;
+  line-height:1.2;
+  transition:
+    color .22s ease,
+    transform .22s ease,
+    text-shadow .22s ease;
+}
+
+.nav-link::after{
+  height:2px;
+  bottom:-2px;
+  border-radius:999px;
+  box-shadow:0 0 12px rgba(146,255,34,.4);
+}
+
+.nav-link:hover,
+.nav-link.active{
+  color:var(--ald-neon);
+  transform:translateY(-1px);
+  text-shadow:0 0 14px rgba(146,255,34,.17);
+}
+
+.nav-cta{
+  min-height:46px;
+  padding-inline:1.2rem;
+  font-size:15px;
+  box-shadow:0 0 0 rgba(146,255,34,0);
+}
+
+.nav-cta:hover{
+  box-shadow:0 0 22px rgba(146,255,34,.2);
+}
+
+/* ---------------------------------------------------------
+   GENERAL RHYTHM
+   --------------------------------------------------------- */
+
+.container{
+  width:min(1240px,calc(100% - 48px));
+}
+
+.section{
+  padding:104px 0;
+}
+
+.section-label{
+  font-weight:800;
+  letter-spacing:.16em;
+}
+
+p{
+  color:var(--ald-text-soft);
+}
+
+.btn-main,
+.btn-ghost,
+.about-btn,
+.work-order-btn,
+.gallery-order-btn{
+  font-weight:750;
+}
+
+/* ---------------------------------------------------------
+   SERVICES — "TOATE" RĂMÂNE COMPACT,
+   O CATEGORIE SELECTATĂ = PANEL CREATIV
+   --------------------------------------------------------- */
+
+.services-section{
+  padding-top:112px;
+  padding-bottom:118px;
+  background:
+    radial-gradient(circle at 94% 8%,rgba(146,255,34,.06),transparent 26%),
+    var(--bg-soft);
+}
+
+.services-heading{
+  margin-bottom:42px;
+}
+
+.services-heading h2{
+  margin-bottom:16px;
+  font-size:clamp(42px,5vw,72px);
+  line-height:1.02;
+  letter-spacing:-.045em;
+}
+
+.services-heading p{
+  max-width:620px;
+  font-size:18px;
+  line-height:1.7;
+}
+
+.services-tabs{
+  gap:10px;
+  margin-bottom:22px;
+  padding-bottom:22px;
+  border-bottom:1px solid var(--ald-line);
+}
+
+.service-filter{
+  min-height:48px;
+  padding:0 18px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  font-size:15px;
+  font-weight:750;
+  transition:
+    color .22s ease,
+    border-color .22s ease,
+    background .22s ease,
+    transform .22s ease,
+    box-shadow .22s ease;
+}
+
+.service-filter:hover{
+  transform:translateY(-2px);
+}
+
+.service-filter.active{
+  border-color:rgba(146,255,34,.48);
+  background:rgba(146,255,34,.10);
+  box-shadow:inset 0 0 0 1px rgba(146,255,34,.06);
+}
+
+/* lista compactă pentru "Toate" */
+.service-card-row{
+  min-height:150px;
+  padding:28px 4px;
+  grid-template-columns:56px minmax(0,1fr) auto;
+  gap:22px;
+}
+
+.service-copy small{
+  font-size:14px;
+  letter-spacing:.02em;
+}
+
+.service-copy h3{
+  margin:6px 0 7px;
+  font-size:22px;
+  line-height:1.22;
+}
+
+.service-copy p{
+  font-size:16px;
+  line-height:1.62;
+}
+
+.service-example{
+  min-width:140px;
+  font-size:15px;
+}
+
+/* la selectarea unei categorii, lista compactă dispare */
+.services-list.is-detail-mode{
+  display:none !important;
+}
+
+.service-details-wrap{
+  margin-top:28px;
+}
+
+.service-detail-panel{
+  display:none;
+  grid-template-columns:minmax(0,1.02fr) minmax(430px,.98fr);
+  gap:44px;
+  padding:44px;
+  overflow:hidden;
+  border:1px solid rgba(247,244,235,.12);
+  border-radius:30px;
+  background:
+    radial-gradient(circle at 88% 8%,rgba(146,255,34,.08),transparent 30%),
+    linear-gradient(145deg,rgba(247,244,235,.045),rgba(247,244,235,.018));
+  box-shadow:0 24px 70px rgba(0,0,0,.18);
+}
+
+.service-detail-panel.active{
+  display:grid;
+  animation:aldServiceIn .34s cubic-bezier(.22,1,.36,1) both;
+}
+
+@keyframes aldServiceIn{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.service-detail-copy{
+  align-self:center;
+  min-width:0;
+}
+
+.service-detail-copy .section-label{
+  margin-bottom:16px;
+}
+
+.service-detail-copy h3{
+  max-width:720px;
+  margin:0 0 18px;
+  font-size:clamp(32px,3.2vw,48px);
+  line-height:1.1;
+  letter-spacing:-.035em;
+}
+
+.service-detail-copy > p{
+  max-width:66ch;
+  margin:0;
+  color:rgba(247,244,235,.82);
+  font-size:18px;
+  line-height:1.72;
+}
+
+.service-detail-examples{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:24px;
+}
+
+.service-detail-example{
+  min-height:60px;
+  display:flex;
+  align-items:center;
+  padding:13px 15px;
+  border:1px solid rgba(247,244,235,.11);
+  border-radius:15px;
+  background:rgba(247,244,235,.035);
+  color:rgba(247,244,235,.92);
+  font-size:15px;
+  line-height:1.45;
+  transition:border-color .22s ease,background .22s ease,transform .22s ease;
+}
+
+.service-detail-example:hover{
+  transform:translateY(-2px);
+  border-color:rgba(146,255,34,.34);
+  background:rgba(146,255,34,.045);
+}
+
+.service-detail-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:11px;
+  margin-top:28px;
+}
+
+.service-detail-actions .btn-main,
+.service-detail-actions .btn-ghost{
+  min-height:52px;
+}
+
+.service-detail-gallery{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  align-content:start;
+}
+
+.service-detail-gallery figure{
+  position:relative;
+  margin:0;
+  overflow:hidden;
+  border:1px solid rgba(247,244,235,.10);
+  border-radius:20px;
+  background:#090c09;
+}
+
+.service-detail-gallery figure:first-child{
+  grid-column:1/-1;
+}
+
+.service-detail-gallery img{
+  display:block;
+  width:100%;
+  height:210px;
+  object-fit:cover;
+  transition:transform .38s cubic-bezier(.22,1,.36,1),filter .3s ease;
+}
+
+.service-detail-gallery figure:first-child img{
+  height:310px;
+}
+
+.service-detail-gallery figure:hover img{
+  transform:scale(1.035);
+  filter:contrast(1.03) saturate(1.03);
+}
+
+/* nu afișăm texte sub imagini */
+.service-detail-gallery figcaption{
+  display:none !important;
+}
+
+/* ---------------------------------------------------------
+   FOOTER
+   --------------------------------------------------------- */
+
+.site-footer{
+  padding-top:64px;
+}
+
+.footer-inner{
+  gap:3rem;
+}
+
+.footer-logo{
+  height:50px;
+  transition:transform .25s ease,filter .25s ease;
+}
+
+.footer-logo-link:hover .footer-logo{
+  transform:scale(1.04);
+  filter:drop-shadow(0 0 10px rgba(146,255,34,.26));
+}
+
+.footer-brand p{
+  font-size:15px;
+  line-height:1.7;
+}
+
+.site-footer h4{
+  font-size:13px;
+  color:rgba(247,244,235,.62);
+}
+
+.footer-links a{
+  font-size:15px;
+  transition:color .2s ease,transform .2s ease;
+}
+
+.footer-links a:hover{
+  transform:translateX(2px);
+}
+
+.footer-bottom{
+  font-size:13px;
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE: LARGE TABLET
+   --------------------------------------------------------- */
+
+@media (max-width:1100px){
+  .container{
+    width:min(100% - 36px,1240px);
+  }
+
+  .logo-svg{
+    height:56px;
+  }
+
+  .site-navbar.nav-scrolled .logo-svg{
+    height:51px;
+  }
+
+  .nav-links-wrap{
+    gap:1.25rem;
+  }
+
+  .nav-link{
+    font-size:15px;
+  }
+
+  .service-detail-panel{
+    grid-template-columns:1fr;
+    padding:36px;
+    gap:32px;
+  }
+
+  .service-detail-gallery figure:first-child img{
+    height:300px;
+  }
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE: TABLET / MOBILE
+   --------------------------------------------------------- */
+
+@media (max-width:768px){
+  :root{
+    --ald-fs-small:14px;
+    --ald-fs-body:16px;
+    --ald-fs-title:clamp(28px,7vw,38px);
+    --ald-fs-display:clamp(46px,15vw,72px);
+  }
+
+  .container{
+    width:min(100% - 28px,1240px);
+  }
+
+  .section{
+    padding:76px 0;
+  }
+
+  .site-navbar,
+  .site-navbar.nav-scrolled{
+    height:76px;
+  }
+
+  .logo-svg,
+  .site-navbar.nav-scrolled .logo-svg{
+    height:52px;
+  }
+
+  .nav-menu{
+    display:grid;
+    width:46px;
+    height:46px;
+    border-color:rgba(247,244,235,.15);
+  }
+
+  .nav-links-wrap{
+    top:calc(100% + 6px);
+    left:14px;
+    right:14px;
+    padding:10px;
+    border-radius:18px;
+    background:rgba(5,7,6,.98);
+    box-shadow:0 22px 56px rgba(0,0,0,.42);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+  }
+
+  .nav-link{
+    min-height:48px;
+    display:flex;
+    align-items:center;
+    padding:0 14px;
+    font-size:16px;
+    border-radius:12px;
+  }
+
+  .nav-link:hover,
+  .nav-link.active{
+    transform:none;
+    background:rgba(146,255,34,.07);
+  }
+
+  .nav-cta{
+    display:none;
+  }
+
+  .services-heading h2{
+    font-size:clamp(38px,11vw,54px);
+  }
+
+  .services-heading p{
+    font-size:16px;
+  }
+
+  .services-tabs{
+    overflow-x:auto;
+    flex-wrap:nowrap;
+    scrollbar-width:none;
+    padding-bottom:16px;
+  }
+
+  .services-tabs::-webkit-scrollbar{
+    display:none;
+  }
+
+  .service-filter{
+    flex:0 0 auto;
+    min-height:44px;
+    padding:0 16px;
+    font-size:14px;
+  }
+
+  .service-card-row{
+    min-height:0;
+    grid-template-columns:38px minmax(0,1fr);
+    gap:12px;
+    padding:26px 0;
+  }
+
+  .service-example{
+    grid-column:2;
+    justify-content:flex-start;
+    min-width:0;
+    margin-top:4px;
+  }
+
+  .service-detail-panel{
+    grid-template-columns:1fr;
+    padding:26px;
+    border-radius:24px;
+  }
+
+  .service-detail-copy h3{
+    font-size:clamp(30px,8vw,40px);
+  }
+
+  .service-detail-copy > p{
+    font-size:16px;
+  }
+
+  .service-detail-examples{
+    grid-template-columns:1fr;
+  }
+
+  .service-detail-gallery{
+    grid-template-columns:1fr;
+  }
+
+  .service-detail-gallery figure:first-child{
+    grid-column:auto;
+  }
+
+  .service-detail-gallery img,
+  .service-detail-gallery figure:first-child img{
+    height:240px;
+  }
+
+  .service-detail-actions{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+
+  .service-detail-actions > *{
+    width:100%;
+  }
+
+  /* Footer centrat pe telefon/tabletă */
+  .footer-inner{
+    grid-template-columns:1fr;
+    gap:30px;
+    text-align:center;
+    justify-items:center;
+  }
+
+  .footer-brand{
+    grid-column:auto;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .footer-brand p{
+    max-width:420px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+
+  .footer-nav-block,
+  .footer-social-block{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .footer-links{
+    justify-items:center;
+  }
+
+  .footer-links a:hover{
+    transform:none;
+  }
+
+  .footer-bottom{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    text-align:center;
+  }
+
+  .footer-bottom p{
+    text-align:center;
+  }
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE: SMALL PHONE
+   --------------------------------------------------------- */
+
+@media (max-width:480px){
+  .container{
+    width:min(100% - 22px,1240px);
+  }
+
+  .logo-svg,
+  .site-navbar.nav-scrolled .logo-svg{
+    height:48px;
+  }
+
+  .hero h1{
+    letter-spacing:-.055em;
+  }
+
+  .service-detail-panel{
+    padding:20px;
+    border-radius:20px;
+  }
+
+  .service-detail-copy h3{
+    font-size:29px;
+  }
+
+  .service-detail-gallery img,
+  .service-detail-gallery figure:first-child img{
+    height:210px;
+  }
+
+  .footer-logo{
+    height:48px;
+  }
+
+  .site-footer{
+    padding-top:52px;
+  }
+}
+
+/* ---------------------------------------------------------
+   TOUCH DEVICES: fără efecte hover agresive
+   --------------------------------------------------------- */
+
+@media (hover:none){
+  .logo-link:hover,
+  .logo-link:hover .logo-svg,
+  .nav-link:hover,
+  .service-filter:hover,
+  .service-detail-example:hover{
+    transform:none;
   }
 }
