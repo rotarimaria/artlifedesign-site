@@ -3731,82 +3731,6 @@ p{
 }
 
 /* ---------------------------------------------------------
-   LAUNCHER PROPRIU
-   --------------------------------------------------------- */
-
-.artlife-chat-launcher {
-  position: fixed;
-  right: clamp(12px, 1.6vw, 22px);
-  bottom: max(
-    clamp(12px, 1.6vw, 22px),
-    calc(env(safe-area-inset-bottom) + 10px)
-  );
-  z-index: 1996;
-
-  width: clamp(56px, 4.2vw, 62px);
-  height: clamp(56px, 4.2vw, 62px);
-
-  display: grid;
-  place-items: center;
-
-  padding: 0;
-
-  border: 1px solid rgba(146, 255, 34, .42);
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      circle at 35% 28%,
-      #2f674f 0%,
-      #1F4D3A 55%,
-      #16382b 100%
-    );
-
-  color: #fff;
-
-  box-shadow:
-    0 14px 32px rgba(0, 0, 0, .30),
-    0 0 0 1px rgba(146, 255, 34, .07);
-
-  cursor: pointer;
-
-  transition:
-    transform .24s cubic-bezier(.22, 1, .36, 1),
-    box-shadow .24s ease,
-    opacity .24s ease;
-}
-
-.artlife-chat-launcher > i {
-  position: relative;
-  z-index: 2;
-
-  font-size: clamp(24px, 2vw, 27px);
-  line-height: 1;
-}
-
-.artlife-chat-launcher:hover {
-  transform: translateY(-3px) scale(1.055);
-
-  box-shadow:
-    0 17px 38px rgba(0, 0, 0, .34),
-    0 0 0 7px rgba(146, 255, 34, .075),
-    0 0 22px rgba(146, 255, 34, .16);
-}
-
-.artlife-chat-launcher:focus-visible,
-.artlife-chat-teaser:focus-visible,
-.artlife-chat-teaser-close:focus-visible {
-  outline: 2px solid #92ff22;
-  outline-offset: 3px;
-}
-
-.artlife-chat-launcher.is-hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(.86);
-}
-
-/* ---------------------------------------------------------
    TEASER / NOTIFICARE
    --------------------------------------------------------- */
 
@@ -4183,24 +4107,7 @@ body.artlife-chat-resetting .bpWebchat {
 /* ---------------------------------------------------------
    TELEFON / TABLETĂ MICĂ
    --------------------------------------------------------- */
-
-@media (max-width: 768px) {
-  .artlife-chat-launcher {
-    right: 12px;
-
-    bottom:
-      max(
-        12px,
-        calc(
-          env(safe-area-inset-bottom)
-          + 8px
-        )
-      );
-
-    width: 58px;
-    height: 58px;
-  }
-
+{
   .artlife-chat-teaser {
     right: 12px;
 
@@ -4314,12 +4221,7 @@ body.artlife-chat-resetting .bpWebchat {
    --------------------------------------------------------- */
 
 @media (max-width: 480px) {
-  .artlife-chat-launcher {
-    width: 56px;
-    height: 56px;
 
-    right: 10px;
-  }
 
   .artlife-chat-teaser {
     right: 10px;
@@ -4441,45 +4343,3 @@ body.artlife-chat-resetting .bpWebchat {
   }
 }
 
-/* ---------------------------------------------------------
-   REDUCED MOTION
-   --------------------------------------------------------- */
-
-@media (prefers-reduced-motion: reduce) {
-  .artlife-chat-launcher-ring,
-  .artlife-chat-teaser.show {
-    animation: none !important;
-  }
-
-  .artlife-chat-launcher,
-  .artlife-chat-teaser,
-  .bpWebchat {
-    transition: none !important;
-  }
-}
-
-/* Curățare finală launcher chat */
-
-.artlife-chat-launcher {
-  box-shadow:
-    0 12px 28px rgba(0, 0, 0, .28) !important;
-
-  outline: none !important;
-}
-
-.artlife-chat-launcher:hover {
-  box-shadow:
-    0 14px 32px rgba(0, 0, 0, .32) !important;
-}
-
-.artlife-chat-launcher::before,
-.artlife-chat-launcher::after {
-  content: none !important;
-  display: none !important;
-}
-
-.artlife-chat-launcher {
-  border:
-    1px solid rgba(255,255,255,.16)
-    !important;
-}
