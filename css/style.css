@@ -4457,3 +4457,23 @@ body.artlife-chat-resetting .bpWebchat {
     transition: none !important;
   }
 }
+
+/* Curățare finală launcher chat */
+
+.artlife-chat-launcher {
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, .28) !important;
+
+  outline: none !important;
+}
+
+.artlife-chat-launcher:hover {
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, .32) !important;
+}
+
+.artlife-chat-launcher::before,
+.artlife-chat-launcher::after {
+  content: none !important;
+  display: none !important;
+}
