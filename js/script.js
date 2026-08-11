@@ -1490,11 +1490,6 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     launcher.innerHTML = `
-      <span
-        class="artlife-chat-launcher-ring"
-        aria-hidden="true"
-      ></span>
-
       <i
         class="bi bi-chat-dots-fill"
         aria-hidden="true"
