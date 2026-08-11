@@ -1709,7 +1709,7 @@ document.addEventListener("DOMContentLoaded", () => {
      Reset real al conversației Botpress.
 
      restartConversation() se apelează doar după
-     webchat:ready, conform API-ului Webchat.
+    conform API-ului Webchat.
      --------------------------------------------------------- */
 
   async function restartConversationIfNeeded() {
@@ -1857,13 +1857,26 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     window.botpress.on(
-      "webchat:ready",
-      async () => {
-        webchatReady = true;
+  "webchat:ready",
+  async () => {
+    webchatReady = true;
 
-        await restartConversationIfNeeded();
-      }
-    );
+    console.log("ARTLIFE: webchat ready");
+
+    try {
+      await window.botpress.restartConversation();
+
+      console.log(
+        "ARTLIFE: restartConversation SUCCESS"
+      );
+    } catch (error) {
+      console.error(
+        "ARTLIFE: restartConversation ERROR",
+        error
+      );
+    }
+  }
+);
 
     window.botpress.on(
       "webchat:opened",
