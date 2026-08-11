@@ -1858,10 +1858,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.botpress.on(
   "webchat:ready",
-  async () => {
+  () => {
     webchatReady = true;
 
     console.log("ARTLIFE: webchat ready");
+  }
+);
+
+    window.botpress.on(
+  "webchat:opened",
+  async () => {
+    webchatOpen = true;
+
+    console.log("ARTLIFE: webchat opened");
+
+    await new Promise((resolve) =>
+      setTimeout(resolve, 700)
+    );
 
     try {
       await window.botpress.restartConversation();
@@ -1877,32 +1890,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 );
-
-    window.botpress.on(
-      "webchat:opened",
-      async () => {
-        webchatOpen = true;
-
-        launcher?.classList.add(
-          "is-hidden"
-        );
-
-        window.__artlifeHideChatTeaser?.();
-
-        if (
-          MUST_START_FRESH &&
-          !resetFinished
-        ) {
-          document.body.classList.add(
-            "artlife-chat-resetting"
-          );
-        }
-
-        if (webchatReady) {
-          await restartConversationIfNeeded();
-        }
-      }
-    );
 
     window.botpress.on(
       "webchat:closed",
