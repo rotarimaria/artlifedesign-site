@@ -559,10 +559,6 @@
     */
     window.botpress.open();
 
-    /*
-      Abia DUPĂ open() încercăm resetarea.
-    */
-    await restartConversationAfterOpenIfNeeded();
   }
 
   /* ---------------------------------------------------------
@@ -629,15 +625,36 @@
        ------------------------------------------------------- */
 
     window.botpress.on(
-      "webchat:ready",
-      () => {
-        webchatReady = true;
+  "webchat:ready",
+  async () => {
+    webchatReady = true;
 
-        console.log(
-          "ARTLIFE: webchat ready"
-        );
-      }
+    console.log(
+      "ARTLIFE: webchat ready"
     );
+
+    await sleep(2000);
+
+    try {
+      await window.botpress.restartConversation();
+
+      resetFinished = true;
+
+      console.log(
+        "ARTLIFE: conversație Botpress nouă pornită"
+      );
+    } catch (error) {
+      console.error(
+        "ARTLIFE: restartConversation ERROR",
+        error
+      );
+    } finally {
+      document.body.classList.remove(
+        "artlife-chat-resetting"
+      );
+    }
+  }
+);
 
     /* -------------------------------------------------------
        WEBCHAT OPENED
