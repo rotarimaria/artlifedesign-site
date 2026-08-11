@@ -159,154 +159,7 @@
      BOTPRESS WEBCHAT — O SINGURĂ INTEGRARE
      Logica este în js/script.js
      ========================================================= -->
-<script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
 
-<!-- =========================================================
-     BOTPRESS WEBCHAT (EDITAT: NOTIFICARE + RESET ISTORIC)
-     ========================================================= -->
-<style>
-  /* Desktop */
-  .bpWebchat {
-    width: 390px !important;
-    height: 620px !important;
-    max-height: calc(100vh - 110px) !important;
-    right: 18px !important;
-    bottom: 82px !important;
-    border-radius: 22px !important;
-    overflow: hidden !important;
-  }
-
-  /* Mobil */
-  @media (max-width: 768px) {
-    .bpWebchat {
-      width: calc(100vw - 24px) !important;
-      height: 68vh !important;
-      max-height: 560px !important;
-
-      left: 12px !important;
-      right: 12px !important;
-      bottom: 76px !important;
-      top: auto !important;
-
-      border-radius: 20px !important;
-      overflow: hidden !important;
-    }
-
-    .bpFabContainer {
-      right: 14px !important;
-      bottom: 14px !important;
-    }
-  }
-
-  /* Telefoane mici */
-  @media (max-width: 480px) {
-    .bpWebchat {
-      width: calc(100vw - 20px) !important;
-      height: 64vh !important;
-      max-height: 520px !important;
-
-      left: 10px !important;
-      right: 10px !important;
-      bottom: 72px !important;
-
-      border-radius: 18px !important;
-    }
-  }
-
-  @keyframes artLifeChatEntrance {
-    0% {
-      opacity: 0;
-      transform: translateY(40px) scale(0.94);
-      filter: blur(4px);
-    }
-
-    60% {
-      opacity: 1;
-      transform: translateY(-6px) scale(1.015);
-      filter: blur(0);
-    }
-
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      filter: blur(0);
-    }
-  }
-
-  .artlife-chat-entrance {
-    animation: artLifeChatEntrance 1.15s cubic-bezier(.22, 1, .36, 1) both;
-  }
-
-  /* Chat mai compact pe desktop */
-  iframe[src*="botpress"],
-  iframe[title*="Botpress"],
-  iframe[title*="Webchat"] {
-    max-width: 380px !important;
-    max-height: 620px !important;
-    border-radius: 22px !important;
-  }
-
-  @media (max-width: 768px) {
-    iframe[src*="botpress"],
-    iframe[title*="Botpress"],
-    iframe[title*="Webchat"] {
-      max-width: calc(100vw - 20px) !important;
-      max-height: calc(100dvh - 20px) !important;
-    }
-  }
-</style>
-
-<script>
-window.addEventListener("load", function () {
-  let initialized = false;
-
-  // 1. Generăm un ID unic de utilizator salvat DOAR în memoria curentă a paginii.
-  // La fiecare refresh sau schimbare de pagină se generează un ID nou, ștergând istoricul vechi.
-  const uniqueSessionId = 'artlife_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-
-  const checkBotpress = window.setInterval(function () {
-    if (
-      window.botpress &&
-      typeof window.botpress.init === "function" &&
-      !initialized
-    ) {
-      initialized = true;
-      window.clearInterval(checkBotpress);
-
-      // 2. Inițializăm noul Webchat v2 cu regulile cerute
-      window.botpress.init({
-        clientId: "5f16efb4-a4db-46f0-a01b-df2f36f2f4a7",
-        hostUrl: "https://botpress.cloud",
-        messagingUrl: "https://messaging.botpress.cloud",
-        
-        showWidget: true,         // Arată doar butonul rotund în colț
-        openByDefault: false,     // REZOLVARE: Nu mai deschide fereastra mare automat!
-        lazyMode: true,           // Încarcă scriptul eficient
-        userId: uniqueSessionId   // REZOLVARE: Resetează istoricul complet la refresh/schimbare pagină
-      });
-
-      // 3. Când chat-ul este gata încărcat în fundal
-      window.botpress.on("webchat:ready", function () {
-        
-        // REZOLVARE: Afișăm o bulă de notificare text (popup) după 4 secunde, FĂRĂ să mărim chatul
-        window.setTimeout(function () {
-          try {
-            window.botpress.sendPayload({
-              type: 'trigger',
-              payload: {
-                text: '👋 Salut! Sunt aici să te ajut. Apasă aici pentru a alege o opțiune!'
-              }
-            });
-          } catch (e) {
-            console.warn("Nu s-a putut trimite notificarea text:", e);
-          }
-        }, 4000); // 4000 milisecunde = 4 secunde
-        
-      });
-    }
-  }, 100);
-});
-</script>
 
 <style>
   /* =========================================================
@@ -379,6 +232,8 @@ window.addEventListener("load", function () {
   }
 </style>
 
+  <!-- Botpress Webchat: logica este în js/script.js -->
+  <script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
 </head>
 
 

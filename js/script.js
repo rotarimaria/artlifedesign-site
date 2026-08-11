@@ -817,36 +817,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-
 /* =========================================================
-   ART LIFE DESIGN — BOTPRESS WEBCHAT FINAL
-   ---------------------------------------------------------
-   Comportament:
-   - Nu deschide chatul automat.
-   - Afișează o notificare mică după câteva secunde.
-   - Click pe notificare -> deschide chatul.
-   - Refresh / intrare nouă -> conversație nouă.
-   - Navigare internă index <-> lucrari -> păstrează sesiunea.
-   - X pe chat -> conversația rămâne.
-   - Transcriptul este păstrat temporar și sincronizat în
-     user.data.artlifeTranscript pentru Botpress / Make.
+   ART LIFE DESIGN — BOTPRESS WEBCHAT FINAL V2
    ========================================================= */
 
 (() => {
   const CLIENT_ID = "5f16efb4-a4db-46f0-a01b-df2f36f2f4a7";
-  const TEASER_DELAY = 3200;
+  const TEASER_DELAY = 2800;
 
-  let botpressInitialized = false;
+  let initialized = false;
+  let webchatOpen = false;
   let currentConversationId = "";
   let transcript = [];
   let transcriptSyncTimer = null;
+  let shouldRestartConversation = false;
 
-  function getNavigationType() {
+  function navigationType() {
     const entry = performance.getEntriesByType("navigation")[0];
-    return entry ? entry.type : "navigate";
+    return entry?.type || "navigate";
   }
 
-  function isInternalNavigation() {
+  function cameFromSameSite() {
     if (!document.referrer) return false;
 
     try {
@@ -856,28 +847,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /*
-    Resetăm numai când este:
-    - refresh;
-    - acces nou/direct din afara site-ului.
+  function prepareChatSession() {
+    shouldRestartConversation =
+      navigationType() === "reload" ||
+      !cameFromSameSite();
 
-    NU resetăm când utilizatorul merge din index.html în lucrari.html
-    sau invers în același tab.
-  */
-  function prepareSession() {
-    const navigationType = getNavigationType();
-    const internal = isInternalNavigation();
-
-    const freshVisit =
-      navigationType === "reload" ||
-      !internal;
-
-    if (!freshVisit) return;
+    if (!shouldRestartConversation) return;
 
     try {
-      sessionStorage.clear();
+      sessionStorage.removeItem("artlife_chat_transcript_json");
+      sessionStorage.removeItem("artlife_chat_transcript");
+      sessionStorage.removeItem("artlife_chat_conversation");
+      sessionStorage.removeItem("artlife_chat_teaser_seen");
     } catch (error) {
-      console.warn("Art Life Design: sesiunea nu a putut fi resetată.", error);
+      console.warn("Art Life Design: reset sesiune eșuat.", error);
     }
   }
 
@@ -891,7 +874,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function extractMessageText(message) {
+  function transcriptText() {
+    return transcript
+      .map((entry) => `${entry.speaker}: ${entry.text}`)
+      .join("\n");
+  }
+
+  function extractText(message) {
     if (!message) return "";
 
     const payload = message.payload || {};
@@ -900,36 +889,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typeof payload.title === "string") return payload.title.trim();
     if (typeof payload.message === "string") return payload.message.trim();
 
-    if (Array.isArray(payload.options)) {
-      return payload.options
-        .map((option) => {
-          if (typeof option === "string") return option;
-          return option?.label || option?.value || "";
-        })
-        .filter(Boolean)
-        .join(" / ");
-    }
-
     return "";
   }
 
-  function transcriptAsText() {
-    return transcript
-      .map((entry) => `${entry.speaker}: ${entry.text}`)
-      .join("\n");
-  }
+  function syncTranscript() {
+    const text = transcriptText();
 
-  function persistTranscript() {
     try {
       sessionStorage.setItem(
         "artlife_chat_transcript_json",
         JSON.stringify(transcript)
       );
 
-      sessionStorage.setItem(
-        "artlife_chat_transcript",
-        transcriptAsText()
-      );
+      sessionStorage.setItem("artlife_chat_transcript", text);
 
       if (currentConversationId) {
         sessionStorage.setItem(
@@ -938,47 +910,45 @@ document.addEventListener("DOMContentLoaded", () => {
         );
       }
     } catch (error) {
-      console.warn("Art Life Design: transcriptul nu a putut fi salvat.", error);
+      console.warn("Art Life Design: transcript local nesalvat.", error);
     }
 
     if (
       window.botpress &&
       typeof window.botpress.updateUser === "function"
     ) {
-      window.clearTimeout(transcriptSyncTimer);
+      clearTimeout(transcriptSyncTimer);
 
-      transcriptSyncTimer = window.setTimeout(() => {
-        window.botpress.updateUser({
-          data: {
-            artlifeTranscript: transcriptAsText(),
-            artlifeConversationId: currentConversationId || ""
-          }
-        }).catch((error) => {
+      transcriptSyncTimer = setTimeout(async () => {
+        try {
+          await window.botpress.updateUser({
+            data: {
+              artlifeTranscript: text,
+              artlifeConversationId: currentConversationId || ""
+            }
+          });
+        } catch (error) {
           console.warn(
             "Art Life Design: transcriptul nu a putut fi sincronizat cu Botpress.",
             error
           );
-        });
-      }, 220);
+        }
+      }, 250);
     }
   }
 
-  function addTranscriptEntry(message) {
-    const text = extractMessageText(message);
+  function captureMessage(message) {
+    const text = extractText(message);
     if (!text) return;
-
-    const speaker =
-      message?.direction === "outgoing"
-        ? "Art Life Design"
-        : "Client";
 
     const id = message?.id || "";
 
-    /*
-      Evită doar duplicatele reale / consecutive.
-      Nu elimină răspunsuri legitime repetate mai târziu.
-    */
     if (id && transcript.some((entry) => entry.id === id)) return;
+
+    const speaker =
+      message?.direction === "outgoing"
+        ? "Client"
+        : "Art Life Design";
 
     const last = transcript[transcript.length - 1];
 
@@ -997,7 +967,32 @@ document.addEventListener("DOMContentLoaded", () => {
       text
     });
 
-    persistTranscript();
+    syncTranscript();
+  }
+
+  function createLauncher() {
+    if (document.getElementById("artlifeChatLauncher")) return;
+
+    const launcher = document.createElement("button");
+    launcher.id = "artlifeChatLauncher";
+    launcher.className = "artlife-chat-launcher";
+    launcher.type = "button";
+    launcher.setAttribute("aria-label", "Deschide asistentul Art Life Design");
+    launcher.innerHTML = `
+      <span class="artlife-chat-launcher-ring" aria-hidden="true"></span>
+      <i class="bi bi-robot" aria-hidden="true"></i>
+    `;
+
+    launcher.addEventListener("click", () => {
+      if (
+        window.botpress &&
+        typeof window.botpress.open === "function"
+      ) {
+        window.botpress.open();
+      }
+    });
+
+    document.body.appendChild(launcher);
   }
 
   function createTeaser() {
@@ -1014,23 +1009,24 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     teaser.innerHTML = `
-  <div class="artlife-chat-teaser-icon" aria-hidden="true">
-    <i class="bi bi-robot"></i>
-  </div>
+      <div class="artlife-chat-teaser-avatar" aria-hidden="true">
+        <i class="bi bi-robot"></i>
+        <span class="artlife-chat-online-dot"></span>
+      </div>
 
-  <div class="artlife-chat-teaser-copy">
-    <strong>Salut 👋 Sunt aici să te ajut</strong>
-    <span>Alege rapid ce te interesează.</span>
-  </div>
+      <div class="artlife-chat-teaser-copy">
+        <strong>Salut 👋 Sunt aici să te ajut</strong>
+        <span>Alege rapid ce te interesează.</span>
+      </div>
 
-  <button
-    type="button"
-    class="artlife-chat-teaser-close"
-    aria-label="Închide notificarea"
-  >
-    ×
-  </button>
-`;
+      <button
+        type="button"
+        class="artlife-chat-teaser-close"
+        aria-label="Închide notificarea"
+      >
+        ×
+      </button>
+    `;
 
     document.body.appendChild(teaser);
 
@@ -1038,20 +1034,24 @@ document.addEventListener("DOMContentLoaded", () => {
       ".artlife-chat-teaser-close"
     );
 
-    function hideTeaser() {
+    function hideTeaser(markSeen = false) {
       teaser.classList.remove("show");
 
-      window.setTimeout(() => {
-        teaser.style.display = "none";
-      }, 280);
+      if (markSeen) {
+        try {
+          sessionStorage.setItem("artlife_chat_teaser_seen", "1");
+        } catch {}
+      }
+
+      setTimeout(() => {
+        if (!teaser.classList.contains("show")) {
+          teaser.style.display = "none";
+        }
+      }, 320);
     }
 
     function openChat() {
-      try {
-        sessionStorage.setItem("artlife_chat_teaser_seen", "1");
-      } catch {}
-
-      hideTeaser();
+      hideTeaser(true);
 
       if (
         window.botpress &&
@@ -1075,88 +1075,132 @@ document.addEventListener("DOMContentLoaded", () => {
 
     closeButton?.addEventListener("click", (event) => {
       event.stopPropagation();
-
-      try {
-        sessionStorage.setItem("artlife_chat_teaser_seen", "1");
-      } catch {}
-
-      hideTeaser();
+      hideTeaser(true);
     });
 
-    let alreadySeen = false;
+    window.__artlifeShowChatTeaser = () => {
+      let seen = false;
 
-    try {
-      alreadySeen =
-        sessionStorage.getItem("artlife_chat_teaser_seen") === "1";
-    } catch {}
+      try {
+        seen = sessionStorage.getItem("artlife_chat_teaser_seen") === "1";
+      } catch {}
 
-    if (!alreadySeen) {
-      window.setTimeout(() => {
-        teaser.style.display = "grid";
+      if (seen || webchatOpen) return;
 
-        requestAnimationFrame(() => {
-          teaser.classList.add("show");
-        });
-      }, TEASER_DELAY);
-    }
+      teaser.style.display = "grid";
+
+      requestAnimationFrame(() => {
+        teaser.classList.add("show");
+      });
+    };
 
     window.__artlifeHideChatTeaser = hideTeaser;
   }
 
+  function hideNativeBotpressLauncher() {
+    const hide = () => {
+      document.querySelectorAll(
+        ".bpFabContainer, .bpFab, [class*='bpFabContainer']"
+      ).forEach((element) => {
+        element.style.setProperty("display", "none", "important");
+      });
+    };
+
+    hide();
+
+    const observer = new MutationObserver(hide);
+
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  async function restartIfNeeded() {
+    if (!shouldRestartConversation) return;
+
+    shouldRestartConversation = false;
+
+    if (
+      window.botpress &&
+      typeof window.botpress.restartConversation === "function"
+    ) {
+      try {
+        await window.botpress.restartConversation();
+
+        transcript = [];
+        currentConversationId = "";
+        syncTranscript();
+      } catch (error) {
+        console.warn(
+          "Art Life Design: conversația Botpress nu a putut fi restartată.",
+          error
+        );
+      }
+    }
+  }
+
   function initBotpress() {
-    prepareSession();
+    prepareChatSession();
     loadTranscript();
+    createLauncher();
     createTeaser();
+    hideNativeBotpressLauncher();
 
     const startedAt = Date.now();
 
-    const timer = window.setInterval(() => {
+    const timer = setInterval(() => {
       if (
         window.botpress &&
         typeof window.botpress.init === "function" &&
-        !botpressInitialized
+        !initialized
       ) {
-        botpressInitialized = true;
-        window.clearInterval(timer);
+        initialized = true;
+        clearInterval(timer);
 
-        /*
-          Nu trimitem "De la început" prin sendMessage().
-          Astfel nu mai apare ca mesaj al utilizatorului și nu se repetă.
-        */
         window.botpress.init({
           clientId: CLIENT_ID
         });
 
-        window.botpress.on("webchat:initialized", () => {
-          persistTranscript();
+        window.botpress.on("webchat:initialized", async () => {
+          await restartIfNeeded();
+          syncTranscript();
+
+          setTimeout(() => {
+            window.__artlifeShowChatTeaser?.();
+          }, TEASER_DELAY);
         });
 
         window.botpress.on("webchat:opened", () => {
-          window.__artlifeHideChatTeaser?.();
+          webchatOpen = true;
 
-          try {
-            sessionStorage.setItem("artlife_chat_teaser_seen", "1");
-          } catch {}
+          document
+            .getElementById("artlifeChatLauncher")
+            ?.classList.add("is-hidden");
+
+          window.__artlifeHideChatTeaser?.(true);
         });
 
         window.botpress.on("webchat:closed", () => {
-          /*
-            Intenționat NU resetăm conversația aici.
-            X -> redeschidere = aceeași conversație.
-          */
-          persistTranscript();
+          webchatOpen = false;
+
+          document
+            .getElementById("artlifeChatLauncher")
+            ?.classList.remove("is-hidden");
+
+          syncTranscript();
         });
 
-        window.botpress.on("conversation", (conversationId) => {
+        window.botpress.on("conversation", (conversation) => {
           currentConversationId =
-            typeof conversationId === "string"
-              ? conversationId
-              : "";
+            typeof conversation === "string"
+              ? conversation
+              : conversation?.id || "";
 
-          persistTranscript();
+          syncTranscript();
         });
 
-        window.botpress.on("message", addTranscriptEntry);
+        window.botpress.on("message", captureMessage);
 
         window.botpress.on("error", (error) => {
           console.warn("Art Life Design / Botpress:", error);
@@ -1164,14 +1208,20 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (Date.now() - startedAt > 20000) {
-        window.clearInterval(timer);
+        clearInterval(timer);
       }
-    }, 200);
+    }, 150);
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initBotpress, { once:true });
+    document.addEventListener(
+      "DOMContentLoaded",
+      initBotpress,
+      { once: true }
+    );
   } else {
     initBotpress();
   }
-})();
+})(
+
+);
