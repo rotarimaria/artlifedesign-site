@@ -430,9 +430,9 @@
 
   async function restartConversationAfterOpenIfNeeded() {
     if (
-      resetFinished ||
-      resetInProgress
-    ) {
+  resetFinished ||
+  resetInProgress
+) {
       document.body.classList.remove(
         "artlife-chat-resetting"
       );
