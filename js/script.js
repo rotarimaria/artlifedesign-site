@@ -1014,23 +1014,23 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     teaser.innerHTML = `
-      <div class="artlife-chat-teaser-icon" aria-hidden="true">
-        <i class="bi bi-chat-dots"></i>
-      </div>
+  <div class="artlife-chat-teaser-icon" aria-hidden="true">
+    <i class="bi bi-robot"></i>
+  </div>
 
-      <div class="artlife-chat-teaser-copy">
-        <strong>Salut 👋 Sunt aici să te ajut</strong>
-        <span>Alege rapid ce te interesează.</span>
-      </div>
+  <div class="artlife-chat-teaser-copy">
+    <strong>Salut 👋 Sunt aici să te ajut</strong>
+    <span>Alege rapid ce te interesează.</span>
+  </div>
 
-      <button
-        type="button"
-        class="artlife-chat-teaser-close"
-        aria-label="Închide notificarea"
-      >
-        ×
-      </button>
-    `;
+  <button
+    type="button"
+    class="artlife-chat-teaser-close"
+    aria-label="Închide notificarea"
+  >
+    ×
+  </button>
+`;
 
     document.body.appendChild(teaser);
 

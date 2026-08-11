@@ -3282,91 +3282,204 @@ p{
   font-size:15px !important;
 }
 
-/* ---------- CHAT TEASER ---------- */
+/* =========================================================
+   CHAT TEASER — VARIANTA FINALĂ
+   ========================================================= */
 
-.artlife-chat-teaser{
-  position:fixed;
-  right:22px;
-  bottom:92px;
-  z-index:1995;
-  width:min(318px,calc(100vw - 32px));
-  display:none;
-  grid-template-columns:44px minmax(0,1fr) 28px;
-  align-items:center;
-  gap:11px;
-  padding:13px 12px;
-  border:1px solid rgba(146,255,34,.30);
-  border-radius:18px;
-  background:rgba(8,12,9,.96);
-  color:var(--white);
+.artlife-chat-teaser {
+  position: fixed;
+  right: 22px;
+  bottom: 92px;
+  z-index: 1995;
+
+  width: min(330px, calc(100vw - 32px));
+
+  display: none;
+  grid-template-columns: 46px minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 12px;
+
+  padding: 14px 13px;
+
+  border: 1px solid rgba(31, 77, 58, 0.16);
+  border-radius: 18px;
+
+  background: #ffffff;
+  color: #172019;
+
   box-shadow:
-    0 16px 42px rgba(0,0,0,.40),
-    0 0 0 1px rgba(146,255,34,.035);
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
-  cursor:pointer;
-  opacity:0;
-  transform:translateY(12px) scale(.98);
-  transition:opacity .28s ease,transform .28s ease,border-color .28s ease;
+    0 18px 42px rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(31, 77, 58, 0.03);
+
+  cursor: pointer;
+
+  opacity: 0;
+  transform: translateY(18px) scale(0.96);
+
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s ease,
+    border-color 0.28s ease,
+    box-shadow 0.28s ease;
 }
 
-.artlife-chat-teaser.show{
-  display:grid;
-  opacity:1;
-  transform:none;
+.artlife-chat-teaser.show {
+  display: grid;
+  opacity: 1;
+
+  animation:
+    artlifeTeaserBounce 0.72s cubic-bezier(.22, 1, .36, 1) both,
+    artlifeTeaserPulse 2.6s ease-in-out 1.2s infinite;
 }
 
-.artlife-chat-teaser:hover{
-  border-color:rgba(146,255,34,.54);
+.artlife-chat-teaser:hover {
+  transform: translateY(-2px) scale(1.015);
+
+  border-color: rgba(31, 77, 58, 0.35);
+
+  box-shadow:
+    0 22px 52px rgba(0, 0, 0, 0.22),
+    0 0 0 4px rgba(31, 77, 58, 0.04);
 }
 
-.artlife-chat-teaser-icon{
-  width:44px;
-  height:44px;
-  display:grid;
-  place-items:center;
-  border-radius:14px;
-  background:rgba(146,255,34,.12);
-  color:var(--green);
-  font-size:21px;
+
+/* iconița din stânga */
+.artlife-chat-teaser-icon {
+  width: 46px;
+  height: 46px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 14px;
+
+  background: #1F4D3A;
+  color: #ffffff;
+
+  font-size: 21px;
+
+  box-shadow:
+    0 6px 16px rgba(31, 77, 58, 0.22);
 }
 
-.artlife-chat-teaser-copy{
-  min-width:0;
+
+/* text */
+.artlife-chat-teaser-copy {
+  min-width: 0;
 }
 
-.artlife-chat-teaser-copy strong{
-  display:block;
-  margin-bottom:2px;
-  color:var(--white);
-  font-size:15px;
-  line-height:1.3;
-  font-weight:700;
+.artlife-chat-teaser-copy strong {
+  display: block;
+
+  margin-bottom: 2px;
+
+  color: #172019;
+
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 700;
 }
 
-.artlife-chat-teaser-copy span{
-  display:block;
-  color:rgba(247,244,235,.65);
-  font-size:13px;
-  line-height:1.4;
+.artlife-chat-teaser-copy span {
+  display: block;
+
+  color: rgba(23, 32, 25, 0.62);
+
+  font-size: 13px;
+  line-height: 1.4;
 }
 
-.artlife-chat-teaser-close{
-  width:28px;
-  height:28px;
-  display:grid;
-  place-items:center;
-  padding:0;
-  border:0;
-  border-radius:8px;
-  background:transparent;
-  color:rgba(247,244,235,.60);
-  font-size:18px;
+
+/* X */
+.artlife-chat-teaser-close {
+  width: 28px;
+  height: 28px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: transparent;
+  color: rgba(23, 32, 25, 0.48);
+
+  font-size: 18px;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
 }
 
-.artlife-chat-teaser-close:hover{
-  color:var(--green);
-  background:rgba(146,255,34,.07);
+.artlife-chat-teaser-close:hover {
+  color: #1F4D3A;
+  background: rgba(31, 77, 58, 0.07);
+}
+
+
+/* intrare cu mic "salt" */
+@keyframes artlifeTeaserBounce {
+  0% {
+    opacity: 0;
+    transform: translateY(22px) scale(0.94);
+  }
+
+  60% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.02);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* pulse discret */
+@keyframes artlifeTeaserPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 18px 42px rgba(0, 0, 0, 0.18),
+      0 0 0 0 rgba(31, 77, 58, 0);
+  }
+
+  50% {
+    box-shadow:
+      0 20px 46px rgba(0, 0, 0, 0.20),
+      0 0 0 8px rgba(31, 77, 58, 0.07);
+  }
+}
+
+
+/* mobil */
+@media (max-width: 760px) {
+  .artlife-chat-teaser {
+    right: 12px;
+    bottom: 82px;
+
+    width: min(340px, calc(100vw - 24px));
+  }
+}
+
+@media (max-width: 480px) {
+  .artlife-chat-teaser {
+    right: 10px;
+    bottom: 76px;
+
+    width: calc(100vw - 20px);
+  }
+}
+
+
+/* fără animații excesive pentru utilizatorii care le dezactivează */
+@media (prefers-reduced-motion: reduce) {
+  .artlife-chat-teaser.show {
+    animation: none;
+  }
 }
 
 /* Fereastra Webchat */
