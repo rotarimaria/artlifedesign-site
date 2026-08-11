@@ -4477,3 +4477,9 @@ body.artlife-chat-resetting .bpWebchat {
   content: none !important;
   display: none !important;
 }
+
+.artlife-chat-launcher {
+  border:
+    1px solid rgba(255,255,255,.16)
+    !important;
+}
