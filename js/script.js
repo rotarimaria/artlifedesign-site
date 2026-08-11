@@ -1797,9 +1797,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.botpress.open();
 
-    if (webchatReady) {
-      await restartConversationIfNeeded();
-    }
   }
 
   /* ---------------------------------------------------------
@@ -1873,7 +1870,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("ARTLIFE: webchat opened");
 
     await new Promise((resolve) =>
-      setTimeout(resolve, 700)
+      setTimeout(resolve, 1500)
     );
 
     try {
