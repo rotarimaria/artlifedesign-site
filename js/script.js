@@ -1738,8 +1738,6 @@ document.addEventListener("DOMContentLoaded", () => {
     resetInProgress = true;
 
     try {
-      await window.botpress
-        .restartConversation();
 
       resetFinished = true;
     } catch (error) {
@@ -1797,9 +1795,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.botpress.open();
 
-    if (webchatReady) {
-      await restartConversationIfNeeded();
-    }
   }
 
   /* ---------------------------------------------------------
@@ -1857,13 +1852,11 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     window.botpress.on(
-      "webchat:ready",
-      async () => {
-        webchatReady = true;
-
-        await restartConversationIfNeeded();
-      }
-    );
+  "webchat:ready",
+  () => {
+    webchatReady = true;
+  }
+);
 
     window.botpress.on(
       "webchat:opened",
@@ -1883,10 +1876,7 @@ document.addEventListener("DOMContentLoaded", () => {
           document.body.classList.add(
             "artlife-chat-resetting"
           );
-        }
-
-        if (webchatReady) {
-          await restartConversationIfNeeded();
+        
         }
       }
     );
