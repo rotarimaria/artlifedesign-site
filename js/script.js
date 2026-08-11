@@ -430,7 +430,6 @@
 
   async function restartConversationAfterOpenIfNeeded() {
     if (
-      !MUST_START_FRESH ||
       resetFinished ||
       resetInProgress
     ) {
