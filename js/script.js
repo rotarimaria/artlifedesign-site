@@ -1870,7 +1870,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("ARTLIFE: webchat opened");
 
     await new Promise((resolve) =>
-      setTimeout(resolve, 1500)
+      setTimeout(resolve, 500)
     );
 
     try {
