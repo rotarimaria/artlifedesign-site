@@ -1856,7 +1856,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     );
 
-    window.botpress.on(
+  window.botpress.on(
   "webchat:ready",
   () => {
     webchatReady = true;
