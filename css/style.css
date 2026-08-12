@@ -4107,7 +4107,7 @@ body.artlife-chat-resetting .bpWebchat {
 /* ---------------------------------------------------------
    TELEFON / TABLETĂ MICĂ
    --------------------------------------------------------- */
-{
+@media (max-width: 768px) {
   .artlife-chat-teaser {
     right: 12px;
 
@@ -4342,4 +4342,3 @@ body.artlife-chat-resetting .bpWebchat {
       !important;
   }
 }
-
