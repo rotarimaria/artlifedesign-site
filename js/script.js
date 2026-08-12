@@ -1607,11 +1607,31 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     });
 
-    window.botpress.init({
-      botId: BOT_ID,
-      clientId: CLIENT_ID,
+    // Force new Botpress session on every website load
+(function resetBotpressSession() {
+    const keys = Object.keys(localStorage);
 
-      configuration: {
+    keys.forEach((key) => {
+        if (
+            key.toLowerCase().includes("botpress") ||
+            key.toLowerCase().includes("bp")
+        ) {
+            localStorage.removeItem(key);
+        }
+    });
+
+    sessionStorage.clear();
+})();
+
+
+    window.botpress.init({
+
+    botId: BOT_ID,
+    clientId: CLIENT_ID,
+
+    userId: "session-" + Date.now(),
+
+    configuration: {
         botName: "Art Life Design",
         botDescription: "Asistent virtual Art Life Design",
         website: {},
