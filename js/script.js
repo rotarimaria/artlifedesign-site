@@ -1,168 +1,48 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const works = [
-    {
-      title: "Bonjour Tour",
-      service: "Litere în volum & Standuri",
-      category: "volum",
-      image: "images/BonjourLightBox.jpg",
-      date: "2025",
-      desc: "Light box personalizat pentru promovare vizuală.",
-      tags: "Light Box, Exterior, Vizibilitate",
-      search: "bonjour tour light box litere volum stand"
-    },
-    {
-      title: "Urnă personalizată",
-      service: "P.O.S.M.",
-      category: "posm",
-      image: "images/box.jpg",
-      date: "2025",
-      desc: "Material promoțional pentru campanii.",
-      tags: "Urnă, Print, P.O.S.M.",
-      search: "urna box donatie posm campanie"
-    },
-    {
-      title: "Ambalaj Market",
-      service: "Branding Auto",
-      category: "auto",
-      image: "images/brand_auto1.jpg",
-      date: "2025",
-      desc: "Colantare auto pentru transport comercial.",
-      tags: "Auto, Colantare, Comercial",
-      search: "ambalaj market auto branding colantare"
-    },
-    {
-      title: "Documente MD",
-      service: "Branding Auto",
-      category: "auto",
-      image: "images/brand_auto2.jpg",
-      date: "2025",
-      desc: "Grafică aplicată pe transport comercial.",
-      tags: "Microbuz, Colantare, Grafică",
-      search: "documente md auto microbus branding colantare"
-    },
-    {
-      title: "Cub promoțional",
-      service: "P.O.S.M.",
-      category: "posm",
-      image: "images/cub-sticla.jpg",
-      date: "2025",
-      desc: "Element personalizat pentru expunere vizuală.",
-      tags: "Display, Print, Expunere",
-      search: "cub sticla vara aquacity posm stand"
-    },
-    {
-      title: "Stand promoțional",
-      service: "P.O.S.M.",
-      category: "posm",
-      image: "images/cub-sticla0.jpg",
-      date: "2025",
-      desc: "Material personalizat pentru campanie.",
-      tags: "Stand, Print, P.O.S.M.",
-      search: "stand vara aquacity posm"
-    },
-    {
-      title: "Fișe de preț",
-      service: "Poligrafie",
-      category: "poligrafie",
-      image: "images/fise_pret.jpg",
-      date: "2025",
-      desc: "Materiale tipărite pentru prezentarea produselor.",
-      tags: "Print, Meniu, Produs",
-      search: "fise pret meniuri poligrafie print"
-    },
-    {
-      title: "Good Break",
-      service: "Litere în volum & Standuri",
-      category: "volum",
-      image: "images/good-break.jpg",
-      date: "2025",
-      desc: "Reclamă luminoasă pentru fațadă.",
-      tags: "Fațadă, Luminos, Volumetric",
-      search: "good break litere volum light box fatada"
-    },
-    {
-      title: "Etichete produs",
-      service: "Poligrafie",
-      category: "poligrafie",
-      image: "images/inghetata_uv.jpg",
-      date: "2025",
-      desc: "Print personalizat pentru produse.",
-      tags: "Etichete, Print, Produs",
-      search: "inghetata uv print etichete poligrafie"
-    },
-    {
-      title: "Mango Passion Fruit",
-      service: "Poligrafie",
-      category: "poligrafie",
-      image: "images/inghetata-uv1.jpg",
-      date: "2025",
-      desc: "Etichete personalizate pentru produse.",
-      tags: "Etichete, UV, Produs",
-      search: "mango passion fruit uv print etichete poligrafie"
-    },
-    {
-      title: "Logo ArtLife Design",
-      service: "Litere în volum & Standuri",
-      category: "volum",
-      image: "images/litere_volum1.jpg",
-      date: "2025",
-      desc: "Element volumetric pentru identitate vizuală.",
-      tags: "Logo, Interior, Volumetric",
-      search: "art life design litere volum logo interior"
-    },
-    {
-      title: "Smile Dent",
-      service: "Litere în volum & Standuri",
-      category: "volum",
-      image: "images/litere_volum2.jpg",
-      date: "2025",
-      desc: "Reclamă de fațadă cu litere volumetrice.",
-      tags: "Fațadă, Clinică, Volumetric",
-      search: "smile dent litere volum fatada"
-    },
-    {
-      title: "Ambalaj Market",
-      service: "Litere în volum & Standuri",
-      category: "volum",
-      image: "images/litere_volum3.jpg",
-      date: "2025",
-      desc: "Elemente de fațadă pentru spațiu comercial.",
-      tags: "Fațadă, Litere, Exterior",
-      search: "ambalaj market litere volum stand"
-    },
-    {
-      title: "Lux Tavane",
-      service: "Branding Auto",
-      category: "auto",
-      image: "images/lux-tavene.jpg",
-      date: "2025",
-      desc: "Colantare auto pentru servicii locale.",
-      tags: "Auto, Colantare, Grafică",
-      search: "lux tavane auto branding colantare"
-    },
-    {
-      title: "Stickere personalizate",
-      service: "Poligrafie",
-      category: "poligrafie",
-      image: "images/plotter-2.jpg",
-      date: "2025",
-      desc: "Decupare și print pentru etichete de brand.",
-      tags: "Stickere, Plotter, Etichete",
-      search: "stickere etichete plotter poligrafie"
-    }
-  ];
+document.addEventListener("DOMContentLoaded", () => { const works = [ {
+title: "Bonjour Tour", service: "Litere în volum & Standuri", category:
+"volum", image: "images/BonjourLightBox.jpg", date: "2025", desc: "Light box personalizat pentru promovare vizuală.", tags: "Light Box, Exterior, Vizibilitate", search: "bonjour tour light box litere volum stand" }, {
+title: "Urnă personalizată", service: "P.O.S.M.", category: "posm",
+image: "images/box.jpg", date: "2025", desc: "Material promoțional pentru campanii.", tags: "Urnă, Print, P.O.S.M.", search: "urna box donatie posm campanie" }, { title: "Ambalaj Market", service: "Branding Auto", category: "auto", image: "images/brand_auto1.jpg", date: "2025",
+desc: "Colantare auto pentru transport comercial.", tags: "Auto, Colantare, Comercial", search: "ambalaj market auto branding colantare"
+}, { title: "Documente MD", service: "Branding Auto", category: "auto",
+image: "images/brand_auto2.jpg", date: "2025", desc: "Grafică aplicată pe transport comercial.", tags: "Microbuz, Colantare, Grafică", search:
+"documente md auto microbus branding colantare" }, { title: "Cub promoțional", service: "P.O.S.M.", category: "posm", image:
+"images/cub-sticla.jpg", date: "2025", desc: "Element personalizat pentru expunere vizuală.", tags: "Display, Print, Expunere", search:
+"cub sticla vara aquacity posm stand" }, { title: "Stand promoțional",
+service: "P.O.S.M.", category: "posm", image: "images/cub-sticla0.jpg",
+date: "2025", desc: "Material personalizat pentru campanie.", tags:
+"Stand, Print, P.O.S.M.", search: "stand vara aquacity posm" }, { title:
+"Fișe de preț", service: "Poligrafie", category: "poligrafie", image:
+"images/fise_pret.jpg", date: "2025", desc: "Materiale tipărite pentru prezentarea produselor.", tags: "Print, Meniu, Produs", search: "fise pret meniuri poligrafie print" }, { title: "Good Break", service:
+"Litere în volum & Standuri", category: "volum", image:
+"images/good-break.jpg", date: "2025", desc: "Reclamă luminoasă pentru fațadă.", tags: "Fațadă, Luminos, Volumetric", search: "good break litere volum light box fatada" }, { title: "Etichete produs", service:
+"Poligrafie", category: "poligrafie", image: "images/inghetata_uv.jpg",
+date: "2025", desc: "Print personalizat pentru produse.", tags:
+"Etichete, Print, Produs", search: "inghetata uv print etichete poligrafie" }, { title: "Mango Passion Fruit", service: "Poligrafie",
+category: "poligrafie", image: "images/inghetata-uv1.jpg", date: "2025",
+desc: "Etichete personalizate pentru produse.", tags: "Etichete, UV, Produs", search: "mango passion fruit uv print etichete poligrafie" }, {
+title: "Logo ArtLife Design", service: "Litere în volum & Standuri",
+category: "volum", image: "images/litere_volum1.jpg", date: "2025",
+desc: "Element volumetric pentru identitate vizuală.", tags: "Logo, Interior, Volumetric", search: "art life design litere volum logo interior" }, { title: "Smile Dent", service: "Litere în volum & Standuri", category: "volum", image: "images/litere_volum2.jpg", date:
+"2025", desc: "Reclamă de fațadă cu litere volumetrice.", tags: "Fațadă, Clinică, Volumetric", search: "smile dent litere volum fatada" }, {
+title: "Ambalaj Market", service: "Litere în volum & Standuri",
+category: "volum", image: "images/litere_volum3.jpg", date: "2025",
+desc: "Elemente de fațadă pentru spațiu comercial.", tags: "Fațadă, Litere, Exterior", search: "ambalaj market litere volum stand" }, {
+title: "Lux Tavane", service: "Branding Auto", category: "auto", image:
+"images/lux-tavene.jpg", date: "2025", desc: "Colantare auto pentru servicii locale.", tags: "Auto, Colantare, Grafică", search: "lux tavane auto branding colantare" }, { title: "Stickere personalizate", service:
+"Poligrafie", category: "poligrafie", image: "images/plotter-2.jpg",
+date: "2025", desc: "Decupare și print pentru etichete de brand.", tags:
+"Stickere, Plotter, Etichete", search: "stickere etichete plotter poligrafie" } ];
 
-  const $ = (selector) => document.querySelector(selector);
-  const $$ = (selector) => document.querySelectorAll(selector);
+const $ = (selector) => document.querySelector(selector); const $$ =
+(selector) => document.querySelectorAll(selector);
 
-  const navbar = $("#navbarTop");
-  const scrollProgress = $("#scrollProgress");
-  const navMenu = $("#navMenu");
-  const navLinksWrap = $("#navLinksWrap");
+const navbar = $("#navbarTop"); const scrollProgress =
+$("#scrollProgress"); const navMenu = $("#navMenu"); const navLinksWrap
+= $("#navLinksWrap");
 
-  function showToast(text, type = "success") {
-    const toast = $("#siteToast");
-    if (!toast) return;
+function showToast(text, type = "success") { const toast =
+$("#siteToast"); if (!toast) return;
 
     toast.textContent = text;
     toast.className = `site-toast show ${type}`;
@@ -170,12 +50,12 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       toast.className = "site-toast";
     }, 2500);
-  }
 
-  function handleScroll() {
-    const top = window.scrollY;
-    const height = document.documentElement.scrollHeight - window.innerHeight;
-    const percent = height > 0 ? (top / height) * 100 : 0;
+}
+
+function handleScroll() { const top = window.scrollY; const height =
+document.documentElement.scrollHeight - window.innerHeight; const
+percent = height > 0 ? (top / height) * 100 : 0;
 
     if (navbar) {
       navbar.classList.toggle("nav-scrolled", top > 40);
@@ -211,26 +91,26 @@ document.addEventListener("DOMContentLoaded", () => {
         );
       }
     });
-  }
 
-  window.addEventListener("scroll", handleScroll);
+}
 
-  handleScroll();
+window.addEventListener("scroll", handleScroll);
 
-  if (navMenu && navLinksWrap) {
-    navMenu.addEventListener("click", () => {
-      const open = navLinksWrap.classList.toggle("active");
+handleScroll();
+
+if (navMenu && navLinksWrap) { navMenu.addEventListener("click", () => {
+const open = navLinksWrap.classList.toggle("active");
 
       navMenu.setAttribute(
         "aria-expanded",
         String(open)
       );
     });
-  }
 
-  $$('a[href^="#"]').forEach((link) => {
-    link.addEventListener("click", (event) => {
-      const target = $(link.getAttribute("href"));
+}
+
+$$('a[href^="#"]').forEach((link) => { link.addEventListener("click",
+(event) => { const target = $(link.getAttribute("href"));
 
       if (!target) return;
 
@@ -252,10 +132,10 @@ document.addEventListener("DOMContentLoaded", () => {
         );
       }
     });
-  });
 
-  async function copyText(value) {
-    if (!value) return;
+});
+
+async function copyText(value) { if (!value) return;
 
     try {
       await navigator.clipboard.writeText(value);
@@ -270,18 +150,20 @@ document.addEventListener("DOMContentLoaded", () => {
         "error"
       );
     }
-  }
 
-  document.addEventListener("click", (event) => {
-    const copyButton = event.target.closest(".copy-text");
+}
+
+document.addEventListener("click", (event) => { const copyButton =
+event.target.closest(".copy-text");
 
     if (!copyButton) return;
 
     copyText(copyButton.dataset.copy);
-  });
 
-  function selectService(serviceName) {
-    const select = $('select[name="serviciu"]');
+});
+
+function selectService(serviceName) { const select =
+$('select[name="serviciu"]');
 
     if (!select || !serviceName) return;
 
@@ -289,24 +171,17 @@ document.addEventListener("DOMContentLoaded", () => {
       option.selected =
         option.value === serviceName;
     });
-  }
 
-  const serviceFromUrl =
-    new URLSearchParams(
-      window.location.search
-    ).get("service");
+}
 
-  if (serviceFromUrl) {
-    selectService(
-      decodeURIComponent(serviceFromUrl)
-    );
-  }
+const serviceFromUrl = new URLSearchParams( window.location.search
+).get("service");
 
-  document.addEventListener("click", (event) => {
-    const button =
-      event.target.closest(
-        "[data-order-service]"
-      );
+if (serviceFromUrl) { selectService( decodeURIComponent(serviceFromUrl)
+); }
+
+document.addEventListener("click", (event) => { const button =
+event.target.closest( "[data-order-service]" );
 
     if (!button) return;
 
@@ -336,13 +211,11 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href =
         `index.html?service=${encodeURIComponent(service)}#contact`;
     }
-  });
 
-  function workCard(work, isHome = false) {
-    const cardClass =
-      isHome
-        ? "work-card reveal"
-        : "portfolio-card reveal";
+});
+
+function workCard(work, isHome = false) { const cardClass = isHome ?
+"work-card reveal" : "portfolio-card reveal";
 
     const mediaClass =
       isHome
@@ -440,37 +313,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
       </article>
     `;
-  }
 
-  const homeGrid =
-    $("#homeWorksGrid");
+}
 
-  const portfolioGrid =
-    $("#portfolioGrid");
+const homeGrid = $("#homeWorksGrid");
 
-  if (homeGrid) {
-    homeGrid.innerHTML =
-      works
-        .slice(0, 4)
-        .map(
-          (work) =>
-            workCard(work, true)
-        )
-        .join("");
-  }
+const portfolioGrid = $("#portfolioGrid");
 
-  if (portfolioGrid) {
-    portfolioGrid.innerHTML =
-      works
-        .map(
-          (work) =>
-            workCard(work)
-        )
-        .join("");
-  }
+if (homeGrid) { homeGrid.innerHTML = works .slice(0, 4) .map( (work) =>
+workCard(work, true) ) .join(""); }
 
-  function revealOnScroll() {
-    const items = $$(".reveal");
+if (portfolioGrid) { portfolioGrid.innerHTML = works .map( (work) =>
+workCard(work) ) .join(""); }
+
+function revealOnScroll() { const items = $$(".reveal");
 
     if (!("IntersectionObserver" in window)) {
       items.forEach((item) => {
@@ -503,13 +359,12 @@ document.addEventListener("DOMContentLoaded", () => {
     items.forEach((item) => {
       observer.observe(item);
     });
-  }
 
-  revealOnScroll();
+}
 
-  function filterServices() {
-    const search =
-      $("#serviceSearch");
+revealOnScroll();
+
+function filterServices() { const search = $("#serviceSearch");
 
     const cards =
       $$("[data-service-card]");
@@ -594,15 +449,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     render();
-  }
 
-  filterServices();
+}
 
-  function filterPortfolio() {
-    const search = $("#workSearch");
-    const buttons = $$(".filter-btn");
-    const noResults = $("#noResults");
-    let active = "all";
+filterServices();
+
+function filterPortfolio() { const search = $("#workSearch"); const
+buttons = $$(".filter-btn"); const noResults = $("#noResults"); let
+active = "all";
 
     function render() {
       const query = search ? search.value.toLowerCase().trim() : "";
@@ -661,12 +515,13 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       render();
     }
-  }
 
-  filterPortfolio();
+}
 
-  function carousel(trackSelector, speed = 0.45) {
-    const track = $(trackSelector);
+filterPortfolio();
+
+function carousel(trackSelector, speed = 0.45) { const track =
+$(trackSelector);
 
     if (!track) return;
 
@@ -721,26 +576,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     move();
-  }
 
-  let galleryItems = [];
-  let galleryIndex = 0;
+}
 
-  const modal = $("#galleryModal");
-  const modalImg = $("#galleryModalImage");
-  const modalTitle = $("#galleryModalTitle");
-  const modalService = $("#galleryModalService");
-  const modalDate = $("#galleryModalDate");
-  const modalDesc = $("#galleryModalDesc");
-  const modalTags = $("#galleryModalTags");
-  const galleryOrderBtn = $("#galleryOrderBtn");
+let galleryItems = []; let galleryIndex = 0;
 
-  function updateGalleryItems() {
-    galleryItems = [...$$(".gallery-item")];
-  }
+const modal = $("#galleryModal"); const modalImg =
+$("#galleryModalImage"); const modalTitle = $("#galleryModalTitle");
+const modalService = $("#galleryModalService"); const modalDate =
+$("#galleryModalDate"); const modalDesc = $("#galleryModalDesc"); const
+modalTags = $("#galleryModalTags"); const galleryOrderBtn =
+$("#galleryOrderBtn");
 
-  function renderGallery(index) {
-    const item = galleryItems[index];
+function updateGalleryItems() { galleryItems = [...$$(".gallery-item")]; }
+
+function renderGallery(index) { const item = galleryItems[index];
 
     if (!item || !modalImg) return;
 
@@ -798,12 +648,11 @@ document.addEventListener("DOMContentLoaded", () => {
           ? "#contact"
           : `index.html?service=${encodeURIComponent(service)}#contact`;
     }
-  }
 
-  function openGallery(index) {
-    if (!modal || !galleryItems.length) {
-      return;
-    }
+}
+
+function openGallery(index) { if (!modal || !galleryItems.length) {
+return; }
 
     galleryIndex = index;
 
@@ -813,10 +662,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.body.style.overflow =
       "hidden";
-  }
 
-  function closeGallery() {
-    if (!modal) return;
+}
+
+function closeGallery() { if (!modal) return;
 
     modal.classList.remove("active");
 
@@ -825,24 +674,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     document.body.style.overflow = "";
-  }
 
-  function nextGallery() {
-    if (!galleryItems.length) {
-      return;
-    }
+}
+
+function nextGallery() { if (!galleryItems.length) { return; }
 
     galleryIndex =
       (galleryIndex + 1) %
       galleryItems.length;
 
     renderGallery(galleryIndex);
-  }
 
-  function prevGallery() {
-    if (!galleryItems.length) {
-      return;
-    }
+}
+
+function prevGallery() { if (!galleryItems.length) { return; }
 
     galleryIndex =
       (
@@ -853,56 +698,25 @@ document.addEventListener("DOMContentLoaded", () => {
       galleryItems.length;
 
     renderGallery(galleryIndex);
-  }
 
-  updateGalleryItems();
+}
 
-  galleryItems.forEach((item, index) => {
-    item.addEventListener("click", () => {
-      openGallery(index);
-    });
-  });
+updateGalleryItems();
 
-  $("#galleryModalClose")
-    ?.addEventListener(
-      "click",
-      closeGallery
-    );
+galleryItems.forEach((item, index) => { item.addEventListener("click",
+() => { openGallery(index); }); });
 
-  $("#galleryNext")
-    ?.addEventListener(
-      "click",
-      nextGallery
-    );
+$("#galleryModalClose") ?.addEventListener( "click", closeGallery );
 
-  $("#galleryPrev")
-    ?.addEventListener(
-      "click",
-      prevGallery
-    );
+$("#galleryNext") ?.addEventListener( "click", nextGallery );
 
-  if (modal) {
-    modal.addEventListener(
-      "click",
-      (event) => {
-        if (event.target === modal) {
-          closeGallery();
-        }
-      }
-    );
-  }
+$("#galleryPrev") ?.addEventListener( "click", prevGallery );
 
-  document.addEventListener(
-    "keydown",
-    (event) => {
-      if (
-        !modal ||
-        !modal.classList.contains(
-          "active"
-        )
-      ) {
-        return;
-      }
+if (modal) { modal.addEventListener( "click", (event) => { if
+(event.target === modal) { closeGallery(); } } ); }
+
+document.addEventListener( "keydown", (event) => { if ( !modal ||
+!modal.classList.contains( "active" ) ) { return; }
 
       if (event.key === "Escape") {
         closeGallery();
@@ -916,14 +730,11 @@ document.addEventListener("DOMContentLoaded", () => {
         prevGallery();
       }
     }
-  );
 
-  function clearErrors(form) {
-    form
-      .querySelectorAll(".field-error")
-      .forEach((error) => {
-        error.remove();
-      });
+);
+
+function clearErrors(form) { form .querySelectorAll(".field-error")
+.forEach((error) => { error.remove(); });
 
     form
       .querySelectorAll(".field-invalid")
@@ -932,13 +743,10 @@ document.addEventListener("DOMContentLoaded", () => {
           "field-invalid"
         );
       });
-  }
 
-  function showFieldError(
-    field,
-    text
-  ) {
-    if (!field) return;
+}
+
+function showFieldError( field, text ) { if (!field) return;
 
     field.classList.add(
       "field-invalid"
@@ -958,10 +766,10 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     field.focus();
-  }
 
-  function validateForm(form) {
-    clearErrors(form);
+}
+
+function validateForm(form) { clearErrors(form);
 
     const fields = [
       {
@@ -1040,23 +848,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     return true;
-  }
 
-  function getChisinauWorkStatus() {
-    const parts =
-      new Intl.DateTimeFormat(
-        "en-GB",
-        {
-          timeZone:
-            "Europe/Chisinau",
-          weekday: "short",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false
-        }
-      ).formatToParts(
-        new Date()
-      );
+}
+
+function getChisinauWorkStatus() { const parts = new
+Intl.DateTimeFormat( "en-GB", { timeZone: "Europe/Chisinau", weekday:
+"short", hour: "2-digit", minute: "2-digit", hour12: false }
+).formatToParts( new Date() );
 
     const map =
       Object.fromEntries(
@@ -1091,14 +889,12 @@ document.addEventListener("DOMContentLoaded", () => {
       workingDay &&
       workingHours
     );
-  }
 
-  const workStatus =
-    $("#workStatus");
+}
 
-  if (workStatus) {
-    const open =
-      getChisinauWorkStatus();
+const workStatus = $("#workStatus");
+
+if (workStatus) { const open = getChisinauWorkStatus();
 
     workStatus.textContent =
       open
@@ -1109,14 +905,11 @@ document.addEventListener("DOMContentLoaded", () => {
       "is-open",
       open
     );
-  }
 
-  $$(".ajax-form").forEach(
-    (form) => {
-      form.setAttribute(
-        "novalidate",
-        "novalidate"
-      );
+}
+
+$$(".ajax-form").forEach( (form) => { form.setAttribute( "novalidate",
+"novalidate" );
 
       form.addEventListener(
         "input",
@@ -1221,28 +1014,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       );
     }
-  );
 
-  const aboutVisual =
-    document.querySelector(
-      "#aboutVisual img"
-    );
+);
 
-  if (
-    aboutVisual &&
-    !window
-      .matchMedia(
-        "(prefers-reduced-motion: reduce)"
-      )
-      .matches
-  ) {
-    window.addEventListener(
-      "scroll",
-      () => {
-        const box =
-          aboutVisual
-            .parentElement
-            .getBoundingClientRect();
+const aboutVisual = document.querySelector( "#aboutVisual img" );
+
+if ( aboutVisual && !window .matchMedia( "(prefers-reduced-motion: reduce)" ) .matches ) { window.addEventListener( "scroll", () => { const
+box = aboutVisual .parentElement .getBoundingClientRect();
 
         if (
           box.bottom > 0 &&
@@ -1270,18 +1048,12 @@ document.addEventListener("DOMContentLoaded", () => {
         passive: true
       }
     );
-  }
 
-  document
-    .querySelectorAll(
-      ".gmail-launch"
-    )
-    .forEach((link) => {
-      link.addEventListener(
-        "click",
-        (event) => {
-          const email =
-            link.dataset.email;
+}
+
+document .querySelectorAll( ".gmail-launch" ) .forEach((link) => {
+link.addEventListener( "click", (event) => { const email =
+link.dataset.email;
 
           if (!email) return;
 
@@ -1338,37 +1110,33 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       );
     });
+
 });
 
-/* =========================================================
-   ART LIFE DESIGN — BOTPRESS WEBCHAT
-   ---------------------------------------------------------
-   IMPORTANT:
-   - istoricul conversației este gestionat NATIV de Botpress;
-   - în Botpress: Conversation history = OFF;
-   - în Botpress: Chat history reset = After tab closed;
-   - NU folosim restartConversation();
-   - NU folosim localStorage/sessionStorage pentru conversație;
-   - NU forțăm userId / conversationId din JavaScript;
-   - launcher-ul și teaser-ul personalizat rămân neschimbate vizual.
-   ========================================================= */
+/* ========================================================= ART LIFE
+DESIGN — BOTPRESS WEBCHAT ——————————————————— IMPORTANT: - istoricul
+conversației este gestionat NATIV de Botpress; - în Botpress:
+Conversation history = OFF; - în Botpress: Chat history reset = After
+tab closed; - NU folosim restartConversation(); - NU folosim
+localStorage/sessionStorage pentru conversație; - NU forțăm userId /
+conversationId din JavaScript; - launcher-ul și teaser-ul personalizat
+rămân neschimbate vizual.
+========================================================= */
 
-(() => {
-  "use strict";
+(() => { "use strict";
 
-  const CLIENT_ID = "5f16efb4-a4db-46f0-a01b-df2f36f2f4a7";
-  const BOT_ID = "133db566-e14b-4bfb-bf62-c19460ad72d7";
+const CLIENT_ID = "5f16efb4-a4db-46f0-a01b-df2f36f2f4a7"; const BOT_ID =
+"133db566-e14b-4bfb-bf62-c19460ad72d7";
 
-  const TEASER_DELAY = 3200;
+const TEASER_DELAY = 3200;
 
-  let initialized = false;
-  let webchatOpen = false;
-  let teaserTimer = null;
+let initialized = false; let webchatOpen = false; let teaserTimer =
+null;
 
-  const prefersRussian = false;
+const prefersRussian = false;
 
-  function createLauncher() {
-    let launcher = document.getElementById("artlifeChatLauncher");
+function createLauncher() { let launcher =
+document.getElementById("artlifeChatLauncher");
 
     if (launcher) {
       return launcher;
@@ -1414,10 +1182,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     return launcher;
-  }
 
-  function createTeaser() {
-    let teaser = document.getElementById("artlifeChatTeaser");
+}
+
+function createTeaser() { let teaser =
+document.getElementById("artlifeChatTeaser");
 
     if (teaser) {
       return teaser;
@@ -1532,16 +1301,13 @@ document.addEventListener("DOMContentLoaded", () => {
     window.__artlifeHideChatTeaser = hide;
 
     return teaser;
-  }
 
-  function hideNativeLauncher() {
-    document.documentElement.classList.add("artlife-custom-chat");
-  }
+}
 
-  function initBotpress() {
-    if (initialized) {
-      return;
-    }
+function hideNativeLauncher() {
+document.documentElement.classList.add("artlife-custom-chat"); }
+
+function initBotpress() { if (initialized) { return; }
 
     if (
       !window.botpress ||
@@ -1560,11 +1326,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.botpress.on("webchat:initialized", async () => {
       /*
-        Trimitem doar limba preferată a browserului.
-        Aceasta NU controlează istoricul și NU creează o identitate persistentă.
+        Webchat initializat.
+        Limba conversatiei este controlata de Botpress in functie de utilizator.
+        Site-ul nu forteaza limba si nu trimite date personale.
       */
-      // User memory is disabled intentionally.
-      // No persistent user data is sent from the website.
 
       clearTimeout(teaserTimer);
 
@@ -1572,6 +1337,15 @@ document.addEventListener("DOMContentLoaded", () => {
         window.__artlifeShowChatTeaser?.();
       }, TEASER_DELAY);
     });
+
+    /*
+      Botpress ready event.
+      Conversatia ramane controlata de Botpress.
+      Nu trimitem mesaje automate din JavaScript pentru a evita:
+      - mesaje duplicate;
+      - aparitia START_CONVERSATION in chat;
+      - erori de tip user message.
+    */
 
     window.botpress.on("webchat:opened", () => {
       webchatOpen = true;
@@ -1613,47 +1387,34 @@ window.botpress.init({
         composerPlaceholder: "Scrieți mesajul..."
       }
     });
-  }
 
-  if (document.readyState === "loading") {
-    document.addEventListener(
-      "DOMContentLoaded",
-      initBotpress,
-      { once: true }
-    );
-  } else {
-    initBotpress();
-  }
-})();
+}
 
-/*
-IMPORTANT BOTPRESS SETTINGS:
+if (document.readyState === "loading") { document.addEventListener(
+"DOMContentLoaded", initBotpress, { once: true } ); } else {
+initBotpress(); } })();
 
-Pentru ca mesajul de start si butoanele sa apara imediat la deschiderea chatului:
+/* IMPORTANT BOTPRESS SETTINGS:
 
-1. Botpress -> Channels -> Webchat:
-   - Home page = OFF
+Pentru ca mesajul de start si butoanele sa apara imediat la deschiderea
+chatului:
 
-2. Service Menu trebuie sa fie primul playbook pornit automat.
+1.  Botpress -> Channels -> Webchat:
+    -   Home page = OFF
+2.  Service Menu trebuie sa fie primul playbook pornit automat.
 
-Primul mesaj:
-"Bună 👋 Sunt asistentul virtual Art Life Design.
+Primul mesaj: "Bună 👋 Sunt asistentul virtual Art Life Design.  Cu ce vă putem ajuta?"
 
-Cu ce vă putem ajuta?"
+Quick replies: - Am nevoie de o recomandare - Știu ce serviciu îmi
+trebuie - Vreau să discut cu un specialist
 
-Quick replies:
-- Am nevoie de o recomandare
-- Știu ce serviciu îmi trebuie
-- Vreau să discut cu un specialist
+3.  Limba:
 
-3. Limba:
-- pornirea este întotdeauna în română;
-- dacă utilizatorul scrie în rusă, playbook-ul continuă în rusă;
-- nu se folosește limba browserului.
+-   pornirea este întotdeauna în română;
+-   dacă utilizatorul scrie în rusă, playbook-ul continuă în rusă;
+-   nu se folosește limba browserului.
 
-4. Istoricul:
-Botpress -> Conversation history = OFF
-Chat history reset = After tab closed
+4.  Istoricul: Botpress -> Conversation history = OFF Chat history reset
+    = After tab closed
 
-Nu se folosește localStorage pentru controlul conversației.
-*/
+Nu se folosește localStorage pentru controlul conversației. */
