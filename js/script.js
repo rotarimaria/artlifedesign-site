@@ -1393,7 +1393,9 @@ window.botpress.init({
     botId: BOT_ID,
     clientId: CLIENT_ID,
 
-
+    conversation: {
+    reset: true
+      },
     configuration: {
         botName: "Art Life Design",
         botDescription: "Asistent virtual Art Life Design",
