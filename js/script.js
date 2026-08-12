@@ -1365,11 +1365,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let webchatOpen = false;
   let teaserTimer = null;
 
-  const browserLanguage =
-    (navigator.language || navigator.userLanguage || "ro")
-      .toLowerCase();
-
-  const prefersRussian = browserLanguage.startsWith("ru");
+  const prefersRussian = false;
 
   function createLauncher() {
     let launcher = document.getElementById("artlifeChatLauncher");
@@ -1595,43 +1591,11 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     });
 
-    // Force a fresh visitor session for every page load.
-// The website does not store Botpress identity locally.
-// A new anonymous visitor id is created every time.
-(function resetBotpressSession() {
-  try {
-    const storageKeys = [
-      ...Object.keys(localStorage),
-      ...Object.keys(sessionStorage)
-    ];
-
-    storageKeys.forEach((key) => {
-      const lower = key.toLowerCase();
-
-      if (
-        lower.includes("botpress") ||
-        lower.includes("webchat") ||
-        lower.includes("bp")
-      ) {
-        localStorage.removeItem(key);
-        sessionStorage.removeItem(key);
-      }
-    });
-  } catch (error) {
-    console.warn(
-      "Art Life Design / Botpress storage reset failed:",
-      error
-    );
-  }
-})();
-
-
 window.botpress.init({
 
     botId: BOT_ID,
     clientId: CLIENT_ID,
 
-    userId: "session-" + Date.now(),
 
     configuration: {
         botName: "Art Life Design",
@@ -1646,9 +1610,7 @@ window.botpress.init({
         themeMode: "light",
         fontFamily: "inter",
         radius: 2,
-        composerPlaceholder: prefersRussian
-          ? "Напишите сообщение..."
-          : "Scrieți mesajul..."
+        composerPlaceholder: "Scrieți mesajul..."
       }
     });
   }
@@ -1663,3 +1625,35 @@ window.botpress.init({
     initBotpress();
   }
 })();
+
+/*
+IMPORTANT BOTPRESS SETTINGS:
+
+Pentru ca mesajul de start si butoanele sa apara imediat la deschiderea chatului:
+
+1. Botpress -> Channels -> Webchat:
+   - Home page = OFF
+
+2. Service Menu trebuie sa fie primul playbook pornit automat.
+
+Primul mesaj:
+"Bună 👋 Sunt asistentul virtual Art Life Design.
+
+Cu ce vă putem ajuta?"
+
+Quick replies:
+- Am nevoie de o recomandare
+- Știu ce serviciu îmi trebuie
+- Vreau să discut cu un specialist
+
+3. Limba:
+- pornirea este întotdeauna în română;
+- dacă utilizatorul scrie în rusă, playbook-ul continuă în rusă;
+- nu se folosește limba browserului.
+
+4. Istoricul:
+Botpress -> Conversation history = OFF
+Chat history reset = After tab closed
+
+Nu se folosește localStorage pentru controlul conversației.
+*/
