@@ -1567,20 +1567,8 @@ document.addEventListener("DOMContentLoaded", () => {
         Trimitem doar limba preferată a browserului.
         Aceasta NU controlează istoricul și NU creează o identitate persistentă.
       */
-      if (typeof window.botpress.updateUser === "function") {
-        try {
-          await window.botpress.updateUser({
-            data: {
-              preferredLanguage: prefersRussian ? "ru" : "ro"
-            }
-          });
-        } catch (error) {
-          console.warn(
-            "Art Life Design / Botpress: limba browserului nu a putut fi transmisă.",
-            error
-          );
-        }
-      }
+      // User memory is disabled intentionally.
+      // No persistent user data is sent from the website.
 
       clearTimeout(teaserTimer);
 
@@ -1607,24 +1595,38 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     });
 
-    // Force new Botpress session on every website load
+    // Force a fresh visitor session for every page load.
+// The website does not store Botpress identity locally.
+// A new anonymous visitor id is created every time.
 (function resetBotpressSession() {
-    const keys = Object.keys(localStorage);
+  try {
+    const storageKeys = [
+      ...Object.keys(localStorage),
+      ...Object.keys(sessionStorage)
+    ];
 
-    keys.forEach((key) => {
-        if (
-            key.toLowerCase().includes("botpress") ||
-            key.toLowerCase().includes("bp")
-        ) {
-            localStorage.removeItem(key);
-        }
+    storageKeys.forEach((key) => {
+      const lower = key.toLowerCase();
+
+      if (
+        lower.includes("botpress") ||
+        lower.includes("webchat") ||
+        lower.includes("bp")
+      ) {
+        localStorage.removeItem(key);
+        sessionStorage.removeItem(key);
+      }
     });
-
-    sessionStorage.clear();
+  } catch (error) {
+    console.warn(
+      "Art Life Design / Botpress storage reset failed:",
+      error
+    );
+  }
 })();
 
 
-    window.botpress.init({
+window.botpress.init({
 
     botId: BOT_ID,
     clientId: CLIENT_ID,
