@@ -1347,6 +1347,29 @@ function initBotpress() { if (initialized) { return; }
       - erori de tip user message.
     */
 
+    window.botpress.on("webchat:ready", async () => {
+      /*
+        La fiecare încărcare a paginii pornim o conversație complet nouă.
+        Nu depindem de istoricul salvat anterior în browser.
+      */
+      if (window.__artlifeConversationResetDone) {
+        return;
+      }
+
+      window.__artlifeConversationResetDone = true;
+
+      try {
+        if (typeof window.botpress.restartConversation === "function") {
+          await window.botpress.restartConversation();
+        }
+      } catch (error) {
+        console.warn(
+          "Art Life Design / Botpress: conversația nu a putut fi resetată.",
+          error
+        );
+      }
+    });
+
     window.botpress.on("webchat:opened", () => {
       webchatOpen = true;
       launcher?.classList.add("is-hidden");
