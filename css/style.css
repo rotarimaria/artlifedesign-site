@@ -5202,3 +5202,180 @@ body.artlife-chat-resetting .bpWebchat {
     font-size: .68rem;
   }
 }
+
+
+/* =========================================================
+   MOBILE — LUCRĂRI RECENTE CA CAROUSEL
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  /*
+    Pe homepage, lucrările recente devin un carousel:
+    - 1 card aproape complet vizibil
+    - puțin din următorul card rămâne la vedere
+    - swipe / scroll orizontal
+    - snap natural între carduri
+    - JS-ul le schimbă automat la câteva secunde
+  */
+  #homeWorksGrid.mobile-recent-carousel {
+    display: flex !important;
+    grid-template-columns: none !important;
+    gap: 14px;
+    width: calc(100% + 18px);
+    margin-right: -18px;
+    padding: 2px 18px 12px 0;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 0;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  #homeWorksGrid.mobile-recent-carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  #homeWorksGrid.mobile-recent-carousel .work-card {
+    flex: 0 0 calc(88vw - 24px);
+    width: calc(88vw - 24px);
+    max-width: 390px;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    margin: 0;
+  }
+
+  #homeWorksGrid.mobile-recent-carousel .work-card:hover {
+    transform: none;
+  }
+
+  #homeWorksGrid.mobile-recent-carousel .work-img {
+    min-height: 240px;
+  }
+
+  #homeWorksGrid.mobile-recent-carousel .work-info {
+    min-height: 150px;
+  }
+
+  /*
+    Acțiunile cardului rămân curate, dar primesc puțin mai mult contrast
+    ca utilizatorul să înțeleagă imediat că sunt apăsabile.
+  */
+  #homeWorksGrid.mobile-recent-carousel .work-actions-double {
+    gap: 10px;
+    border-top: 0;
+    padding-top: 1rem;
+  }
+
+  #homeWorksGrid.mobile-recent-carousel .work-order-btn {
+    min-height: 42px;
+    padding: 0 .8rem !important;
+    border-radius: 12px !important;
+    justify-content: space-between !important;
+  }
+
+  #homeWorksGrid.mobile-recent-carousel .work-order-primary {
+    background: var(--green) !important;
+    border: 1px solid var(--green) !important;
+    color: #071006 !important;
+  }
+
+  #homeWorksGrid.mobile-recent-carousel .work-order-primary i {
+    color: #071006 !important;
+  }
+
+  #homeWorksGrid.mobile-recent-carousel .work-order-secondary {
+    background: rgba(247,244,235,.035) !important;
+    border: 1px solid rgba(247,244,235,.16) !important;
+    color: var(--white) !important;
+  }
+
+  #homeWorksGrid.mobile-recent-carousel .work-order-secondary::before {
+    display: none !important;
+  }
+
+  /*
+    Modal mobil:
+    scoatem contorul "2 / 4" și facem acțiunile principale
+    mai evidente decât navigarea între imagini.
+  */
+  .gallery-counter {
+    display: none !important;
+  }
+
+  .gallery-action-links {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    border-top: 0;
+    padding-top: 1rem;
+  }
+
+  .gallery-action-link {
+    min-height: 44px;
+    padding: 0 .85rem;
+    border-radius: 12px;
+    justify-content: space-between;
+  }
+
+  .gallery-action-primary {
+    background: var(--green);
+    border: 1px solid var(--green);
+    color: #071006;
+  }
+
+  .gallery-action-primary i {
+    color: #071006;
+  }
+
+  .gallery-action-secondary {
+    background: rgba(247,244,235,.035);
+    border: 1px solid rgba(247,244,235,.16);
+    color: var(--white);
+  }
+
+  /*
+    Navigarea între lucrări rămâne dedesubt, dar fără contor central.
+  */
+  .gallery-inline-nav {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: .45rem;
+    padding-top: .75rem;
+  }
+
+  .gallery-inline-btn {
+    min-height: 42px;
+    padding: 0 .72rem;
+    border: 1px solid rgba(247,244,235,.10);
+    border-radius: 11px;
+    background: rgba(247,244,235,.018);
+    color: rgba(247,244,235,.72);
+  }
+
+  .gallery-inline-btn:first-child {
+    justify-self: stretch;
+    justify-content: flex-start;
+  }
+
+  .gallery-inline-btn:last-child {
+    justify-self: stretch;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 420px) {
+  #homeWorksGrid.mobile-recent-carousel .work-card {
+    flex-basis: calc(91vw - 24px);
+    width: calc(91vw - 24px);
+  }
+
+  .gallery-inline-btn span {
+    display: inline !important;
+  }
+
+  .gallery-inline-btn {
+    font-size: .72rem !important;
+  }
+}

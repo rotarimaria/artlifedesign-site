@@ -410,6 +410,153 @@ document.addEventListener("DOMContentLoaded", () => {
     homeGrid.innerHTML = works.slice(0, 4).map((work) => workCard(work, true)).join("");
   }
 
+
+  function initMobileRecentWorksCarousel() {
+    const grid = $("#homeWorksGrid");
+    if (!grid) return;
+
+    const mobileQuery = window.matchMedia("(max-width: 760px)");
+    let autoplayId = null;
+    let resumeId = null;
+    let currentIndex = 0;
+    let isPointerDown = false;
+
+    function cards() {
+      return [...grid.querySelectorAll(".work-card")];
+    }
+
+    function cardStep() {
+      const first = cards()[0];
+      if (!first) return 0;
+
+      const gridStyle = getComputedStyle(grid);
+      const gap = parseFloat(gridStyle.columnGap || gridStyle.gap) || 14;
+
+      return first.getBoundingClientRect().width + gap;
+    }
+
+    function nearestIndex() {
+      const step = cardStep();
+      if (!step) return 0;
+
+      return Math.max(
+        0,
+        Math.min(
+          cards().length - 1,
+          Math.round(grid.scrollLeft / step)
+        )
+      );
+    }
+
+    function goTo(index, behavior = "smooth") {
+      const items = cards();
+      if (!items.length) return;
+
+      currentIndex = (index + items.length) % items.length;
+
+      items[currentIndex].scrollIntoView({
+        behavior,
+        block: "nearest",
+        inline: "start"
+      });
+    }
+
+    function stopAutoplay() {
+      if (autoplayId) {
+        clearInterval(autoplayId);
+        autoplayId = null;
+      }
+    }
+
+    function startAutoplay() {
+      stopAutoplay();
+
+      if (!mobileQuery.matches || document.hidden) return;
+
+      autoplayId = setInterval(() => {
+        const items = cards();
+        if (items.length < 2 || isPointerDown) return;
+
+        currentIndex = nearestIndex();
+        goTo(currentIndex + 1);
+      }, 4200);
+    }
+
+    function pauseAndResume() {
+      stopAutoplay();
+
+      if (resumeId) clearTimeout(resumeId);
+
+      resumeId = setTimeout(() => {
+        currentIndex = nearestIndex();
+        startAutoplay();
+      }, 5500);
+    }
+
+    function syncMode() {
+      if (mobileQuery.matches) {
+        grid.classList.add("mobile-recent-carousel");
+        currentIndex = nearestIndex();
+        startAutoplay();
+      } else {
+        grid.classList.remove("mobile-recent-carousel");
+        stopAutoplay();
+      }
+    }
+
+    grid.addEventListener("scroll", () => {
+      if (!mobileQuery.matches) return;
+
+      currentIndex = nearestIndex();
+    }, { passive: true });
+
+    grid.addEventListener("pointerdown", () => {
+      if (!mobileQuery.matches) return;
+
+      isPointerDown = true;
+      stopAutoplay();
+    }, { passive: true });
+
+    window.addEventListener("pointerup", () => {
+      if (!mobileQuery.matches) return;
+
+      isPointerDown = false;
+      pauseAndResume();
+    }, { passive: true });
+
+    grid.addEventListener("touchstart", pauseAndResume, { passive: true });
+    grid.addEventListener("wheel", pauseAndResume, { passive: true });
+
+    grid.addEventListener("click", (event) => {
+      if (!mobileQuery.matches) return;
+
+      if (
+        event.target.closest("a") ||
+        event.target.closest(".gallery-item")
+      ) {
+        pauseAndResume();
+      }
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        stopAutoplay();
+      } else {
+        startAutoplay();
+      }
+    });
+
+    if (mobileQuery.addEventListener) {
+      mobileQuery.addEventListener("change", syncMode);
+    } else {
+      mobileQuery.addListener(syncMode);
+    }
+
+    syncMode();
+  }
+
+  initMobileRecentWorksCarousel();
+
   if (portfolioGrid) {
     portfolioGrid.innerHTML = works.map((work) => workCard(work)).join("");
   }
