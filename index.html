@@ -244,6 +244,18 @@
   }
 </style>
 
+
+  <!-- Art Life Design: protecție desktop pentru ca Webchat-ul să nu acopere meniul -->
+  <style>
+    @media (min-width: 769px) {
+      html.artlife-chat-below-nav .bpWebchat,
+      html.artlife-chat-below-nav .bpContainer {
+        top: var(--artlife-chat-safe-top, 96px) !important;
+        max-height: calc(100dvh - var(--artlife-chat-safe-top, 96px) - 16px) !important;
+      }
+    }
+  </style>
+
 </head>
 
 
@@ -1808,6 +1820,97 @@
        SITE JAVASCRIPT
        ========================================================= -->
   <script src="js/script.js"></script>
+
+
+  <script>
+    /*
+      Pe desktop, mută Webchat-ul sub navbar NUMAI dacă s-ar suprapune peste meniu.
+      Pe telefon/tabletă mică nu modifică poziția sau înălțimea chatului.
+    */
+    (() => {
+      const DESKTOP_MIN_WIDTH = 769;
+      const GAP = 12;
+
+      function findNavbar() {
+        return (
+          document.getElementById("navbarTop") ||
+          document.querySelector("header") ||
+          document.querySelector(".navbar")
+        );
+      }
+
+      function findChatElement() {
+        return (
+          document.querySelector(".bpWebchat") ||
+          document.querySelector(".bpContainer")
+        );
+      }
+
+      function updateChatPosition() {
+        const root = document.documentElement;
+
+        if (window.innerWidth < DESKTOP_MIN_WIDTH) {
+          root.classList.remove("artlife-chat-below-nav");
+          root.style.removeProperty("--artlife-chat-safe-top");
+          return;
+        }
+
+        const navbar = findNavbar();
+        const chat = findChatElement();
+
+        if (!navbar || !chat) {
+          root.classList.remove("artlife-chat-below-nav");
+          return;
+        }
+
+        const navRect = navbar.getBoundingClientRect();
+        const chatRect = chat.getBoundingClientRect();
+        const safeTop = Math.ceil(navRect.bottom + GAP);
+
+        /*
+          Activăm corecția doar dacă partea de sus a chatului intră
+          în zona meniului. Dacă nu există suprapunere, păstrăm
+          designul implicit Botpress.
+        */
+        if (chatRect.top < safeTop) {
+          root.style.setProperty(
+            "--artlife-chat-safe-top",
+            `${safeTop}px`
+          );
+          root.classList.add("artlife-chat-below-nav");
+        } else {
+          root.classList.remove("artlife-chat-below-nav");
+          root.style.removeProperty("--artlife-chat-safe-top");
+        }
+      }
+
+      let rafId = 0;
+
+      function scheduleUpdate() {
+        cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(updateChatPosition);
+      }
+
+      window.addEventListener("resize", scheduleUpdate, { passive: true });
+      window.addEventListener("load", scheduleUpdate, { once: true });
+
+      const observer = new MutationObserver(scheduleUpdate);
+
+      observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["class", "style"]
+      });
+
+      document.addEventListener("click", () => {
+        window.setTimeout(scheduleUpdate, 50);
+        window.setTimeout(scheduleUpdate, 250);
+      });
+
+      scheduleUpdate();
+    })();
+  </script>
 
 </body>
 </html>
