@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Litere în volum & Standuri",
       category: "volum",
       image: "images/BonjourLightBox.jpg",
+      focus: "48% 45%",
       images: [
         "images/BonjourLightBox.jpg",
         "images/litere_volum1.jpg",
@@ -21,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "P.O.S.M.",
       category: "posm",
       image: "images/box.jpg",
+      focus: "52% 58%",
       images: [
         "images/box.jpg"
       ],
@@ -34,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Branding Auto",
       category: "auto",
       image: "images/brand_auto1.jpg",
+      focus: "52% 50%",
       images: [
         "images/brand_auto1.jpg",
         "images/brand_auto2.jpg",
@@ -49,6 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Branding Auto",
       category: "auto",
       image: "images/brand_auto2.jpg",
+      focus: "50% 50%",
       images: [
         "images/brand_auto2.jpg",
         "images/brand_auto1.jpg"
@@ -63,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "P.O.S.M.",
       category: "posm",
       image: "images/cub-sticla.jpg",
+      focus: "50% 52%",
       images: [
         "images/cub-sticla.jpg",
         "images/cub-sticla0.jpg",
@@ -79,6 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "P.O.S.M.",
       category: "posm",
       image: "images/cub-sticla0.jpg",
+      focus: "50% 52%",
       images: [
         "images/cub-sticla0.jpg",
         "images/cub-sticla.jpg"
@@ -93,6 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Poligrafie",
       category: "poligrafie",
       image: "images/fise_pret.jpg",
+      focus: "50% 50%",
       images: [
         "images/fise_pret.jpg",
         "images/inghetata_uv.jpg",
@@ -108,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Litere în volum & Standuri",
       category: "volum",
       image: "images/good-break.jpg",
+      focus: "50% 48%",
       images: [
         "images/good-break.jpg"
       ],
@@ -121,6 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Poligrafie",
       category: "poligrafie",
       image: "images/inghetata_uv.jpg",
+      focus: "50% 50%",
       images: [
         "images/inghetata_uv.jpg",
         "images/inghetata-uv1.jpg"
@@ -135,6 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Poligrafie",
       category: "poligrafie",
       image: "images/inghetata-uv1.jpg",
+      focus: "50% 50%",
       images: [
         "images/inghetata-uv1.jpg",
         "images/inghetata_uv.jpg",
@@ -151,6 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Litere în volum & Standuri",
       category: "volum",
       image: "images/litere_volum1.jpg",
+      focus: "50% 48%",
       images: [
         "images/litere_volum1.jpg",
         "images/litere_volum2.jpg",
@@ -166,6 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Litere în volum & Standuri",
       category: "volum",
       image: "images/litere_volum2.jpg",
+      focus: "50% 48%",
       images: [
         "images/litere_volum2.jpg",
         "images/litere_volum1.jpg"
@@ -180,6 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Litere în volum & Standuri",
       category: "volum",
       image: "images/litere_volum3.jpg",
+      focus: "50% 48%",
       images: [
         "images/litere_volum3.jpg"
       ],
@@ -193,6 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Branding Auto",
       category: "auto",
       image: "images/lux-tavene.jpg",
+      focus: "50% 50%",
       images: [
         "images/lux-tavene.jpg",
         "images/brand_auto1.jpg",
@@ -208,6 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Poligrafie",
       category: "poligrafie",
       image: "images/plotter-2.jpg",
+      focus: "50% 50%",
       images: [
         "images/plotter-2.jpg",
         "images/fise_pret.jpg"
@@ -377,6 +392,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <button
             class="work-img gallery-item"
             type="button"
+            style="--card-focus:${work.focus || "50% 50%"};"
             data-category="${work.category}"
             data-full="${work.image}"
             data-images="${encodedImages}"
@@ -442,6 +458,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <button
           class="portfolio-media gallery-item"
           type="button"
+          style="--card-focus:${work.focus || "50% 50%"};"
           data-category="${work.category}"
           data-full="${work.image}"
           data-images="${encodedImages}"

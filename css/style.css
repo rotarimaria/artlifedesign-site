@@ -8379,3 +8379,272 @@ body.gallery-open {
     max-height: 250px !important;
   }
 }
+
+
+/* =========================================================
+   V15 — CARDURI CA LA ÎNCEPUT: COVER + FOCUS CONTROLAT
+   ========================================================= */
+
+/*
+  IMPORTANT:
+  Acest bloc se aplică doar imaginilor din CARDURI.
+  Modalul deschis rămâne cu imaginea completă (contain).
+*/
+
+/* ---------------------------------------------------------
+   PAGINA LUCRĂRI
+   --------------------------------------------------------- */
+
+.portfolio-card {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+
+  background: #0b0f0c !important;
+}
+
+.portfolio-media {
+  width: 100% !important;
+
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+
+  flex: none !important;
+
+  aspect-ratio: 4 / 3 !important;
+
+  display: block !important;
+
+  overflow: hidden !important;
+
+  background: #000 !important;
+}
+
+.portfolio-media > img {
+  position: absolute !important;
+  inset: 0 !important;
+
+  display: block !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  min-width: 100% !important;
+  min-height: 100% !important;
+
+  max-width: none !important;
+  max-height: none !important;
+
+  object-fit: cover !important;
+
+  /*
+    Poziția poate fi diferită pentru fiecare proiect.
+    Exemplu: 48% 45%, 60% 50% etc.
+  */
+  object-position: var(--card-focus, 50% 50%) !important;
+
+  margin: 0 !important;
+
+  transform: scale(1.002) !important;
+  filter: none !important;
+
+  transition: transform .35s ease !important;
+}
+
+.portfolio-media:hover > img,
+.portfolio-media:focus-visible > img {
+  transform: scale(1.025) !important;
+}
+
+
+/* Conținutul cardului revine la dimensiune naturală */
+.portfolio-content {
+  height: auto !important;
+  min-height: 170px !important;
+  max-height: none !important;
+
+  flex: 1 !important;
+
+  padding: 1rem 1rem .9rem !important;
+}
+
+.portfolio-content > small {
+  font-size: .78rem !important;
+}
+
+.portfolio-content h3 {
+  font-size: 1.18rem !important;
+}
+
+
+/* ---------------------------------------------------------
+   HOMEPAGE — LUCRĂRI
+   --------------------------------------------------------- */
+
+.work-card .work-img {
+  width: 100% !important;
+
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+
+  aspect-ratio: 16 / 10 !important;
+
+  display: block !important;
+
+  overflow: hidden !important;
+
+  background: #000 !important;
+}
+
+.work-card .work-img > img {
+  position: absolute !important;
+  inset: 0 !important;
+
+  display: block !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  min-width: 100% !important;
+  min-height: 100% !important;
+
+  max-width: none !important;
+  max-height: none !important;
+
+  object-fit: cover !important;
+  object-position: var(--card-focus, 50% 50%) !important;
+
+  margin: 0 !important;
+
+  transform: scale(1.002) !important;
+
+  transition: transform .35s ease !important;
+}
+
+.work-card .work-img:hover > img {
+  transform: scale(1.025) !important;
+}
+
+
+/* ---------------------------------------------------------
+   DESKTOP: 4 carduri / rând
+   --------------------------------------------------------- */
+
+@media (min-width: 1181px) {
+  .portfolio-grid {
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr)) !important;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   LAPTOP: 3 carduri / rând
+   --------------------------------------------------------- */
+
+@media (max-width: 1180px) and (min-width: 861px) {
+  .portfolio-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   TELEFON / TABLETĂ MICĂ: 2 carduri
+   --------------------------------------------------------- */
+
+@media (max-width: 860px) {
+  .portfolio-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr)) !important;
+
+    gap: 10px !important;
+  }
+
+  .portfolio-media {
+    aspect-ratio: 1 / 1 !important;
+  }
+
+  .portfolio-content {
+    min-height: 132px !important;
+
+    padding: .72rem !important;
+  }
+
+  .portfolio-content > small {
+    font-size: .64rem !important;
+  }
+
+  .portfolio-content h3 {
+    font-size: .94rem !important;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   HOMEPAGE CAROUSEL MOBIL
+   2 carduri simultan, crop controlat
+   --------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  #homeWorksGrid.mobile-two-card-carousel .work-card {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-img {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+
+    flex: none !important;
+
+    aspect-ratio: 1 / 1 !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-img > img {
+    width: 100% !important;
+    height: 100% !important;
+
+    object-fit: cover !important;
+    object-position: var(--card-focus, 50% 50%) !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-info {
+    min-height: 118px !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-info h3 {
+    font-size: .9rem !important;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   MODALUL RĂMÂNE CU POZA COMPLETĂ
+   Acest override are prioritate față de cardurile de mai sus.
+   --------------------------------------------------------- */
+
+.gallery-image-stage > img,
+#galleryModalImage {
+  position: static !important;
+
+  width: auto !important;
+  height: auto !important;
+
+  min-width: 0 !important;
+  min-height: 0 !important;
+
+  max-width: 100% !important;
+  max-height: 100% !important;
+
+  object-fit: contain !important;
+  object-position: center center !important;
+
+  margin: auto !important;
+
+  transform: none !important;
+}
