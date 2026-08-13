@@ -4623,11 +4623,11 @@ body.artlife-chat-resetting .bpWebchat {
 
 /* =========================================================
    HOMEPAGE — CARDURI LUCRĂRI
-   Fără descriere + footer compact cu 2 acțiuni
+   Fără descriere + acțiuni discrete tip link
    ========================================================= */
 
 .work-card .work-info {
-  padding: 1.25rem 1.25rem 1.1rem;
+  padding: 1.25rem 1.25rem 1rem;
 }
 
 .work-card .work-info > small {
@@ -4645,96 +4645,125 @@ body.artlife-chat-resetting .bpWebchat {
 }
 
 /*
-  Acțiunile nu mai sunt două "pastile" mari una sub alta.
-  Sunt un footer compact, cu două zone egale.
+  Acțiunile nu mai arată ca butoane.
+  Sunt două linkuri simple, separate printr-o linie fină.
 */
 .work-card .work-actions-double {
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: .55rem;
+  align-items: center;
+  gap: 0;
   margin-top: auto;
-  padding-top: 1.2rem;
+  padding-top: 1.05rem;
+  border-top: 1px solid rgba(247,244,235,.10);
 }
 
 .work-card .work-actions-double .work-order-btn {
-  min-width: 0;
-  min-height: 46px;
-  padding: 0 .85rem;
-  border-radius: 13px;
+  min-height: 0;
+  padding: .82rem 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: .6rem;
-  font-size: .78rem;
+  gap: .45rem;
+  font-size: .8rem;
   font-weight: 800;
   line-height: 1;
-  white-space: nowrap;
   transition:
-    background var(--speed),
-    border-color var(--speed),
     color var(--speed),
-    transform var(--speed);
+    opacity var(--speed);
 }
 
-/* CTA principal — verde discret, nu bloc neon masiv */
+/* Primul link — principal, verde */
 .work-card .work-order-primary {
-  background: rgba(146,255,34,.10);
-  border: 1px solid rgba(146,255,34,.32);
+  justify-content: flex-start;
   color: var(--green);
 }
 
 .work-card .work-order-primary i {
   color: var(--green);
+  transition: transform var(--speed);
 }
 
-.work-card .work-order-primary:hover {
-  background: rgba(146,255,34,.16);
-  border-color: rgba(146,255,34,.58);
-  color: var(--green);
-  transform: translateY(-1px);
-}
-
-/* CTA secundar — foarte curat */
+/* Al doilea link — secundar, alb/gri */
 .work-card .work-order-secondary {
-  background: rgba(247,244,235,.025);
-  border: 1px solid rgba(247,244,235,.12);
-  color: rgba(247,244,235,.82);
+  justify-content: flex-end;
+  color: rgba(247,244,235,.74);
 }
 
 .work-card .work-order-secondary i {
-  color: rgba(247,244,235,.62);
+  color: rgba(247,244,235,.48);
+  transition: transform var(--speed);
+}
+
+.work-card .work-order-primary:hover {
+  background: transparent;
+  border: 0;
+  color: var(--white);
+  transform: none;
+}
+
+.work-card .work-order-primary:hover i {
+  color: var(--green);
+  transform: translate(3px,-2px);
 }
 
 .work-card .work-order-secondary:hover {
-  background: rgba(247,244,235,.045);
-  border-color: rgba(247,244,235,.22);
+  background: transparent;
+  border: 0;
   color: var(--white);
-  transform: translateY(-1px);
+  transform: none;
 }
 
-.work-card .work-actions-double .work-order-btn:hover i {
-  transform: translate(2px,-2px);
+.work-card .work-order-secondary:hover i {
+  color: var(--green);
+  transform: translate(3px,-2px);
 }
 
-/* Pe ecrane foarte înguste rămân tot una lângă alta,
-   dar reducem puțin fontul și padding-ul. */
+/* Separator foarte discret între cele două acțiuni */
+.work-card .work-order-secondary {
+  position: relative;
+}
+
+.work-card .work-order-secondary::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1px;
+  height: 18px;
+  background: rgba(247,244,235,.10);
+  transform: translateY(-50%);
+}
+
+/* Pe mobil păstrăm totul compact și lizibil */
 @media (max-width: 520px) {
-  .work-card .work-actions-double {
-    gap: .45rem;
+  .work-card .work-info {
+    padding: 1rem 1rem .85rem;
   }
 
   .work-card .work-actions-double .work-order-btn {
-    min-height: 44px;
-    padding: 0 .7rem;
-    font-size: .73rem;
-    border-radius: 12px;
+    font-size: .75rem;
+    padding: .78rem 0;
   }
 }
 
-/* Dacă viewport-ul devine extrem de îngust, evităm înghesuirea. */
 @media (max-width: 360px) {
   .work-card .work-actions-double {
     grid-template-columns: 1fr;
+  }
+
+  .work-card .work-order-secondary {
+    justify-content: flex-start;
+  }
+
+  .work-card .work-order-secondary::before {
+    display: none;
+  }
+
+  .work-card .work-order-secondary {
+    border-top: 1px solid rgba(247,244,235,.08);
   }
 }
