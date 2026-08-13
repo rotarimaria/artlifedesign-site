@@ -5379,3 +5379,849 @@ body.artlife-chat-resetting .bpWebchat {
     font-size: .72rem !important;
   }
 }
+
+
+/* =========================================================
+   V7 — PROIECTE / GALERIE SIMPLĂ ȘI RESPONSIVE
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   HOMEPAGE: fără carousel pe mobil
+   --------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  #homeWorksGrid,
+  #homeWorksGrid.mobile-recent-carousel {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+
+    overflow: visible !important;
+
+    scroll-snap-type: none !important;
+  }
+
+  #homeWorksGrid .work-card,
+  #homeWorksGrid.mobile-recent-carousel .work-card {
+    width: 100% !important;
+    max-width: none !important;
+    flex: none !important;
+    scroll-snap-align: none !important;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   MODAL — structură generală
+   --------------------------------------------------------- */
+
+body.gallery-open {
+  overflow: hidden;
+}
+
+.gallery-modal {
+  position: fixed;
+  inset: 0;
+
+  z-index: 10000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 36px 74px;
+
+  background: rgba(0, 0, 0, .88);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transition:
+    opacity .22s ease,
+    visibility .22s ease;
+}
+
+.gallery-modal.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.gallery-box {
+  position: relative;
+
+  width: min(1120px, 100%);
+  max-height: min(820px, calc(100dvh - 72px));
+
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.45fr)
+    minmax(300px, .55fr);
+
+  overflow: hidden;
+
+  border: 1px solid rgba(247, 244, 235, .12);
+  border-radius: 22px;
+
+  background: #0b0f0c;
+
+  box-shadow:
+    0 40px 110px rgba(0, 0, 0, .48);
+}
+
+
+/* ---------------------------------------------------------
+   COLONĂ MEDIA
+   --------------------------------------------------------- */
+
+.gallery-media-column {
+  min-width: 0;
+
+  padding: 22px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  background: #070907;
+}
+
+.gallery-image-stage {
+  position: relative;
+
+  min-width: 0;
+  min-height: 0;
+
+  flex: 1;
+
+  display: grid;
+  place-items: center;
+
+  overflow: hidden;
+
+  border-radius: 15px;
+
+  background: #020302;
+}
+
+.gallery-image-stage > img {
+  width: 100%;
+  height: 100%;
+
+  max-height: 610px;
+
+  object-fit: contain;
+
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+
+/* săgeți pentru fotografiile ACELEIAȘI lucrări */
+
+.gallery-photo-nav {
+  position: absolute;
+  top: 50%;
+
+  width: 42px;
+  height: 42px;
+
+  transform: translateY(-50%);
+
+  border: 1px solid rgba(247, 244, 235, .17);
+  border-radius: 50%;
+
+  background: rgba(5, 7, 6, .78);
+
+  color: var(--white);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  transition:
+    background var(--speed),
+    border-color var(--speed),
+    color var(--speed);
+}
+
+.gallery-photo-nav[hidden] {
+  display: none !important;
+}
+
+.gallery-photo-prev {
+  left: 12px;
+}
+
+.gallery-photo-next {
+  right: 12px;
+}
+
+.gallery-photo-nav:hover {
+  border-color: rgba(146, 255, 34, .38);
+  background: rgba(8, 12, 9, .94);
+  color: var(--green);
+}
+
+
+/* ---------------------------------------------------------
+   THUMBNAILS
+   Prima miniatură = imaginea principală a proiectului.
+   --------------------------------------------------------- */
+
+.gallery-thumbs {
+  display: flex;
+  gap: 8px;
+
+  min-height: 72px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  padding: 1px;
+
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.gallery-thumbs::-webkit-scrollbar {
+  display: none;
+}
+
+.gallery-thumbs[hidden] {
+  display: none !important;
+}
+
+.gallery-thumb {
+  flex: 0 0 105px;
+
+  height: 72px;
+
+  padding: 0;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(247, 244, 235, .12);
+  border-radius: 10px;
+
+  background: #050705;
+
+  opacity: .62;
+
+  transition:
+    opacity var(--speed),
+    border-color var(--speed),
+    transform var(--speed);
+}
+
+.gallery-thumb img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.gallery-thumb:hover {
+  opacity: .88;
+}
+
+.gallery-thumb.active {
+  opacity: 1;
+
+  border-color: var(--green);
+
+  box-shadow:
+    0 0 0 1px rgba(146, 255, 34, .12);
+}
+
+
+/* ---------------------------------------------------------
+   DETALII PROIECT
+   --------------------------------------------------------- */
+
+.gallery-details {
+  min-width: 0;
+
+  padding: 42px 30px 30px;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow-y: auto;
+}
+
+.gallery-service {
+  display: block;
+
+  margin-bottom: .75rem;
+
+  color: var(--green);
+
+  font-size: .77rem;
+  font-weight: 800;
+  letter-spacing: .03em;
+}
+
+.gallery-details h3 {
+  margin: 0 0 1rem;
+
+  font-size: clamp(1.65rem, 2.5vw, 2.4rem);
+  line-height: 1.06;
+
+  letter-spacing: -.045em;
+}
+
+.gallery-meta {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+
+  margin-bottom: 1.2rem;
+
+  color: rgba(247, 244, 235, .52);
+
+  font-size: .8rem;
+}
+
+.gallery-meta i {
+  color: rgba(247, 244, 235, .42);
+}
+
+.gallery-description {
+  margin: 0;
+
+  color: rgba(247, 244, 235, .72);
+
+  font-size: .94rem;
+  line-height: 1.7;
+}
+
+.gallery-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+
+  margin-top: 1rem;
+}
+
+.gallery-tags span {
+  padding: .34rem .55rem;
+
+  border: 1px solid rgba(146, 255, 34, .18);
+  border-radius: 999px;
+
+  background: rgba(146, 255, 34, .055);
+
+  color: rgba(247, 244, 235, .68);
+
+  font-size: .68rem;
+  font-weight: 700;
+}
+
+.gallery-order-simple {
+  width: 100%;
+
+  margin-top: auto;
+  padding: 1rem 0 .35rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  border-top: 1px solid rgba(247, 244, 235, .10);
+
+  color: var(--green);
+
+  font-size: .82rem;
+  font-weight: 800;
+}
+
+.gallery-order-simple i {
+  transition: transform var(--speed);
+}
+
+.gallery-order-simple:hover i {
+  transform: translate(3px, -3px);
+}
+
+.gallery-project-hint {
+  margin: .7rem 0 0 !important;
+
+  color: rgba(247, 244, 235, .32) !important;
+
+  font-size: .68rem !important;
+  line-height: 1.4 !important;
+}
+
+
+/* ---------------------------------------------------------
+   ÎNCHIDERE
+   --------------------------------------------------------- */
+
+.gallery-close {
+  position: absolute;
+
+  top: 12px;
+  right: 12px;
+
+  z-index: 8;
+
+  width: 42px;
+  height: 42px;
+
+  border: 1px solid rgba(247, 244, 235, .12);
+  border-radius: 50%;
+
+  background: rgba(5, 7, 6, .68);
+
+  color: var(--white);
+
+  font-size: 1.45rem;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.gallery-close:hover {
+  color: var(--green);
+  border-color: rgba(146, 255, 34, .28);
+}
+
+
+/* ---------------------------------------------------------
+   SĂGEȚI EXTERIOARE = schimbă PROIECTUL
+   --------------------------------------------------------- */
+
+.gallery-nav {
+  position: fixed;
+
+  top: 50%;
+
+  z-index: 10004;
+
+  width: 48px;
+  height: 48px;
+
+  transform: translateY(-50%);
+
+  border: 1px solid rgba(247, 244, 235, .16);
+  border-radius: 50%;
+
+  background: rgba(8, 11, 9, .84);
+
+  color: rgba(247, 244, 235, .88);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  transition:
+    color var(--speed),
+    border-color var(--speed),
+    transform var(--speed);
+}
+
+.gallery-prev {
+  left: 18px;
+}
+
+.gallery-next {
+  right: 18px;
+}
+
+.gallery-nav:hover {
+  color: var(--green);
+  border-color: rgba(146, 255, 34, .35);
+}
+
+.gallery-prev:hover {
+  transform: translate(-2px, -50%);
+}
+
+.gallery-next:hover {
+  transform: translate(2px, -50%);
+}
+
+
+/* ---------------------------------------------------------
+   PAGINA LUCRĂRI — carduri simple
+   --------------------------------------------------------- */
+
+.portfolio-grid {
+  columns: initial !important;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 18px;
+}
+
+.portfolio-card {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  min-width: 0;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(247, 244, 235, .11);
+  border-radius: 19px;
+
+  background: #0b0f0c;
+
+  transition:
+    border-color .25s ease,
+    transform .25s ease;
+}
+
+.portfolio-card:hover {
+  transform: translateY(-2px);
+
+  border-color: rgba(146, 255, 34, .22);
+}
+
+.portfolio-media {
+  position: relative;
+
+  aspect-ratio: 4 / 3;
+
+  overflow: hidden;
+}
+
+.portfolio-media img {
+  width: 100%;
+  height: 100% !important;
+
+  object-fit: cover;
+
+  transition: transform .35s ease;
+}
+
+.portfolio-media:hover img {
+  transform: scale(1.025);
+}
+
+.portfolio-media-overlay {
+  position: absolute;
+  inset: auto 0 0;
+
+  padding: 2.8rem 1rem .9rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      rgba(5, 7, 6, .84)
+    );
+
+  color: var(--white);
+
+  font-size: .75rem;
+  font-weight: 800;
+
+  opacity: 0;
+
+  transition: opacity var(--speed);
+}
+
+.portfolio-media:hover .portfolio-media-overlay {
+  opacity: 1;
+}
+
+.portfolio-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  padding: 1rem;
+}
+
+.portfolio-content > small {
+  color: var(--green);
+
+  font-size: .7rem;
+  font-weight: 800;
+}
+
+.portfolio-content h3 {
+  margin: .3rem 0 0;
+
+  font-size: 1.12rem;
+  line-height: 1.2;
+}
+
+.portfolio-content > p {
+  display: none !important;
+}
+
+.portfolio-card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  margin-top: auto;
+  padding-top: .9rem;
+
+  border-top: 1px solid rgba(247, 244, 235, .09);
+}
+
+.portfolio-action {
+  min-width: 0;
+
+  padding: .7rem 0;
+
+  border: 0;
+  background: transparent;
+
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+
+  color: rgba(247, 244, 235, .68);
+
+  font-size: .74rem;
+  font-weight: 800;
+}
+
+.portfolio-action-primary {
+  justify-content: flex-start;
+
+  color: var(--green);
+}
+
+.portfolio-action-secondary {
+  justify-content: flex-end;
+}
+
+.portfolio-action i {
+  transition: transform var(--speed);
+}
+
+.portfolio-action:hover {
+  color: var(--white);
+}
+
+.portfolio-action:hover i {
+  color: var(--green);
+
+  transform: translate(3px, -2px);
+}
+
+
+/* ---------------------------------------------------------
+   TABLETĂ
+   --------------------------------------------------------- */
+
+@media (max-width: 1050px) {
+  .portfolio-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .gallery-modal {
+    padding: 28px 62px;
+  }
+
+  .gallery-box {
+    grid-template-columns:
+      minmax(0, 1.15fr)
+      minmax(260px, .85fr);
+  }
+
+  .gallery-media-column {
+    padding: 16px;
+  }
+
+  .gallery-details {
+    padding: 36px 24px 24px;
+  }
+
+  .gallery-thumb {
+    flex-basis: 88px;
+
+    height: 62px;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   MOBIL
+   --------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .portfolio-grid {
+    grid-template-columns: 1fr;
+
+    gap: 14px;
+  }
+
+  .gallery-modal {
+    align-items: flex-start;
+
+    padding:
+      max(52px, env(safe-area-inset-top))
+      8px
+      max(10px, env(safe-area-inset-bottom));
+
+    overflow-y: auto;
+
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .gallery-box {
+    width: 100%;
+    max-height: none;
+
+    display: block;
+
+    overflow: hidden;
+
+    border-radius: 16px;
+  }
+
+  .gallery-media-column {
+    padding: 8px;
+
+    gap: 8px;
+  }
+
+  .gallery-image-stage {
+    width: 100%;
+
+    aspect-ratio: 4 / 3;
+
+    border-radius: 12px;
+  }
+
+  .gallery-image-stage > img {
+    width: 100%;
+    height: 100%;
+
+    max-height: none;
+
+    object-fit: contain;
+  }
+
+  .gallery-photo-nav {
+    width: 40px;
+    height: 40px;
+  }
+
+  .gallery-photo-prev {
+    left: 8px;
+  }
+
+  .gallery-photo-next {
+    right: 8px;
+  }
+
+  .gallery-thumbs {
+    min-height: 58px;
+  }
+
+  .gallery-thumb {
+    flex: 0 0 76px;
+
+    height: 56px;
+
+    border-radius: 8px;
+  }
+
+  .gallery-details {
+    height: auto;
+    max-height: none;
+
+    overflow: visible;
+
+    padding: 1rem;
+  }
+
+  .gallery-details h3 {
+    font-size: 1.55rem;
+  }
+
+  .gallery-order-simple {
+    margin-top: 1.2rem;
+  }
+
+  .gallery-project-hint {
+    display: none;
+  }
+
+  /*
+    Pe mobil proiectul următor / precedent rămâne accesibil
+    prin două săgeți circulare discrete pe marginea ecranului.
+  */
+  .gallery-nav {
+    top: 33vh;
+
+    width: 40px;
+    height: 40px;
+  }
+
+  .gallery-prev {
+    left: 12px;
+  }
+
+  .gallery-next {
+    right: 12px;
+  }
+
+  .gallery-close {
+    position: fixed;
+
+    top: max(8px, env(safe-area-inset-top));
+    right: 8px;
+
+    width: 38px;
+    height: 38px;
+  }
+
+  .portfolio-media-overlay {
+    opacity: 1;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   TELEFON MIC
+   --------------------------------------------------------- */
+
+@media (max-width: 420px) {
+  .gallery-service {
+    font-size: .71rem;
+  }
+
+  .gallery-details h3 {
+    font-size: 1.4rem;
+  }
+
+  .gallery-description {
+    font-size: .88rem;
+  }
+
+  .gallery-order-simple {
+    font-size: .76rem;
+  }
+
+  .portfolio-card-actions {
+    gap: 10px;
+  }
+
+  .portfolio-action {
+    font-size: .7rem;
+  }
+}

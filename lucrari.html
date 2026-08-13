@@ -638,153 +638,130 @@
 
 
   <!-- =========================================================
-       MODAL GALERIE
+       GALERIE PROIECT
        ========================================================= -->
 
   <div
     class="gallery-modal"
     id="galleryModal"
+    aria-hidden="true"
   >
 
-
+    <!-- Aceste săgeți schimbă PROIECTUL -->
     <button
       class="gallery-nav gallery-prev icon-btn"
       id="galleryPrev"
       type="button"
-      aria-label="Imaginea precedentă"
+      aria-label="Proiectul precedent"
     >
-
       <i class="bi bi-chevron-left"></i>
-
     </button>
-
-
 
     <button
       class="gallery-nav gallery-next icon-btn"
       id="galleryNext"
       type="button"
-      aria-label="Imaginea următoare"
+      aria-label="Proiectul următor"
     >
-
       <i class="bi bi-chevron-right"></i>
-
     </button>
-
-
-
-    <button
-      class="gallery-close icon-btn"
-      id="galleryModalClose"
-      type="button"
-      aria-label="Închide"
-    >
-
-      &times;
-
-    </button>
-
-
 
     <div class="gallery-box">
 
+      <button
+        class="gallery-close icon-btn"
+        id="galleryModalClose"
+        type="button"
+        aria-label="Închide proiectul"
+      >
+        &times;
+      </button>
 
-      <div class="gallery-image-wrap">
+      <div class="gallery-media-column">
 
-        <img
-          src=""
-          alt=""
-          id="galleryModalImage"
-        >
+        <div class="gallery-image-stage">
+
+          <img
+            src=""
+            alt=""
+            id="galleryModalImage"
+          >
+
+          <!-- Aceste săgeți schimbă FOTOGRAFIA din proiect -->
+          <button
+            class="gallery-photo-nav gallery-photo-prev icon-btn"
+            id="galleryPhotoPrev"
+            type="button"
+            aria-label="Fotografia precedentă"
+            hidden
+          >
+            <i class="bi bi-chevron-left"></i>
+          </button>
+
+          <button
+            class="gallery-photo-nav gallery-photo-next icon-btn"
+            id="galleryPhotoNext"
+            type="button"
+            aria-label="Fotografia următoare"
+            hidden
+          >
+            <i class="bi bi-chevron-right"></i>
+          </button>
+
+        </div>
+
+        <div
+          class="gallery-thumbs"
+          id="galleryThumbs"
+          aria-label="Fotografiile proiectului"
+          hidden
+        ></div>
 
       </div>
 
-
-
       <div class="gallery-details">
 
-
-        <span id="galleryModalDate"></span>
-
+        <span
+          class="gallery-service"
+          id="galleryModalService"
+        ></span>
 
         <h3 id="galleryModalTitle"></h3>
 
+        <div class="gallery-meta">
+          <i class="bi bi-calendar3"></i>
+          <span id="galleryModalDate"></span>
+        </div>
 
-        <p id="galleryModalService"></p>
+        <p
+          class="gallery-description"
+          id="galleryModalDesc"
+        ></p>
 
-
+        <!-- Taguri simple, fără titlul "Cuvinte cheie" -->
         <div
           class="gallery-tags"
           id="galleryModalTags"
         ></div>
 
+        <a
+          href="index.html#contact"
+          class="gallery-order-simple"
+          id="galleryOrderBtn"
+        >
+          Cere ofertă pentru un proiect similar
+          <i class="bi bi-arrow-up-right"></i>
+        </a>
 
-        <small id="galleryModalDesc"></small>
-
-
-        <div class="gallery-action-links">
-
-          <a
-            href="index.html#contact"
-            class="gallery-action-link gallery-action-primary"
-            id="galleryOrderBtn"
-          >
-            Cere ofertă
-            <i class="bi bi-arrow-up-right"></i>
-          </a>
-
-          <a
-            href="lucrari.html"
-            class="gallery-action-link gallery-action-secondary"
-            id="galleryExamplesBtn"
-          >
-            Vezi categoria
-            <i class="bi bi-arrow-up-right"></i>
-          </a>
-
-        </div>
-
-        <div class="gallery-inline-nav">
-
-          <button
-            type="button"
-            class="gallery-inline-btn"
-            id="galleryPrevInline"
-            aria-label="Lucrarea precedentă"
-          >
-            <i class="bi bi-arrow-left"></i>
-            <span>Precedenta</span>
-          </button>
-
-          <span
-            class="gallery-counter"
-            id="galleryCounter"
-            aria-live="polite"
-          >
-            1 / 1
-          </span>
-
-          <button
-            type="button"
-            class="gallery-inline-btn"
-            id="galleryNextInline"
-            aria-label="Lucrarea următoare"
-          >
-            <span>Următoarea</span>
-            <i class="bi bi-arrow-right"></i>
-          </button>
-
-        </div>
-
+        <p class="gallery-project-hint">
+          Săgețile laterale schimbă proiectul.
+        </p>
 
       </div>
 
-
     </div>
 
-
   </div>
-
 
 
   <!-- =========================================================

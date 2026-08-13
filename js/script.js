@@ -5,6 +5,12 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Litere în volum & Standuri",
       category: "volum",
       image: "images/BonjourLightBox.jpg",
+      images: [
+        "images/BonjourLightBox.jpg",
+        "images/litere_volum1.jpg",
+        "images/litere_volum2.jpg",
+        "images/litere_volum3.jpg"
+      ],
       date: "2025",
       desc: "Light box personalizat pentru promovare vizuală.",
       tags: "Light Box, Exterior, Vizibilitate",
@@ -15,6 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "P.O.S.M.",
       category: "posm",
       image: "images/box.jpg",
+      images: [
+        "images/box.jpg"
+      ],
       date: "2025",
       desc: "Material promoțional pentru campanii.",
       tags: "Urnă, Print, P.O.S.M.",
@@ -25,6 +34,11 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Branding Auto",
       category: "auto",
       image: "images/brand_auto1.jpg",
+      images: [
+        "images/brand_auto1.jpg",
+        "images/brand_auto2.jpg",
+        "images/lux-tavene.jpg"
+      ],
       date: "2025",
       desc: "Colantare auto pentru transport comercial.",
       tags: "Auto, Colantare, Comercial",
@@ -35,6 +49,10 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Branding Auto",
       category: "auto",
       image: "images/brand_auto2.jpg",
+      images: [
+        "images/brand_auto2.jpg",
+        "images/brand_auto1.jpg"
+      ],
       date: "2025",
       desc: "Grafică aplicată pe transport comercial.",
       tags: "Microbuz, Colantare, Grafică",
@@ -45,6 +63,12 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "P.O.S.M.",
       category: "posm",
       image: "images/cub-sticla.jpg",
+      images: [
+        "images/cub-sticla.jpg",
+        "images/cub-sticla0.jpg",
+        "images/box.jpg",
+        "images/fise_pret.jpg"
+      ],
       date: "2025",
       desc: "Element personalizat pentru expunere vizuală.",
       tags: "Display, Print, Expunere",
@@ -55,6 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "P.O.S.M.",
       category: "posm",
       image: "images/cub-sticla0.jpg",
+      images: [
+        "images/cub-sticla0.jpg",
+        "images/cub-sticla.jpg"
+      ],
       date: "2025",
       desc: "Material personalizat pentru campanie.",
       tags: "Stand, Print, P.O.S.M.",
@@ -65,6 +93,11 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Poligrafie",
       category: "poligrafie",
       image: "images/fise_pret.jpg",
+      images: [
+        "images/fise_pret.jpg",
+        "images/inghetata_uv.jpg",
+        "images/inghetata-uv1.jpg"
+      ],
       date: "2025",
       desc: "Materiale tipărite pentru prezentarea produselor.",
       tags: "Print, Meniu, Produs",
@@ -75,6 +108,9 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Litere în volum & Standuri",
       category: "volum",
       image: "images/good-break.jpg",
+      images: [
+        "images/good-break.jpg"
+      ],
       date: "2025",
       desc: "Reclamă luminoasă pentru fațadă.",
       tags: "Fațadă, Luminos, Volumetric",
@@ -85,6 +121,10 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Poligrafie",
       category: "poligrafie",
       image: "images/inghetata_uv.jpg",
+      images: [
+        "images/inghetata_uv.jpg",
+        "images/inghetata-uv1.jpg"
+      ],
       date: "2025",
       desc: "Print personalizat pentru produse.",
       tags: "Etichete, Print, Produs",
@@ -95,6 +135,12 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Poligrafie",
       category: "poligrafie",
       image: "images/inghetata-uv1.jpg",
+      images: [
+        "images/inghetata-uv1.jpg",
+        "images/inghetata_uv.jpg",
+        "images/fise_pret.jpg",
+        "images/plotter-2.jpg"
+      ],
       date: "2025",
       desc: "Etichete personalizate pentru produse.",
       tags: "Etichete, UV, Produs",
@@ -105,6 +151,11 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Litere în volum & Standuri",
       category: "volum",
       image: "images/litere_volum1.jpg",
+      images: [
+        "images/litere_volum1.jpg",
+        "images/litere_volum2.jpg",
+        "images/litere_volum3.jpg"
+      ],
       date: "2025",
       desc: "Element volumetric pentru identitate vizuală.",
       tags: "Logo, Interior, Volumetric",
@@ -115,6 +166,10 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Litere în volum & Standuri",
       category: "volum",
       image: "images/litere_volum2.jpg",
+      images: [
+        "images/litere_volum2.jpg",
+        "images/litere_volum1.jpg"
+      ],
       date: "2025",
       desc: "Reclamă de fațadă cu litere volumetrice.",
       tags: "Fațadă, Clinică, Volumetric",
@@ -125,6 +180,9 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Litere în volum & Standuri",
       category: "volum",
       image: "images/litere_volum3.jpg",
+      images: [
+        "images/litere_volum3.jpg"
+      ],
       date: "2025",
       desc: "Elemente de fațadă pentru spațiu comercial.",
       tags: "Fațadă, Litere, Exterior",
@@ -135,6 +193,11 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Branding Auto",
       category: "auto",
       image: "images/lux-tavene.jpg",
+      images: [
+        "images/lux-tavene.jpg",
+        "images/brand_auto1.jpg",
+        "images/brand_auto2.jpg"
+      ],
       date: "2025",
       desc: "Colantare auto pentru servicii locale.",
       tags: "Auto, Colantare, Grafică",
@@ -145,6 +208,10 @@ document.addEventListener("DOMContentLoaded", () => {
       service: "Poligrafie",
       category: "poligrafie",
       image: "images/plotter-2.jpg",
+      images: [
+        "images/plotter-2.jpg",
+        "images/fise_pret.jpg"
+      ],
       date: "2025",
       desc: "Decupare și print pentru etichete de brand.",
       tags: "Stickere, Plotter, Etichete",
@@ -296,22 +363,35 @@ document.addEventListener("DOMContentLoaded", () => {
         ? "lucrari.html?search=plotter"
         : `lucrari.html?filter=${encodeURIComponent(work.category)}`;
 
+    const encodedImages = encodeURIComponent(
+      JSON.stringify(work.images || [work.image])
+    );
+
     if (isHome) {
       return `
-        <article class="work-card reveal"
+        <article
+          class="work-card reveal"
           data-category="${work.category}"
-          data-search="${work.search}">
+          data-search="${work.search}"
+        >
           <button
             class="work-img gallery-item"
             type="button"
             data-category="${work.category}"
             data-full="${work.image}"
+            data-images="${encodedImages}"
             data-title="${work.title}"
             data-service="${work.service}"
             data-date="${work.date}"
             data-desc="${work.desc}"
-            data-tags="${work.tags}">
-            <img src="${work.image}" alt="${work.title}" loading="lazy">
+            data-tags="${work.tags}"
+            aria-label="Deschide proiectul ${work.title}"
+          >
+            <img
+              src="${work.image}"
+              alt="${work.title}"
+              loading="lazy"
+            >
 
             <span>
               ${work.service.replace(
@@ -322,7 +402,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             <div class="media-overlay">
               <i class="bi bi-arrows-fullscreen"></i>
-              <small>Vezi lucrarea</small>
+              <small>Vezi proiectul</small>
             </div>
           </button>
 
@@ -331,15 +411,19 @@ document.addEventListener("DOMContentLoaded", () => {
             <h3>${work.title}</h3>
 
             <div class="work-actions work-actions-double">
-              <a href="${orderHref}"
-                class="work-order-btn work-order-primary btn-arrow"
-                data-order-service="${work.service}">
+              <a
+                href="${orderHref}"
+                class="work-order-btn work-order-primary"
+                data-order-service="${work.service}"
+              >
                 Cere ofertă
                 <i class="bi bi-arrow-up-right"></i>
               </a>
 
-              <a href="${examplesHref}"
-                class="work-order-btn work-order-secondary btn-arrow">
+              <a
+                href="${examplesHref}"
+                class="work-order-btn work-order-secondary"
+              >
                 Vezi exemple
                 <i class="bi bi-arrow-up-right"></i>
               </a>
@@ -350,21 +434,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     return `
-      <article class="portfolio-card reveal"
+      <article
+        class="portfolio-card reveal"
         data-category="${work.category}"
-        data-search="${work.search}">
+        data-search="${work.search}"
+      >
         <button
           class="portfolio-media gallery-item"
           type="button"
           data-category="${work.category}"
           data-full="${work.image}"
+          data-images="${encodedImages}"
           data-title="${work.title}"
           data-service="${work.service}"
           data-date="${work.date}"
           data-desc="${work.desc}"
           data-tags="${work.tags}"
-          aria-label="Deschide lucrarea ${work.title}">
-          <img src="${work.image}" alt="${work.title}" loading="lazy">
+          aria-label="Deschide proiectul ${work.title}"
+        >
+          <img
+            src="${work.image}"
+            alt="${work.title}"
+            loading="lazy"
+          >
 
           <span>
             ${work.service.replace(
@@ -374,7 +466,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </span>
 
           <div class="portfolio-media-overlay">
-            <span>Deschide lucrarea</span>
+            <span>Vezi proiectul</span>
             <i class="bi bi-arrow-up-right"></i>
           </div>
         </button>
@@ -384,17 +476,21 @@ document.addEventListener("DOMContentLoaded", () => {
           <h3>${work.title}</h3>
 
           <div class="portfolio-card-actions">
-            <a href="${orderHref}"
+            <a
+              href="${orderHref}"
               class="portfolio-action portfolio-action-primary"
-              data-order-service="${work.service}">
+              data-order-service="${work.service}"
+            >
               Cere ofertă
               <i class="bi bi-arrow-up-right"></i>
             </a>
 
-            <button type="button"
+            <button
+              type="button"
               class="portfolio-action portfolio-action-secondary"
-              data-open-card-work>
-              Deschide
+              data-open-card-work
+            >
+              Vezi proiectul
               <i class="bi bi-arrow-right"></i>
             </button>
           </div>
@@ -409,155 +505,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (homeGrid) {
     homeGrid.innerHTML = works.slice(0, 4).map((work) => workCard(work, true)).join("");
   }
-
-
-  function initMobileRecentWorksCarousel() {
-    const grid = $("#homeWorksGrid");
-    if (!grid) return;
-
-    const mobileQuery = window.matchMedia("(max-width: 760px)");
-    let autoplayId = null;
-    let resumeId = null;
-    let currentIndex = 0;
-    let isPointerDown = false;
-
-    function cards() {
-      return [...grid.querySelectorAll(".work-card")];
-    }
-
-    function cardStep() {
-      const first = cards()[0];
-      if (!first) return 0;
-
-      const gridStyle = getComputedStyle(grid);
-      const gap = parseFloat(gridStyle.columnGap || gridStyle.gap) || 14;
-
-      return first.getBoundingClientRect().width + gap;
-    }
-
-    function nearestIndex() {
-      const step = cardStep();
-      if (!step) return 0;
-
-      return Math.max(
-        0,
-        Math.min(
-          cards().length - 1,
-          Math.round(grid.scrollLeft / step)
-        )
-      );
-    }
-
-    function goTo(index, behavior = "smooth") {
-      const items = cards();
-      if (!items.length) return;
-
-      currentIndex = (index + items.length) % items.length;
-
-      items[currentIndex].scrollIntoView({
-        behavior,
-        block: "nearest",
-        inline: "start"
-      });
-    }
-
-    function stopAutoplay() {
-      if (autoplayId) {
-        clearInterval(autoplayId);
-        autoplayId = null;
-      }
-    }
-
-    function startAutoplay() {
-      stopAutoplay();
-
-      if (!mobileQuery.matches || document.hidden) return;
-
-      autoplayId = setInterval(() => {
-        const items = cards();
-        if (items.length < 2 || isPointerDown) return;
-
-        currentIndex = nearestIndex();
-        goTo(currentIndex + 1);
-      }, 4200);
-    }
-
-    function pauseAndResume() {
-      stopAutoplay();
-
-      if (resumeId) clearTimeout(resumeId);
-
-      resumeId = setTimeout(() => {
-        currentIndex = nearestIndex();
-        startAutoplay();
-      }, 5500);
-    }
-
-    function syncMode() {
-      if (mobileQuery.matches) {
-        grid.classList.add("mobile-recent-carousel");
-        currentIndex = nearestIndex();
-        startAutoplay();
-      } else {
-        grid.classList.remove("mobile-recent-carousel");
-        stopAutoplay();
-      }
-    }
-
-    grid.addEventListener("scroll", () => {
-      if (!mobileQuery.matches) return;
-
-      currentIndex = nearestIndex();
-    }, { passive: true });
-
-    grid.addEventListener("pointerdown", () => {
-      if (!mobileQuery.matches) return;
-
-      isPointerDown = true;
-      stopAutoplay();
-    }, { passive: true });
-
-    window.addEventListener("pointerup", () => {
-      if (!mobileQuery.matches) return;
-
-      isPointerDown = false;
-      pauseAndResume();
-    }, { passive: true });
-
-    grid.addEventListener("touchstart", pauseAndResume, { passive: true });
-    grid.addEventListener("wheel", pauseAndResume, { passive: true });
-
-    grid.addEventListener("click", (event) => {
-      if (!mobileQuery.matches) return;
-
-      if (
-        event.target.closest("a") ||
-        event.target.closest(".gallery-item")
-      ) {
-        pauseAndResume();
-      }
-    });
-
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) {
-        stopAutoplay();
-      } else {
-        startAutoplay();
-      }
-    });
-
-    if (mobileQuery.addEventListener) {
-      mobileQuery.addEventListener("change", syncMode);
-    } else {
-      mobileQuery.addListener(syncMode);
-    }
-
-    syncMode();
-  }
-
-  initMobileRecentWorksCarousel();
-
-  if (portfolioGrid) {
+if (portfolioGrid) {
     portfolioGrid.innerHTML = works.map((work) => workCard(work)).join("");
   }
 
@@ -827,6 +775,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let galleryItems = [];
   let galleryIndex = 0;
+  let projectImages = [];
+  let projectImageIndex = 0;
 
   const modal = $("#galleryModal");
   const modalImg = $("#galleryModalImage");
@@ -835,13 +785,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalDate = $("#galleryModalDate");
   const modalDesc = $("#galleryModalDesc");
   const modalTags = $("#galleryModalTags");
+  const modalThumbs = $("#galleryThumbs");
+  const photoPrev = $("#galleryPhotoPrev");
+  const photoNext = $("#galleryPhotoNext");
   const galleryOrderBtn = $("#galleryOrderBtn");
-  const galleryExamplesBtn = $("#galleryExamplesBtn");
-  const galleryCounter = $("#galleryCounter");
 
   function updateGalleryItems() {
     galleryItems = [...$$(".gallery-item")].filter((item) => {
       const card = item.closest(".portfolio-card, .work-card");
+
       if (!card) return true;
 
       const computed = window.getComputedStyle(card);
@@ -854,20 +806,98 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function categoryHref(category) {
-    if (!category) return "lucrari.html";
+  function getProjectImages(item) {
+    if (!item) return [];
 
-    return category === "laser"
-      ? "lucrari.html?search=plotter"
-      : `lucrari.html?filter=${encodeURIComponent(category)}`;
+    try {
+      const decoded = decodeURIComponent(item.dataset.images || "");
+      const parsed = JSON.parse(decoded);
+
+      if (Array.isArray(parsed) && parsed.length) {
+        return parsed.slice(0, 4);
+      }
+    } catch (error) {
+      // fallback la imaginea principală
+    }
+
+    return [item.dataset.full || ""].filter(Boolean);
+  }
+
+  function renderThumbnails() {
+    if (!modalThumbs) return;
+
+    modalThumbs.innerHTML = "";
+
+    if (projectImages.length <= 1) {
+      modalThumbs.hidden = true;
+      return;
+    }
+
+    modalThumbs.hidden = false;
+
+    projectImages.forEach((src, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "gallery-thumb";
+      button.classList.toggle("active", index === projectImageIndex);
+      button.setAttribute(
+        "aria-label",
+        `Afișează fotografia ${index + 1} din proiect`
+      );
+
+      const image = document.createElement("img");
+      image.src = src;
+      image.alt = "";
+      image.loading = "lazy";
+
+      button.appendChild(image);
+
+      button.addEventListener("click", () => {
+        projectImageIndex = index;
+        renderProjectImage();
+      });
+
+      modalThumbs.appendChild(button);
+    });
+  }
+
+  function renderProjectImage() {
+    if (!modalImg || !projectImages.length) return;
+
+    modalImg.src = projectImages[projectImageIndex];
+    modalImg.alt =
+      `${modalTitle?.textContent || "Proiect Art Life Design"} — fotografia ${projectImageIndex + 1}`;
+
+    renderThumbnails();
+
+    const hasMultiple = projectImages.length > 1;
+
+    if (photoPrev) photoPrev.hidden = !hasMultiple;
+    if (photoNext) photoNext.hidden = !hasMultiple;
+  }
+
+  function previousPhoto() {
+    if (projectImages.length <= 1) return;
+
+    projectImageIndex =
+      (projectImageIndex - 1 + projectImages.length) % projectImages.length;
+
+    renderProjectImage();
+  }
+
+  function nextPhoto() {
+    if (projectImages.length <= 1) return;
+
+    projectImageIndex =
+      (projectImageIndex + 1) % projectImages.length;
+
+    renderProjectImage();
   }
 
   function renderGallery(index) {
     const item = galleryItems[index];
-    if (!item || !modalImg) return;
 
-    modalImg.src = item.dataset.full || "";
-    modalImg.alt = item.dataset.title || "Lucrare ArtLife Design";
+    if (!item) return;
 
     if (modalTitle) modalTitle.textContent = item.dataset.title || "";
     if (modalService) modalService.textContent = item.dataset.service || "";
@@ -888,26 +918,19 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    const service = item.dataset.service || "";
-    const category = item.dataset.category || "";
-
     if (galleryOrderBtn) {
+      const service = item.dataset.service || "";
+
       galleryOrderBtn.dataset.orderService = service;
       galleryOrderBtn.href = $("#contact")
         ? "#contact"
         : `index.html?service=${encodeURIComponent(service)}#contact`;
     }
 
-    if (galleryExamplesBtn) {
-      galleryExamplesBtn.href = categoryHref(category);
-      galleryExamplesBtn.innerHTML = portfolioGrid
-        ? 'Vezi categoria <i class="bi bi-arrow-up-right"></i>'
-        : 'Vezi exemple <i class="bi bi-arrow-up-right"></i>';
-    }
+    projectImages = getProjectImages(item);
+    projectImageIndex = 0;
 
-    if (galleryCounter) {
-      galleryCounter.textContent = `${index + 1} / ${galleryItems.length}`;
-    }
+    renderProjectImage();
   }
 
   function openGalleryFromItem(item) {
@@ -916,32 +939,37 @@ document.addEventListener("DOMContentLoaded", () => {
     updateGalleryItems();
 
     const index = galleryItems.indexOf(item);
+
     if (index < 0) return;
 
     galleryIndex = index;
     renderGallery(galleryIndex);
+
     modal.classList.add("active");
-    document.body.style.overflow = "hidden";
+    document.body.classList.add("gallery-open");
   }
 
   function closeGallery() {
     if (!modal) return;
 
     modal.classList.remove("active");
+    document.body.classList.remove("gallery-open");
+
     if (modalImg) modalImg.src = "";
-    document.body.style.overflow = "";
   }
 
-  function nextGallery() {
+  function nextProject() {
     updateGalleryItems();
+
     if (!galleryItems.length) return;
 
     galleryIndex = (galleryIndex + 1) % galleryItems.length;
     renderGallery(galleryIndex);
   }
 
-  function prevGallery() {
+  function previousProject() {
     updateGalleryItems();
+
     if (!galleryItems.length) return;
 
     galleryIndex =
@@ -964,23 +992,20 @@ document.addEventListener("DOMContentLoaded", () => {
     if (openButton) {
       event.preventDefault();
 
-      const item = openButton
+      const media = openButton
         .closest(".portfolio-card")
         ?.querySelector(".gallery-item");
 
-      if (item) openGalleryFromItem(item);
+      if (media) openGalleryFromItem(media);
     }
   });
 
   $("#galleryModalClose")?.addEventListener("click", closeGallery);
+  $("#galleryPrev")?.addEventListener("click", previousProject);
+  $("#galleryNext")?.addEventListener("click", nextProject);
 
-  ["#galleryNext", "#galleryNextInline"].forEach((selector) => {
-    $(selector)?.addEventListener("click", nextGallery);
-  });
-
-  ["#galleryPrev", "#galleryPrevInline"].forEach((selector) => {
-    $(selector)?.addEventListener("click", prevGallery);
-  });
+  photoPrev?.addEventListener("click", previousPhoto);
+  photoNext?.addEventListener("click", nextPhoto);
 
   if (modal) {
     modal.addEventListener("click", (event) => {
@@ -992,34 +1017,67 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!modal || !modal.classList.contains("active")) return;
 
     if (event.key === "Escape") closeGallery();
-    if (event.key === "ArrowRight") nextGallery();
-    if (event.key === "ArrowLeft") prevGallery();
+
+    if (event.key === "ArrowLeft") {
+      if (projectImages.length > 1) {
+        previousPhoto();
+      } else {
+        previousProject();
+      }
+    }
+
+    if (event.key === "ArrowRight") {
+      if (projectImages.length > 1) {
+        nextPhoto();
+      } else {
+        nextProject();
+      }
+    }
   });
 
-  if (modal) {
+  /*
+    Swipe pe imagine schimbă fotografiile din proiect.
+    Dacă proiectul are o singură fotografie, swipe-ul schimbă proiectul.
+  */
+  const imageWrap = $(".gallery-image-stage");
+
+  if (imageWrap) {
     let touchStartX = 0;
     let touchStartY = 0;
 
-    modal.addEventListener("touchstart", (event) => {
-      const touch = event.changedTouches[0];
-      touchStartX = touch.clientX;
-      touchStartY = touch.clientY;
-    }, { passive: true });
+    imageWrap.addEventListener(
+      "touchstart",
+      (event) => {
+        const touch = event.changedTouches[0];
 
-    modal.addEventListener("touchend", (event) => {
-      const touch = event.changedTouches[0];
-      const deltaX = touch.clientX - touchStartX;
-      const deltaY = touch.clientY - touchStartY;
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+      },
+      { passive: true }
+    );
 
-      if (
-        Math.abs(deltaX) < 55 ||
-        Math.abs(deltaX) <= Math.abs(deltaY)
-      ) {
-        return;
-      }
+    imageWrap.addEventListener(
+      "touchend",
+      (event) => {
+        const touch = event.changedTouches[0];
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
 
-      deltaX < 0 ? nextGallery() : prevGallery();
-    }, { passive: true });
+        if (
+          Math.abs(deltaX) < 50 ||
+          Math.abs(deltaX) <= Math.abs(deltaY)
+        ) {
+          return;
+        }
+
+        if (projectImages.length > 1) {
+          deltaX < 0 ? nextPhoto() : previousPhoto();
+        } else {
+          deltaX < 0 ? nextProject() : previousProject();
+        }
+      },
+      { passive: true }
+    );
   }
 
   function clearErrors(form) {
