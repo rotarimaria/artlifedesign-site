@@ -155,6 +155,18 @@
       }
     }
   </style>
+
+  <!-- Art Life Design: ascunde launcher-ul permanent; chatul se deschide din notificarea personalizată -->
+  <style>
+    #artlifeChatLauncher,
+    .artlife-chat-launcher,
+    #botpressHiddenLauncher {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+  </style>
+
 <!-- =========================================================
      BOTPRESS WEBCHAT — O SINGURĂ INTEGRARE
      Logica este în js/script.js
@@ -1779,6 +1791,18 @@
     id="siteToast"
   ></div>
 
+
+
+  <!-- Launcher invizibil pentru Botpress.
+       În Botpress → Channels → Webchat → Deployment → Chat launcher
+       selectează Custom element și setează ID-ul: botpressHiddenLauncher -->
+  <button
+    id="botpressHiddenLauncher"
+    type="button"
+    aria-hidden="true"
+    tabindex="-1"
+    style="display:none !important;"
+  ></button>
 
   <!-- =========================================================
        SITE JAVASCRIPT
