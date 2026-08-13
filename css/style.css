@@ -4355,3 +4355,56 @@ body.artlife-chat-resetting .bpWebchat {
     max-height: 100% !important;
   }
 }
+
+/* =========================================================
+   BOTPRESS — POZIȚIONARE FINALĂ DESKTOP
+   ---------------------------------------------------------
+   Scop:
+   - pe desktop, fereastra Botpress începe sub navbar;
+   - înălțimea se reduce automat ca să nu iasă din viewport;
+   - pe mobil NU modificăm poziționarea Botpress;
+   - nu schimbăm culorile, iconițele sau designul intern al chatului.
+   ========================================================= */
+
+/*
+  Botpress Webchat v5 este injectat într-un iframe.
+  De aceea repoziționăm iframe-ul exterior, nu doar .bpWebchat.
+*/
+@media (min-width: 769px) {
+  iframe[title="Botpress"],
+  iframe[src*="botpress"] {
+    top: 92px !important;
+    bottom: 14px !important;
+    height: calc(100dvh - 106px) !important;
+    max-height: calc(100dvh - 106px) !important;
+  }
+}
+
+/*
+  Laptopuri / desktop-uri cu înălțime mai mică:
+  păstrăm aceeași distanță față de meniu, dar chatul devine mai scurt.
+*/
+@media (min-width: 769px) and (max-height: 900px) {
+  iframe[title="Botpress"],
+  iframe[src*="botpress"] {
+    top: 88px !important;
+    bottom: 10px !important;
+    height: calc(100dvh - 98px) !important;
+    max-height: calc(100dvh - 98px) !important;
+  }
+}
+
+/*
+  Telefon / ecrane mici:
+  anulăm doar regulile desktop de mai sus.
+  Restul regulilor mobile existente în fișier rămân neschimbate.
+*/
+@media (max-width: 768px) {
+  iframe[title="Botpress"],
+  iframe[src*="botpress"] {
+    top: auto !important;
+    bottom: auto !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+}
