@@ -264,6 +264,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const button = event.target.closest("[data-order-service]");
     if (!button) return;
 
+    // Rândurile din lista de servicii deschid detaliile serviciului,
+    // nu formularul de contact.
+    if (button.closest("[data-service-card]")) return;
+
     event.preventDefault();
 
     const service = button.dataset.orderService || "";
@@ -357,10 +361,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const buttons = $$(".service-filter");
     const servicesList = $(".services-list");
     const detailPanels = $$("[data-service-detail]");
+    const detailsWrap = $("#serviceDetailsWrap");
 
     let active = "all";
 
-    function render() {
+    function setActiveButton(serviceKey) {
+      buttons.forEach((button) => {
+        button.classList.toggle(
+          "active",
+          (button.dataset.service || "all") === serviceKey
+        );
+      });
+    }
+
+    function render({ focusDetail = false } = {}) {
       const query = search ? search.value.toLowerCase().trim() : "";
       const detailMode = active !== "all";
 
@@ -378,7 +392,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         card.classList.toggle("hidden", !visible);
         card.style.display = visible ? "" : "none";
+        card.classList.toggle(
+          "is-selected",
+          detailMode && card.dataset.serviceCard === active
+        );
       });
+
+      let activePanel = null;
 
       detailPanels.forEach((panel) => {
         const visible =
@@ -387,25 +407,88 @@ document.addEventListener("DOMContentLoaded", () => {
 
         panel.classList.toggle("active", visible);
         panel.setAttribute("aria-hidden", visible ? "false" : "true");
+
+        if (visible) activePanel = panel;
       });
+
+      if (focusDetail && activePanel) {
+        requestAnimationFrame(() => {
+          activePanel.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        });
+      }
+    }
+
+    function openService(serviceKey, { focusDetail = true } = {}) {
+      if (!serviceKey) return;
+
+      active = serviceKey;
+      setActiveButton(active);
+      render({ focusDetail });
     }
 
     buttons.forEach((button) => {
       button.addEventListener("click", () => {
         active = button.dataset.service || "all";
+        setActiveButton(active);
+        render({ focusDetail: active !== "all" });
+      });
+    });
 
-        buttons.forEach((btn) => btn.classList.remove("active"));
-        button.classList.add("active");
+    cards.forEach((card) => {
+      card.addEventListener("click", (event) => {
+        // Linkul "Vezi lucrările" trebuie să rămână link normal.
+        if (event.target.closest(".service-example")) return;
 
-        render();
+        event.preventDefault();
+        openService(card.dataset.serviceCard || card.dataset.openService);
+      });
+
+      card.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        if (event.target.closest(".service-example")) return;
+
+        event.preventDefault();
+        openService(card.dataset.serviceCard || card.dataset.openService);
+      });
+    });
+
+    // Și linkul/titlul din interiorul rândului poate deschide explicit panoul.
+    $$("[data-open-service]").forEach((trigger) => {
+      if (trigger.matches("[data-service-card]")) return;
+
+      trigger.addEventListener("click", (event) => {
+        event.preventDefault();
+        openService(trigger.dataset.openService);
       });
     });
 
     if (search) {
-      search.addEventListener("input", render);
+      search.addEventListener("input", () => {
+        active = "all";
+        setActiveButton(active);
+        render();
+      });
     }
 
-    render();
+    // Dacă pagina este deschisă cu ?serviceDetail=poligrafie etc.,
+    // deschidem direct serviciul respectiv.
+    const params = new URLSearchParams(window.location.search);
+    const serviceDetailFromUrl = params.get("serviceDetail");
+
+    if (
+      serviceDetailFromUrl &&
+      [...detailPanels].some(
+        (panel) => panel.dataset.serviceDetail === serviceDetailFromUrl
+      )
+    ) {
+      openService(serviceDetailFromUrl, { focusDetail: false });
+    } else {
+      setActiveButton(active);
+      render();
+    }
   }
 
   filterServices();
