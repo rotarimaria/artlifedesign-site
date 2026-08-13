@@ -6228,11 +6228,11 @@ body.gallery-open {
 
 
 /* =========================================================
-   V8 — MODAL STABIL + CAROUSEL MOBIL CU 2 CARDURI
+   V9 — CAROUSEL CONTINUU + GRID PORTOFOLIU DENS
    ========================================================= */
 
 /* ---------------------------------------------------------
-   MODAL: dimensiune constantă indiferent de fotografia activă
+   MODAL STABIL
    --------------------------------------------------------- */
 
 .gallery-box {
@@ -6269,11 +6269,6 @@ body.gallery-open {
   object-fit: contain !important;
 }
 
-/*
-  Thumbnails au o înălțime fixă.
-  Dacă există o singură imagine, rândul dispare și imaginea mare
-  folosește automat tot spațiul disponibil.
-*/
 .gallery-thumbs {
   min-height: 74px !important;
   height: 74px !important;
@@ -6283,17 +6278,13 @@ body.gallery-open {
   display: none !important;
 }
 
-/* al doilea set de săgeți nu mai există */
+/* Doar săgețile exterioare schimbă proiectul. */
 .gallery-photo-nav,
 #galleryPhotoPrev,
 #galleryPhotoNext {
   display: none !important;
 }
 
-/*
-  Rămâne un singur set de săgeți:
-  stânga / dreapta = proiect precedent / proiect următor.
-*/
 .gallery-nav {
   display: grid !important;
   place-items: center !important;
@@ -6301,26 +6292,261 @@ body.gallery-open {
 
 
 /* ---------------------------------------------------------
-   TABLETĂ
+   PAGINA LUCRĂRI
+   Desktop: 4 carduri / rând
+   Laptop mic: 3
+   Tabletă: 2
+   Telefon: 2
    --------------------------------------------------------- */
 
-@media (max-width: 1050px) and (min-width: 761px) {
-  .gallery-box {
-    width: min(900px, calc(100vw - 92px)) !important;
-    height: min(680px, calc(100dvh - 78px)) !important;
+.portfolio-grid {
+  display: grid !important;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr)) !important;
 
+  gap: 14px !important;
+}
+
+.portfolio-card {
+  border-radius: 16px !important;
+}
+
+.portfolio-media {
+  aspect-ratio: 1 / 1 !important;
+}
+
+.portfolio-content {
+  padding: .8rem !important;
+}
+
+.portfolio-content > small {
+  font-size: .64rem !important;
+}
+
+.portfolio-content h3 {
+  font-size: .98rem !important;
+}
+
+.portfolio-card-actions {
+  padding-top: .7rem !important;
+}
+
+.portfolio-action {
+  font-size: .68rem !important;
+}
+
+@media (max-width: 1180px) {
+  .portfolio-grid {
     grid-template-columns:
-      minmax(0, 1.2fr)
-      minmax(270px, .8fr) !important;
+      repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .portfolio-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr)) !important;
   }
 }
 
 
 /* ---------------------------------------------------------
-   MOBIL — modal stabil
+   HOMEPAGE MOBIL — CAROUSEL CONTINUU CU 2 CARDURI
    --------------------------------------------------------- */
 
+.mobile-works-carousel-hint {
+  display: none;
+}
+
 @media (max-width: 760px) {
+  #homeWorksGrid.mobile-two-card-carousel {
+    display: flex !important;
+
+    gap: 10px !important;
+
+    width: calc(100% + 18px) !important;
+
+    margin-right: -18px !important;
+
+    padding:
+      2px
+      18px
+      10px
+      0
+      !important;
+
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+
+    scroll-snap-type: none !important;
+
+    overscroll-behavior-x: contain;
+
+    -webkit-overflow-scrolling: touch;
+
+    scrollbar-width: none;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-card {
+    flex: 0 0 calc((100vw - 54px) / 2) !important;
+
+    width: calc((100vw - 54px) / 2) !important;
+    max-width: none !important;
+
+    margin: 0 !important;
+
+    border-radius: 14px !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-img {
+    min-height: 0 !important;
+
+    aspect-ratio: 1 / 1 !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-img > span {
+    top: 7px !important;
+    left: 7px !important;
+
+    max-width: calc(100% - 14px);
+
+    padding: .28rem .4rem !important;
+
+    font-size: .55rem !important;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .media-overlay {
+    display: none !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-info {
+    min-height: 112px !important;
+
+    padding: .68rem !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-info > small {
+    display: none !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-info h3 {
+    margin: 0 !important;
+
+    font-size: .86rem !important;
+    line-height: 1.2 !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-actions-double {
+    display: block !important;
+
+    margin-top: .6rem !important;
+    padding-top: .55rem !important;
+
+    border-top:
+      1px solid rgba(247,244,235,.08) !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-order-primary {
+    width: 100% !important;
+
+    min-height: 30px !important;
+
+    display: flex !important;
+    justify-content: space-between !important;
+
+    padding: 0 !important;
+
+    border: 0 !important;
+    border-radius: 0 !important;
+
+    background: transparent !important;
+
+    color: var(--green) !important;
+
+    font-size: .64rem !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-order-secondary {
+    display: none !important;
+  }
+
+  /*
+    Semnal vizual că se poate glisa:
+    ultimul card vizibil nu ajunge lipit de margine,
+    iar secțiunea are un fade subtil în dreapta.
+  */
+  .works-section .container {
+    position: relative;
+  }
+
+  .works-section .container::after {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    width: 22px;
+
+    pointer-events: none;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        var(--bg)
+      );
+
+    opacity: .65;
+  }
+
+  .mobile-works-carousel-hint {
+    margin-top: 7px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    color: rgba(247,244,235,.42);
+
+    font-size: .66rem;
+    font-weight: 700;
+  }
+
+  .mobile-works-carousel-hint span:nth-child(2) {
+    margin-left: auto;
+  }
+
+  .mobile-works-carousel-hint i {
+    color: var(--green);
+
+    animation: mobileWorksHintV9 1.6s ease-in-out infinite;
+  }
+
+  @keyframes mobileWorksHintV9 {
+    0%, 100% {
+      transform: translateX(0);
+      opacity: .6;
+    }
+
+    50% {
+      transform: translateX(4px);
+      opacity: 1;
+    }
+  }
+
+  /* Modal mobil */
   .gallery-modal {
     align-items: flex-start !important;
 
@@ -6383,10 +6609,6 @@ body.gallery-open {
     padding: 1rem !important;
   }
 
-  /*
-    Un singur set de arrows pentru proiecte.
-    Pe mobil stau discret pe marginile ecranului.
-  */
   .gallery-nav {
     top: 32vh !important;
 
@@ -6404,212 +6626,54 @@ body.gallery-open {
 }
 
 
-/* ---------------------------------------------------------
-   HOMEPAGE MOBIL — 2 CARDURI VIZIBILE + CAROUSEL CLAR
-   --------------------------------------------------------- */
+/* Telefon foarte îngust: tot 2 carduri în Lucrări */
+@media (max-width: 430px) {
+  .portfolio-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr)) !important;
 
-.mobile-works-carousel-hint {
-  display: none;
-}
-
-@media (max-width: 760px) {
-  #homeWorksGrid.mobile-two-card-carousel {
-    display: flex !important;
-
-    grid-template-columns: none !important;
-
-    gap: 10px !important;
-
-    width: calc(100% + 18px) !important;
-
-    margin-right: -18px !important;
-
-    padding:
-      2px
-      18px
-      10px
-      0
-      !important;
-
-    overflow-x: auto !important;
-    overflow-y: visible !important;
-
-    scroll-snap-type: x mandatory !important;
-    scroll-padding-left: 0 !important;
-
-    overscroll-behavior-x: contain;
-
-    -webkit-overflow-scrolling: touch;
-
-    scrollbar-width: none;
+    gap: 9px !important;
   }
 
-  #homeWorksGrid.mobile-two-card-carousel::-webkit-scrollbar {
-    display: none;
+  .portfolio-card {
+    border-radius: 13px !important;
   }
 
-  #homeWorksGrid.mobile-two-card-carousel .work-card {
-    flex: 0 0 calc((100vw - 54px) / 2) !important;
-
-    width: calc((100vw - 54px) / 2) !important;
-    max-width: none !important;
-
-    scroll-snap-align: start !important;
-    scroll-snap-stop: always !important;
-
-    margin: 0 !important;
-
-    border-radius: 15px !important;
+  .portfolio-content {
+    padding: .62rem !important;
   }
 
-  #homeWorksGrid.mobile-two-card-carousel .work-img {
-    min-height: 0 !important;
-
-    aspect-ratio: 1 / 1 !important;
+  .portfolio-content > small {
+    font-size: .56rem !important;
   }
 
-  #homeWorksGrid.mobile-two-card-carousel .work-img > span {
-    top: 8px !important;
-    left: 8px !important;
-
-    max-width: calc(100% - 16px);
-
-    padding: .32rem .45rem !important;
-
-    font-size: .58rem !important;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .portfolio-content h3 {
+    font-size: .82rem !important;
   }
 
-  #homeWorksGrid.mobile-two-card-carousel .media-overlay {
-    display: none !important;
+  .portfolio-card-actions {
+    grid-template-columns: 1fr !important;
+
+    gap: 2px !important;
   }
 
-  #homeWorksGrid.mobile-two-card-carousel .work-info {
-    min-height: 132px !important;
+  .portfolio-action {
+    justify-content: flex-start !important;
 
-    padding: .75rem !important;
+    padding: .48rem 0 !important;
+
+    font-size: .61rem !important;
   }
 
-  #homeWorksGrid.mobile-two-card-carousel .work-info > small {
-    display: none !important;
-  }
-
-  #homeWorksGrid.mobile-two-card-carousel .work-info h3 {
-    margin: 0 !important;
-
-    font-size: .9rem !important;
-    line-height: 1.22 !important;
-  }
-
-  /*
-    Pe cardurile mici lăsăm un singur CTA vizual.
-    "Vezi exemple" rămâne accesibil prin pagina Lucrări,
-    dar nu înghesuim două butoane în jumătate de ecran.
-  */
-  #homeWorksGrid.mobile-two-card-carousel .work-actions-double {
-    display: block !important;
-
-    margin-top: .7rem !important;
-    padding-top: .65rem !important;
-
-    border-top: 1px solid rgba(247,244,235,.08) !important;
-  }
-
-  #homeWorksGrid.mobile-two-card-carousel .work-order-primary {
-    width: 100% !important;
-
-    min-height: 34px !important;
-
-    display: flex !important;
-    justify-content: space-between !important;
-
-    padding: 0 !important;
-
-    border: 0 !important;
-    border-radius: 0 !important;
-
-    background: transparent !important;
-
-    color: var(--green) !important;
-
-    font-size: .68rem !important;
-  }
-
-  #homeWorksGrid.mobile-two-card-carousel .work-order-secondary {
-    display: none !important;
-  }
-
-  /*
-    Hint clar că secțiunea poate fi glisată.
-    Nu este un control, doar o indicație vizuală.
-  */
-  .mobile-works-carousel-hint {
-    margin-top: 8px;
-
-    display: flex;
-    align-items: center;
-
-    gap: 7px;
-
-    color: rgba(247,244,235,.42);
-
-    font-size: .68rem;
-    font-weight: 700;
-  }
-
-  .mobile-works-carousel-hint span:first-child {
-    color: rgba(247,244,235,.62);
-  }
-
-  .mobile-works-carousel-hint span:nth-child(2) {
-    margin-left: auto;
-  }
-
-  .mobile-works-carousel-hint i {
-    color: var(--green);
-
-    animation: mobileWorksHint 1.7s ease-in-out infinite;
-  }
-
-  @keyframes mobileWorksHint {
-    0%, 100% {
-      transform: translateX(0);
-      opacity: .65;
-    }
-
-    50% {
-      transform: translateX(4px);
-      opacity: 1;
-    }
-  }
-}
-
-
-/* ecrane foarte înguste — păstrăm tot 2 carduri, dar compacte */
-@media (max-width: 390px) {
   #homeWorksGrid.mobile-two-card-carousel {
     gap: 8px !important;
   }
 
   #homeWorksGrid.mobile-two-card-carousel .work-card {
-    flex-basis: calc((100vw - 48px) / 2) !important;
-    width: calc((100vw - 48px) / 2) !important;
-  }
+    flex-basis:
+      calc((100vw - 48px) / 2) !important;
 
-  #homeWorksGrid.mobile-two-card-carousel .work-info {
-    min-height: 124px !important;
-
-    padding: .65rem !important;
-  }
-
-  #homeWorksGrid.mobile-two-card-carousel .work-info h3 {
-    font-size: .82rem !important;
-  }
-
-  #homeWorksGrid.mobile-two-card-carousel .work-order-primary {
-    font-size: .64rem !important;
+    width:
+      calc((100vw - 48px) / 2) !important;
   }
 }

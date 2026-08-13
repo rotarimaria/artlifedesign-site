@@ -512,99 +512,195 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!grid) return;
 
     const mq = window.matchMedia("(max-width: 760px)");
-    let timer = null;
+
+    let rafId = null;
     let resumeTimer = null;
-    let pausedByUser = false;
+    let paused = false;
+    let cycleWidth = 0;
+    let lastTime = 0;
 
-    function items() {
-      return [...grid.querySelectorAll(".work-card")];
+    function originalCards() {
+      return [
+        ...grid.querySelectorAll(
+          ".work-card:not([data-carousel-clone])"
+        )
+      ];
     }
 
-    function maxScrollLeft() {
-      return Math.max(0, grid.scrollWidth - grid.clientWidth);
+    function cloneCards() {
+      return [
+        ...grid.querySelectorAll("[data-carousel-clone]")
+      ];
     }
 
-    function cardAdvance() {
-      const cards = items();
-      if (cards.length < 2) return grid.clientWidth;
-
-      const a = cards[0].getBoundingClientRect();
-      const b = cards[1].getBoundingClientRect();
-
-      return Math.max(1, b.left - a.left);
+    function removeClones() {
+      cloneCards().forEach((clone) => clone.remove());
     }
 
-    function pageAdvance() {
-      // Mutăm câte 2 carduri, pentru că pe mobil se văd 2 simultan.
-      return cardAdvance() * 2;
+    function measureCycle() {
+      const firstOriginal = originalCards()[0];
+      const firstClone = cloneCards()[0];
+
+      if (!firstOriginal || !firstClone) {
+        cycleWidth = 0;
+        return;
+      }
+
+      cycleWidth =
+        firstClone.getBoundingClientRect().left -
+        firstOriginal.getBoundingClientRect().left;
     }
 
-    function stop() {
-      if (timer) {
-        clearInterval(timer);
-        timer = null;
+    function buildLoop() {
+      removeClones();
+
+      const cards = originalCards();
+      if (cards.length < 2) return;
+
+      cards.forEach((card, index) => {
+        const clone = card.cloneNode(true);
+
+        clone.dataset.carouselClone = "true";
+        clone.dataset.carouselSourceIndex = String(index);
+        clone.setAttribute("aria-hidden", "true");
+
+        grid.appendChild(clone);
+      });
+
+      requestAnimationFrame(measureCycle);
+    }
+
+    function stopAnimation() {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
       }
     }
 
-    function start() {
-      stop();
+    function frame(time) {
+      if (!mq.matches) {
+        rafId = null;
+        return;
+      }
+
+      if (!lastTime) lastTime = time;
+
+      const delta = Math.min(32, time - lastTime);
+      lastTime = time;
+
+      if (!paused && cycleWidth > 0) {
+        grid.scrollLeft += delta * 0.022;
+
+        if (grid.scrollLeft >= cycleWidth) {
+          grid.scrollLeft -= cycleWidth;
+        }
+      }
+
+      rafId = requestAnimationFrame(frame);
+    }
+
+    function startAnimation() {
+      stopAnimation();
+      lastTime = 0;
 
       if (!mq.matches || document.hidden) return;
 
-      timer = setInterval(() => {
-        if (pausedByUser || items().length < 3) return;
-
-        const nextLeft = grid.scrollLeft + pageAdvance();
-        const end = maxScrollLeft();
-
-        if (nextLeft >= end - 8) {
-          grid.scrollTo({ left: 0, behavior: "smooth" });
-        } else {
-          grid.scrollBy({ left: pageAdvance(), behavior: "smooth" });
-        }
-      }, 5000);
+      rafId = requestAnimationFrame(frame);
     }
 
     function pauseTemporarily() {
       if (!mq.matches) return;
 
-      pausedByUser = true;
-      stop();
+      paused = true;
 
-      if (resumeTimer) clearTimeout(resumeTimer);
+      if (resumeTimer) {
+        clearTimeout(resumeTimer);
+      }
 
       resumeTimer = setTimeout(() => {
-        pausedByUser = false;
-        start();
-      }, 6500);
+        paused = false;
+      }, 2200);
     }
 
-    function sync() {
+    function syncMode() {
+      stopAnimation();
+
       if (mq.matches) {
         grid.classList.add("mobile-two-card-carousel");
-        start();
+
+        buildLoop();
+
+        requestAnimationFrame(() => {
+          grid.scrollLeft = 0;
+          measureCycle();
+          startAnimation();
+        });
       } else {
         grid.classList.remove("mobile-two-card-carousel");
-        stop();
+
+        removeClones();
+
         grid.scrollLeft = 0;
+        cycleWidth = 0;
       }
     }
 
-    grid.addEventListener("touchstart", pauseTemporarily, { passive: true });
-    grid.addEventListener("pointerdown", pauseTemporarily, { passive: true });
-    grid.addEventListener("wheel", pauseTemporarily, { passive: true });
+    grid.addEventListener(
+      "touchstart",
+      pauseTemporarily,
+      { passive: true }
+    );
 
-    document.addEventListener("visibilitychange", () => {
-      document.hidden ? stop() : start();
+    grid.addEventListener(
+      "pointerdown",
+      pauseTemporarily,
+      { passive: true }
+    );
+
+    grid.addEventListener(
+      "wheel",
+      pauseTemporarily,
+      { passive: true }
+    );
+
+    grid.addEventListener(
+      "scroll",
+      () => {
+        if (
+          mq.matches &&
+          cycleWidth > 0 &&
+          grid.scrollLeft >= cycleWidth
+        ) {
+          grid.scrollLeft -= cycleWidth;
+        }
+      },
+      { passive: true }
+    );
+
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+        if (document.hidden) {
+          stopAnimation();
+        } else {
+          startAnimation();
+        }
+      }
+    );
+
+    window.addEventListener("resize", () => {
+      if (!mq.matches) return;
+
+      requestAnimationFrame(measureCycle);
     });
 
     if (mq.addEventListener) {
-      mq.addEventListener("change", sync);
+      mq.addEventListener("change", syncMode);
     } else {
-      mq.addListener(sync);
+      mq.addListener(syncMode);
     }
 
-    sync();
+    syncMode();
   }
 
   initMobileWorksCarousel();
@@ -893,6 +989,8 @@ if (portfolioGrid) {
 
   function updateGalleryItems() {
     galleryItems = [...$$(".gallery-item")].filter((item) => {
+      if (item.closest("[data-carousel-clone]")) return false;
+
       const card = item.closest(".portfolio-card, .work-card");
 
       if (!card) return true;
@@ -1039,7 +1137,28 @@ if (portfolioGrid) {
 
     updateGalleryItems();
 
-    const index = galleryItems.indexOf(item);
+    let sourceItem = item;
+
+    const cloneCard = item.closest("[data-carousel-clone]");
+
+    if (cloneCard) {
+      const sourceIndex = Number(
+        cloneCard.dataset.carouselSourceIndex
+      );
+
+      const originalCards = [
+        ...document.querySelectorAll(
+          "#homeWorksGrid .work-card:not([data-carousel-clone])"
+        )
+      ];
+
+      sourceItem =
+        originalCards[sourceIndex]
+          ?.querySelector(".gallery-item") ||
+        item;
+    }
+
+    const index = galleryItems.indexOf(sourceItem);
 
     if (index < 0) return;
 
