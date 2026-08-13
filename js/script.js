@@ -352,8 +352,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     class="work-order-btn work-order-primary btn-arrow"
                     data-order-service="${work.service}"
                   >
-                    Solicită ofertă
-                    <i class="bi bi-arrow-right"></i>
+                    Cere ofertă
+                    <i class="bi bi-arrow-up-right"></i>
                   </a>
 
                   <a
