@@ -6677,3 +6677,218 @@ body.gallery-open {
       calc((100vw - 48px) / 2) !important;
   }
 }
+
+
+/* =========================================================
+   V10 — FIX INTERACȚIUNE CARDURI
+   ========================================================= */
+
+.work-card,
+.portfolio-card {
+  cursor: pointer;
+}
+
+.work-card a,
+.portfolio-card a,
+.work-card button,
+.portfolio-card button {
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   V11 — CARDURI MAI LIZIBILE + IMAGINI UNIFORME
+   ========================================================= */
+
+/* Toate imaginile din cardurile portofoliului ocupă exact același spațiu */
+.portfolio-media {
+  width: 100% !important;
+  aspect-ratio: 4 / 3 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  background: #050705 !important;
+}
+
+.portfolio-media img {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+
+/* Cardurile păstrează o structură uniformă */
+.portfolio-card {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 100% !important;
+}
+
+.portfolio-content {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  min-height: 150px !important;
+  padding: 1rem !important;
+}
+
+/* Text mai mare și mai lizibil */
+.portfolio-content > small {
+  font-size: .72rem !important;
+  line-height: 1.35 !important;
+}
+
+.portfolio-content h3 {
+  margin-top: .38rem !important;
+  font-size: 1.08rem !important;
+  line-height: 1.22 !important;
+}
+
+.portfolio-action {
+  font-size: .74rem !important;
+  line-height: 1.2 !important;
+}
+
+/* Tagul de pe imagine puțin mai lizibil */
+.portfolio-media > span {
+  font-size: .68rem !important;
+  line-height: 1.2 !important;
+}
+
+
+/* =========================================================
+   MODAL — TEXT MAI MARE, FĂRĂ AN
+   ========================================================= */
+
+.gallery-service {
+  font-size: .84rem !important;
+  line-height: 1.35 !important;
+}
+
+.gallery-details h3 {
+  font-size: clamp(1.9rem, 2.8vw, 2.65rem) !important;
+  line-height: 1.04 !important;
+}
+
+.gallery-description {
+  margin-top: .2rem !important;
+  font-size: 1rem !important;
+  line-height: 1.72 !important;
+  color: rgba(247,244,235,.76) !important;
+}
+
+.gallery-tags {
+  margin-top: 1.15rem !important;
+}
+
+.gallery-tags span {
+  font-size: .72rem !important;
+  line-height: 1.25 !important;
+}
+
+.gallery-order-simple {
+  font-size: .88rem !important;
+  line-height: 1.35 !important;
+}
+
+
+/* =========================================================
+   DESKTOP — mai multe carduri, dar lizibile
+   ========================================================= */
+
+@media (min-width: 1181px) {
+  .portfolio-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+}
+
+
+/* =========================================================
+   TABLETĂ / LAPTOP MIC
+   ========================================================= */
+
+@media (max-width: 1180px) and (min-width: 861px) {
+  .portfolio-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .portfolio-content h3 {
+    font-size: 1rem !important;
+  }
+}
+
+
+/* =========================================================
+   TELEFON — 2 CARDURI PE RÂND, IMAGINI PERFECT UNIFORME
+   ========================================================= */
+
+@media (max-width: 860px) {
+  .portfolio-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .portfolio-media {
+    aspect-ratio: 1 / 1 !important;
+  }
+
+  .portfolio-content {
+    min-height: 132px !important;
+    padding: .72rem !important;
+  }
+
+  .portfolio-content > small {
+    font-size: .61rem !important;
+  }
+
+  .portfolio-content h3 {
+    font-size: .9rem !important;
+    line-height: 1.2 !important;
+  }
+
+  .portfolio-action {
+    font-size: .64rem !important;
+  }
+
+  .portfolio-media > span {
+    font-size: .57rem !important;
+  }
+
+  .gallery-service {
+    font-size: .76rem !important;
+  }
+
+  .gallery-details h3 {
+    font-size: 1.65rem !important;
+  }
+
+  .gallery-description {
+    font-size: .93rem !important;
+    line-height: 1.62 !important;
+  }
+
+  .gallery-order-simple {
+    font-size: .8rem !important;
+  }
+}
+
+
+/* Telefon foarte mic — păstrăm tot 2 carduri */
+@media (max-width: 430px) {
+  .portfolio-grid {
+    gap: 8px !important;
+  }
+
+  .portfolio-content {
+    min-height: 124px !important;
+    padding: .62rem !important;
+  }
+
+  .portfolio-content h3 {
+    font-size: .84rem !important;
+  }
+
+  .portfolio-action {
+    font-size: .6rem !important;
+  }
+}

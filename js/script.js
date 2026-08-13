@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "images/litere_volum3.jpg"
       ],
       date: "2025",
-      desc: "Light box personalizat pentru promovare vizuală.",
+      desc: "Light box personalizat pentru promovare vizuală, realizat pentru o prezență clară și elegantă. Construcția pune în valoare identitatea brandului atât pe timp de zi, cât și seara, iar finisajele sunt gândite pentru un aspect curat și profesional.",
       tags: "Light Box, Exterior, Vizibilitate",
       search: "bonjour tour light box litere volum stand"
     },
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "images/box.jpg"
       ],
       date: "2025",
-      desc: "Material promoțional pentru campanii.",
+      desc: "Urnă promoțională personalizată pentru campanii și acțiuni de colectare. Designul este adaptat identității vizuale a clientului, cu suprafețe pregătite pentru print clar, mesaje ușor de citit și utilizare practică în spații comerciale sau la evenimente.",
       tags: "Urnă, Print, P.O.S.M.",
       search: "urna box donatie posm campanie"
     },
@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "images/lux-tavene.jpg"
       ],
       date: "2025",
-      desc: "Colantare auto pentru transport comercial.",
+      desc: "Colantare auto realizată pentru transport comercial, cu accent pe vizibilitate și recunoașterea rapidă a brandului. Grafica este adaptată formei vehiculului și păstrează informațiile importante clare din mers și de la distanță.",
       tags: "Auto, Colantare, Comercial",
       search: "ambalaj market auto branding colantare"
     },
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "images/brand_auto1.jpg"
       ],
       date: "2025",
-      desc: "Grafică aplicată pe transport comercial.",
+      desc: "Branding auto pentru transport comercial, realizat cu grafică aplicată pe suprafețe mari și elemente vizuale bine delimitate. Proiectul urmărește să păstreze lizibilitatea mesajului și coerența brandului pe întreg vehiculul.",
       tags: "Microbuz, Colantare, Grafică",
       search: "documente md auto microbus branding colantare"
     },
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "images/fise_pret.jpg"
       ],
       date: "2025",
-      desc: "Element personalizat pentru expunere vizuală.",
+      desc: "Element promoțional personalizat pentru expunere vizuală în campanii, evenimente și spații comerciale. Suprafețele permit integrarea graficii de brand, a mesajelor promoționale și a elementelor informative într-o formă compactă și ușor de remarcat.",
       tags: "Display, Print, Expunere",
       search: "cub sticla vara aquacity posm stand"
     },
@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "images/cub-sticla.jpg"
       ],
       date: "2025",
-      desc: "Material personalizat pentru campanie.",
+      desc: "Stand promoțional realizat pentru campanii și prezentări de produs. Construcția este gândită pentru vizibilitate bună, montaj practic și integrarea elementelor grafice într-un format coerent cu identitatea vizuală a brandului.",
       tags: "Stand, Print, P.O.S.M.",
       search: "stand vara aquacity posm"
     },
@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "images/inghetata-uv1.jpg"
       ],
       date: "2025",
-      desc: "Materiale tipărite pentru prezentarea produselor.",
+      desc: "Fișe de preț și materiale tipărite pentru prezentarea clară a produselor și ofertelor. Formatul poate fi adaptat pentru restaurante, magazine, showroom-uri sau campanii, cu accent pe lizibilitate și organizarea informației.",
       tags: "Print, Meniu, Produs",
       search: "fise pret meniuri poligrafie print"
     },
@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "images/good-break.jpg"
       ],
       date: "2025",
-      desc: "Reclamă luminoasă pentru fațadă.",
+      desc: "Reclamă luminoasă pentru fațadă, realizată pentru vizibilitate bună atât ziua, cât și noaptea. Proporțiile și iluminarea sunt adaptate spațiului, astfel încât brandul să rămână ușor de recunoscut de la distanță.",
       tags: "Fațadă, Luminos, Volumetric",
       search: "good break litere volum light box fatada"
     },
@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "images/inghetata-uv1.jpg"
       ],
       date: "2025",
-      desc: "Print personalizat pentru produse.",
+      desc: "Etichete personalizate pentru produse, realizate pentru un aspect curat și o prezentare coerentă a brandului. Pot fi adaptate diferitelor dimensiuni și suprafețe, cu print clar, culori bine definite și finisaje potrivite utilizării finale.",
       tags: "Etichete, Print, Produs",
       search: "inghetata uv print etichete poligrafie"
     },
@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "images/plotter-2.jpg"
       ],
       date: "2025",
-      desc: "Etichete personalizate pentru produse.",
+      desc: "Etichete personalizate pentru ambalaje de produs, cu accent pe culori, lizibilitate și diferențiere la raft. Grafica este pregătită pentru print de calitate și poate fi adaptată în mai multe dimensiuni sau variante vizuale.",
       tags: "Etichete, UV, Produs",
       search: "mango passion fruit uv print etichete poligrafie"
     },
@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "images/litere_volum3.jpg"
       ],
       date: "2025",
-      desc: "Element volumetric pentru identitate vizuală.",
+      desc: "Element volumetric pentru identitate vizuală, realizat pentru interior și prezentare de brand. Construcția și finisajele urmăresc un aspect precis, curat și premium, potrivit pentru recepții, showroom-uri sau spații comerciale.",
       tags: "Logo, Interior, Volumetric",
       search: "art life design litere volum logo interior"
     },
@@ -171,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "images/litere_volum1.jpg"
       ],
       date: "2025",
-      desc: "Reclamă de fațadă cu litere volumetrice.",
+      desc: "Reclamă de fațadă cu litere volumetrice, realizată pentru identificarea clară a locației și vizibilitate din exterior. Dimensiunile, contrastul și poziționarea sunt adaptate fațadei pentru un rezultat echilibrat și ușor de remarcat.",
       tags: "Fațadă, Clinică, Volumetric",
       search: "smile dent litere volum fatada"
     },
@@ -184,7 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "images/litere_volum3.jpg"
       ],
       date: "2025",
-      desc: "Elemente de fațadă pentru spațiu comercial.",
+      desc: "Elemente de fațadă pentru spațiu comercial, realizate pentru a crește vizibilitatea brandului și pentru a integra identitatea vizuală direct în arhitectura locației. Finisajele și proporțiile sunt adaptate suprafeței pentru un rezultat coerent și profesional.",
       tags: "Fațadă, Litere, Exterior",
       search: "ambalaj market litere volum stand"
     },
@@ -199,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "images/brand_auto2.jpg"
       ],
       date: "2025",
-      desc: "Colantare auto pentru servicii locale.",
+      desc: "Colantare auto pentru promovarea serviciilor locale, cu grafică adaptată caroseriei și zonelor cu vizibilitate maximă. Designul urmărește să transmită rapid serviciul oferit și să păstreze brandul ușor de recunoscut în trafic.",
       tags: "Auto, Colantare, Grafică",
       search: "lux tavane auto branding colantare"
     },
@@ -213,7 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "images/fise_pret.jpg"
       ],
       date: "2025",
-      desc: "Decupare și print pentru etichete de brand.",
+      desc: "Stickere și etichete decupate la plotter pentru branding, ambalaje și materiale promoționale. Pot fi realizate în forme și dimensiuni diferite, cu margini curate și finisaj potrivit pentru aplicare pe diverse suprafețe.",
       tags: "Stickere, Plotter, Etichete",
       search: "stickere etichete plotter poligrafie"
     }
@@ -981,7 +981,6 @@ if (portfolioGrid) {
   const modalImg = $("#galleryModalImage");
   const modalTitle = $("#galleryModalTitle");
   const modalService = $("#galleryModalService");
-  const modalDate = $("#galleryModalDate");
   const modalDesc = $("#galleryModalDesc");
   const modalTags = $("#galleryModalTags");
   const modalThumbs = $("#galleryThumbs");
@@ -1096,7 +1095,6 @@ if (portfolioGrid) {
 
     if (modalTitle) modalTitle.textContent = item.dataset.title || "";
     if (modalService) modalService.textContent = item.dataset.service || "";
-    if (modalDate) modalDate.textContent = item.dataset.date || "";
     if (modalDesc) modalDesc.textContent = item.dataset.desc || "";
 
     if (modalTags) {
