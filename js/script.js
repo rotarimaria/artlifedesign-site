@@ -287,8 +287,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function workCard(work, isHome = false) {
-    const cardClass = isHome ? "work-card reveal" : "portfolio-card reveal";
-    const mediaClass = isHome ? "work-img gallery-item" : "portfolio-media gallery-item";
     const orderHref = isHome
       ? "#contact"
       : `index.html?service=${encodeURIComponent(work.service)}#contact`;
@@ -298,27 +296,75 @@ document.addEventListener("DOMContentLoaded", () => {
         ? "lucrari.html?search=plotter"
         : `lucrari.html?filter=${encodeURIComponent(work.category)}`;
 
+    if (isHome) {
+      return `
+        <article class="work-card reveal"
+          data-category="${work.category}"
+          data-search="${work.search}">
+          <button
+            class="work-img gallery-item"
+            type="button"
+            data-category="${work.category}"
+            data-full="${work.image}"
+            data-title="${work.title}"
+            data-service="${work.service}"
+            data-date="${work.date}"
+            data-desc="${work.desc}"
+            data-tags="${work.tags}">
+            <img src="${work.image}" alt="${work.title}" loading="lazy">
+
+            <span>
+              ${work.service.replace(
+                "Litere în volum & Standuri",
+                "Litere & Standuri"
+              )}
+            </span>
+
+            <div class="media-overlay">
+              <i class="bi bi-arrows-fullscreen"></i>
+              <small>Vezi lucrarea</small>
+            </div>
+          </button>
+
+          <div class="work-info">
+            <small>${work.service}</small>
+            <h3>${work.title}</h3>
+
+            <div class="work-actions work-actions-double">
+              <a href="${orderHref}"
+                class="work-order-btn work-order-primary btn-arrow"
+                data-order-service="${work.service}">
+                Cere ofertă
+                <i class="bi bi-arrow-up-right"></i>
+              </a>
+
+              <a href="${examplesHref}"
+                class="work-order-btn work-order-secondary btn-arrow">
+                Vezi exemple
+                <i class="bi bi-arrow-up-right"></i>
+              </a>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
     return `
-      <article
-        class="${cardClass}"
+      <article class="portfolio-card reveal"
         data-category="${work.category}"
-        data-search="${work.search}"
-      >
+        data-search="${work.search}">
         <button
-          class="${mediaClass}"
+          class="portfolio-media gallery-item"
           type="button"
+          data-category="${work.category}"
           data-full="${work.image}"
           data-title="${work.title}"
           data-service="${work.service}"
           data-date="${work.date}"
           data-desc="${work.desc}"
           data-tags="${work.tags}"
-        >
-          <img
-            src="${work.image}"
-            alt="${work.title}"
-            loading="lazy"
-          >
+          aria-label="Deschide lucrarea ${work.title}">
+          <img src="${work.image}" alt="${work.title}" loading="lazy">
 
           <span>
             ${work.service.replace(
@@ -327,59 +373,31 @@ document.addEventListener("DOMContentLoaded", () => {
             )}
           </span>
 
-          ${
-            isHome
-              ? `
-                <div class="media-overlay">
-                  <i class="bi bi-arrows-fullscreen"></i>
-                  <small>Vezi lucrarea</small>
-                </div>
-              `
-              : ""
-          }
+          <div class="portfolio-media-overlay">
+            <span>Deschide lucrarea</span>
+            <i class="bi bi-arrow-up-right"></i>
+          </div>
         </button>
 
-        <div class="${isHome ? "work-info" : "portfolio-content"}">
+        <div class="portfolio-content">
           <small>${work.service}</small>
           <h3>${work.title}</h3>
 
-          ${
-            isHome
-              ? `
-                <div class="work-actions work-actions-double">
-                  <a
-                    href="${orderHref}"
-                    class="work-order-btn work-order-primary btn-arrow"
-                    data-order-service="${work.service}"
-                  >
-                    Cere ofertă
-                    <i class="bi bi-arrow-up-right"></i>
-                  </a>
+          <div class="portfolio-card-actions">
+            <a href="${orderHref}"
+              class="portfolio-action portfolio-action-primary"
+              data-order-service="${work.service}">
+              Cere ofertă
+              <i class="bi bi-arrow-up-right"></i>
+            </a>
 
-                  <a
-                    href="${examplesHref}"
-                    class="work-order-btn work-order-secondary btn-arrow"
-                  >
-                    Vezi exemple
-                    <i class="bi bi-arrow-up-right"></i>
-                  </a>
-                </div>
-              `
-              : `
-                <p>${work.desc}</p>
-
-                <div class="work-actions">
-                  <a
-                    href="${orderHref}"
-                    class="work-order-btn btn-arrow"
-                    data-order-service="${work.service}"
-                  >
-                    Produs similar
-                    <i class="bi bi-arrow-right"></i>
-                  </a>
-                </div>
-              `
-          }
+            <button type="button"
+              class="portfolio-action portfolio-action-secondary"
+              data-open-card-work>
+              Deschide
+              <i class="bi bi-arrow-right"></i>
+            </button>
+          </div>
         </div>
       </article>
     `;
@@ -671,9 +689,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalDesc = $("#galleryModalDesc");
   const modalTags = $("#galleryModalTags");
   const galleryOrderBtn = $("#galleryOrderBtn");
+  const galleryExamplesBtn = $("#galleryExamplesBtn");
+  const galleryCounter = $("#galleryCounter");
 
   function updateGalleryItems() {
-    galleryItems = [...$$(".gallery-item")];
+    galleryItems = [...$$(".gallery-item")].filter((item) => {
+      const card = item.closest(".portfolio-card, .work-card");
+      if (!card) return true;
+
+      const computed = window.getComputedStyle(card);
+
+      return (
+        computed.display !== "none" &&
+        computed.visibility !== "hidden" &&
+        !card.classList.contains("hidden")
+      );
+    });
+  }
+
+  function categoryHref(category) {
+    if (!category) return "lucrari.html";
+
+    return category === "laser"
+      ? "lucrari.html?search=plotter"
+      : `lucrari.html?filter=${encodeURIComponent(category)}`;
   }
 
   function renderGallery(index) {
@@ -702,21 +741,38 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    if (galleryOrderBtn) {
-      const service = item.dataset.service || "";
+    const service = item.dataset.service || "";
+    const category = item.dataset.category || "";
 
+    if (galleryOrderBtn) {
       galleryOrderBtn.dataset.orderService = service;
       galleryOrderBtn.href = $("#contact")
         ? "#contact"
         : `index.html?service=${encodeURIComponent(service)}#contact`;
     }
+
+    if (galleryExamplesBtn) {
+      galleryExamplesBtn.href = categoryHref(category);
+      galleryExamplesBtn.innerHTML = portfolioGrid
+        ? 'Vezi categoria <i class="bi bi-arrow-up-right"></i>'
+        : 'Vezi exemple <i class="bi bi-arrow-up-right"></i>';
+    }
+
+    if (galleryCounter) {
+      galleryCounter.textContent = `${index + 1} / ${galleryItems.length}`;
+    }
   }
 
-  function openGallery(index) {
-    if (!modal || !galleryItems.length) return;
+  function openGalleryFromItem(item) {
+    if (!modal || !item) return;
+
+    updateGalleryItems();
+
+    const index = galleryItems.indexOf(item);
+    if (index < 0) return;
 
     galleryIndex = index;
-    renderGallery(index);
+    renderGallery(galleryIndex);
     modal.classList.add("active");
     document.body.style.overflow = "hidden";
   }
@@ -725,13 +781,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!modal) return;
 
     modal.classList.remove("active");
-
     if (modalImg) modalImg.src = "";
-
     document.body.style.overflow = "";
   }
 
   function nextGallery() {
+    updateGalleryItems();
     if (!galleryItems.length) return;
 
     galleryIndex = (galleryIndex + 1) % galleryItems.length;
@@ -739,21 +794,46 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function prevGallery() {
+    updateGalleryItems();
     if (!galleryItems.length) return;
 
-    galleryIndex = (galleryIndex - 1 + galleryItems.length) % galleryItems.length;
+    galleryIndex =
+      (galleryIndex - 1 + galleryItems.length) % galleryItems.length;
+
     renderGallery(galleryIndex);
   }
 
-  updateGalleryItems();
+  document.addEventListener("click", (event) => {
+    const item = event.target.closest(".gallery-item");
 
-  galleryItems.forEach((item, index) => {
-    item.addEventListener("click", () => openGallery(index));
+    if (item) {
+      event.preventDefault();
+      openGalleryFromItem(item);
+      return;
+    }
+
+    const openButton = event.target.closest("[data-open-card-work]");
+
+    if (openButton) {
+      event.preventDefault();
+
+      const item = openButton
+        .closest(".portfolio-card")
+        ?.querySelector(".gallery-item");
+
+      if (item) openGalleryFromItem(item);
+    }
   });
 
   $("#galleryModalClose")?.addEventListener("click", closeGallery);
-  $("#galleryNext")?.addEventListener("click", nextGallery);
-  $("#galleryPrev")?.addEventListener("click", prevGallery);
+
+  ["#galleryNext", "#galleryNextInline"].forEach((selector) => {
+    $(selector)?.addEventListener("click", nextGallery);
+  });
+
+  ["#galleryPrev", "#galleryPrevInline"].forEach((selector) => {
+    $(selector)?.addEventListener("click", prevGallery);
+  });
 
   if (modal) {
     modal.addEventListener("click", (event) => {
@@ -768,6 +848,32 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.key === "ArrowRight") nextGallery();
     if (event.key === "ArrowLeft") prevGallery();
   });
+
+  if (modal) {
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    modal.addEventListener("touchstart", (event) => {
+      const touch = event.changedTouches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    }, { passive: true });
+
+    modal.addEventListener("touchend", (event) => {
+      const touch = event.changedTouches[0];
+      const deltaX = touch.clientX - touchStartX;
+      const deltaY = touch.clientY - touchStartY;
+
+      if (
+        Math.abs(deltaX) < 55 ||
+        Math.abs(deltaX) <= Math.abs(deltaY)
+      ) {
+        return;
+      }
+
+      deltaX < 0 ? nextGallery() : prevGallery();
+    }, { passive: true });
+  }
 
   function clearErrors(form) {
     form.querySelectorAll(".field-error").forEach((error) => error.remove());

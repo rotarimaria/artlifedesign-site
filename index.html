@@ -1665,14 +1665,59 @@
 
         <small id="galleryModalDesc"></small>
 
-        <a
-          href="#contact"
-          class="gallery-order-btn btn-arrow"
-          id="galleryOrderBtn"
-        >
-          Produs similar
-          <i class="bi bi-arrow-right"></i>
-        </a>
+        <div class="gallery-action-links">
+
+          <a
+            href="#contact"
+            class="gallery-action-link gallery-action-primary"
+            id="galleryOrderBtn"
+          >
+            Cere ofertă
+            <i class="bi bi-arrow-up-right"></i>
+          </a>
+
+          <a
+            href="lucrari.html"
+            class="gallery-action-link gallery-action-secondary"
+            id="galleryExamplesBtn"
+          >
+            Vezi exemple
+            <i class="bi bi-arrow-up-right"></i>
+          </a>
+
+        </div>
+
+        <div class="gallery-inline-nav">
+
+          <button
+            type="button"
+            class="gallery-inline-btn"
+            id="galleryPrevInline"
+            aria-label="Lucrarea precedentă"
+          >
+            <i class="bi bi-arrow-left"></i>
+            <span>Precedenta</span>
+          </button>
+
+          <span
+            class="gallery-counter"
+            id="galleryCounter"
+            aria-live="polite"
+          >
+            1 / 1
+          </span>
+
+          <button
+            type="button"
+            class="gallery-inline-btn"
+            id="galleryNextInline"
+            aria-label="Lucrarea următoare"
+          >
+            <span>Următoarea</span>
+            <i class="bi bi-arrow-right"></i>
+          </button>
+
+        </div>
 
       </div>
 
