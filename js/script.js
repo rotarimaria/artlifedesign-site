@@ -589,7 +589,7 @@ document.addEventListener("DOMContentLoaded", () => {
       lastTime = time;
 
       if (!paused && cycleWidth > 0) {
-        grid.scrollLeft += delta * 0.022;
+        grid.scrollLeft += delta * 0.032;
 
         if (grid.scrollLeft >= cycleWidth) {
           grid.scrollLeft -= cycleWidth;
@@ -1069,10 +1069,6 @@ if (portfolioGrid) {
 
     renderThumbnails();
 
-    const hasMultiple = projectImages.length > 1;
-
-    if (photoPrev) photoPrev.hidden = !hasMultiple;
-    if (photoNext) photoNext.hidden = !hasMultiple;
   }
 
   function previousPhoto() {
@@ -1217,6 +1213,26 @@ if (portfolioGrid) {
         ?.querySelector(".gallery-item");
 
       if (media) openGalleryFromItem(media);
+      return;
+    }
+
+    /*
+      Click pe zona liberă / titlul cardului deschide proiectul.
+      Linkurile "Cere ofertă" și "Vezi exemple" rămân independente.
+    */
+    const card = event.target.closest(".work-card, .portfolio-card");
+
+    if (
+      card &&
+      !event.target.closest("a") &&
+      !event.target.closest("button")
+    ) {
+      const media = card.querySelector(".gallery-item");
+
+      if (media) {
+        event.preventDefault();
+        openGalleryFromItem(media);
+      }
     }
   });
 
