@@ -287,112 +287,99 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function workCard(work, isHome = false) {
-    const cardClass = isHome ? "work-card reveal home-work-card" : "portfolio-card reveal";
+    const cardClass = isHome ? "work-card reveal" : "portfolio-card reveal";
     const mediaClass = isHome ? "work-img gallery-item" : "portfolio-media gallery-item";
-    const orderHref = isHome ? "#contact" : `index.html?service=${encodeURIComponent(work.service)}#contact`;
+    const orderHref = isHome
+      ? "#contact"
+      : `index.html?service=${encodeURIComponent(work.service)}#contact`;
+
     const examplesHref =
       work.category === "laser"
         ? "lucrari.html?search=plotter"
         : `lucrari.html?filter=${encodeURIComponent(work.category)}`;
 
-    if (isHome) {
-      return `
-        <article
-          class="${cardClass}"
-          data-category="${work.category}"
-          data-search="${work.search}"
-          data-home-work-card
-        >
-          <button
-            class="${mediaClass}"
-            type="button"
-            aria-expanded="false"
-            data-home-work-toggle
-            data-full="${work.image}"
-            data-title="${work.title}"
-            data-service="${work.service}"
-            data-date="${work.date}"
-            data-desc="${work.desc}"
-            data-tags="${work.tags}"
-          >
-            <img src="${work.image}" alt="${work.title}" loading="lazy">
-
-            <div class="home-work-overlay">
-              <span class="home-work-service">
-                ${work.service.replace("Litere în volum & Standuri", "Litere & Standuri")}
-              </span>
-
-              <div class="home-work-title-row">
-                <h3>${work.title}</h3>
-                <span class="home-work-more">Vezi detalii</span>
-              </div>
-            </div>
-          </button>
-
-          <div class="home-work-details" aria-hidden="true">
-            <div class="home-work-details-copy">
-              <small>${work.service}</small>
-              <h3>${work.title}</h3>
-              <p>${work.desc}</p>
-
-              <div class="home-work-tags">
-                ${(work.tags || "")
-                  .split(",")
-                  .map(tag => tag.trim())
-                  .filter(Boolean)
-                  .map(tag => `<span>${tag}</span>`)
-                  .join("")}
-              </div>
-            </div>
-
-            <div class="home-work-details-actions">
-              <a
-                href="${orderHref}"
-                class="btn-main btn-arrow"
-                data-order-service="${work.service}"
-              >
-                Solicită ofertă
-                <i class="bi bi-arrow-right"></i>
-              </a>
-
-              <a
-                href="${examplesHref}"
-                class="btn-ghost btn-arrow"
-              >
-                Vezi exemple
-                <i class="bi bi-arrow-up-right"></i>
-              </a>
-            </div>
-          </div>
-        </article>
-      `;
-    }
-
     return `
-      <article class="${cardClass}" data-category="${work.category}" data-search="${work.search}">
-        <button class="${mediaClass}"
+      <article
+        class="${cardClass}"
+        data-category="${work.category}"
+        data-search="${work.search}"
+      >
+        <button
+          class="${mediaClass}"
           type="button"
           data-full="${work.image}"
           data-title="${work.title}"
           data-service="${work.service}"
           data-date="${work.date}"
           data-desc="${work.desc}"
-          data-tags="${work.tags}">
-          <img src="${work.image}" alt="${work.title}" loading="lazy">
-          <span>${work.service.replace("Litere în volum & Standuri", "Litere & Standuri")}</span>
+          data-tags="${work.tags}"
+        >
+          <img
+            src="${work.image}"
+            alt="${work.title}"
+            loading="lazy"
+          >
+
+          <span>
+            ${work.service.replace(
+              "Litere în volum & Standuri",
+              "Litere & Standuri"
+            )}
+          </span>
+
+          ${
+            isHome
+              ? `
+                <div class="media-overlay">
+                  <i class="bi bi-arrows-fullscreen"></i>
+                  <small>Vezi lucrarea</small>
+                </div>
+              `
+              : ""
+          }
         </button>
 
-        <div class="portfolio-content">
+        <div class="${isHome ? "work-info" : "portfolio-content"}">
           <small>${work.service}</small>
           <h3>${work.title}</h3>
-          <p>${work.desc}</p>
 
-          <div class="work-actions">
-            <a href="${orderHref}" class="work-order-btn btn-arrow" data-order-service="${work.service}">
-              Produs similar
-              <i class="bi bi-arrow-right"></i>
-            </a>
-          </div>
+          ${
+            isHome
+              ? `
+                <div class="work-actions work-actions-double">
+                  <a
+                    href="${orderHref}"
+                    class="work-order-btn work-order-primary btn-arrow"
+                    data-order-service="${work.service}"
+                  >
+                    Solicită ofertă
+                    <i class="bi bi-arrow-right"></i>
+                  </a>
+
+                  <a
+                    href="${examplesHref}"
+                    class="work-order-btn work-order-secondary btn-arrow"
+                  >
+                    Vezi exemple
+                    <i class="bi bi-arrow-up-right"></i>
+                  </a>
+                </div>
+              `
+              : `
+                <p>${work.desc}</p>
+
+                <div class="work-actions">
+                  <a
+                    href="${orderHref}"
+                    class="work-order-btn btn-arrow"
+                    data-order-service="${work.service}"
+                  >
+                    Produs similar
+                    <i class="bi bi-arrow-right"></i>
+                  </a>
+                </div>
+              `
+          }
         </div>
       </article>
     `;
@@ -410,62 +397,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  function initHomeWorkCards() {
-    const cards = $$("[data-home-work-card]");
-    if (!cards.length) return;
-
-    function closeCard(card) {
-      const toggle = card.querySelector("[data-home-work-toggle]");
-      const details = card.querySelector(".home-work-details");
-
-      card.classList.remove("is-open");
-
-      if (toggle) toggle.setAttribute("aria-expanded", "false");
-      if (details) details.setAttribute("aria-hidden", "true");
-    }
-
-    function openCard(card) {
-      cards.forEach((otherCard) => {
-        if (otherCard !== card) closeCard(otherCard);
-      });
-
-      const toggle = card.querySelector("[data-home-work-toggle]");
-      const details = card.querySelector(".home-work-details");
-
-      card.classList.add("is-open");
-
-      if (toggle) toggle.setAttribute("aria-expanded", "true");
-      if (details) details.setAttribute("aria-hidden", "false");
-    }
-
-    cards.forEach((card) => {
-      const toggle = card.querySelector("[data-home-work-toggle]");
-      if (!toggle) return;
-
-      toggle.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-
-        if (card.classList.contains("is-open")) {
-          closeCard(card);
-        } else {
-          openCard(card);
-        }
-      });
-    });
-
-    document.addEventListener("click", (event) => {
-      if (event.target.closest("[data-home-work-card]")) return;
-      cards.forEach(closeCard);
-    });
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key !== "Escape") return;
-      cards.forEach(closeCard);
-    });
-  }
-
-  initHomeWorkCards();
 
   function revealOnScroll() {
     const items = $$(".reveal");
@@ -742,7 +673,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const galleryOrderBtn = $("#galleryOrderBtn");
 
   function updateGalleryItems() {
-    galleryItems = [...$$(".gallery-item:not([data-home-work-toggle])")];
+    galleryItems = [...$$(".gallery-item")];
   }
 
   function renderGallery(index) {
