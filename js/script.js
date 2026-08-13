@@ -505,6 +505,109 @@ document.addEventListener("DOMContentLoaded", () => {
   if (homeGrid) {
     homeGrid.innerHTML = works.slice(0, 4).map((work) => workCard(work, true)).join("");
   }
+
+
+  function initMobileWorksCarousel() {
+    const grid = $("#homeWorksGrid");
+    if (!grid) return;
+
+    const mq = window.matchMedia("(max-width: 760px)");
+    let timer = null;
+    let resumeTimer = null;
+    let pausedByUser = false;
+
+    function items() {
+      return [...grid.querySelectorAll(".work-card")];
+    }
+
+    function maxScrollLeft() {
+      return Math.max(0, grid.scrollWidth - grid.clientWidth);
+    }
+
+    function cardAdvance() {
+      const cards = items();
+      if (cards.length < 2) return grid.clientWidth;
+
+      const a = cards[0].getBoundingClientRect();
+      const b = cards[1].getBoundingClientRect();
+
+      return Math.max(1, b.left - a.left);
+    }
+
+    function pageAdvance() {
+      // Mutăm câte 2 carduri, pentru că pe mobil se văd 2 simultan.
+      return cardAdvance() * 2;
+    }
+
+    function stop() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    }
+
+    function start() {
+      stop();
+
+      if (!mq.matches || document.hidden) return;
+
+      timer = setInterval(() => {
+        if (pausedByUser || items().length < 3) return;
+
+        const nextLeft = grid.scrollLeft + pageAdvance();
+        const end = maxScrollLeft();
+
+        if (nextLeft >= end - 8) {
+          grid.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          grid.scrollBy({ left: pageAdvance(), behavior: "smooth" });
+        }
+      }, 5000);
+    }
+
+    function pauseTemporarily() {
+      if (!mq.matches) return;
+
+      pausedByUser = true;
+      stop();
+
+      if (resumeTimer) clearTimeout(resumeTimer);
+
+      resumeTimer = setTimeout(() => {
+        pausedByUser = false;
+        start();
+      }, 6500);
+    }
+
+    function sync() {
+      if (mq.matches) {
+        grid.classList.add("mobile-two-card-carousel");
+        start();
+      } else {
+        grid.classList.remove("mobile-two-card-carousel");
+        stop();
+        grid.scrollLeft = 0;
+      }
+    }
+
+    grid.addEventListener("touchstart", pauseTemporarily, { passive: true });
+    grid.addEventListener("pointerdown", pauseTemporarily, { passive: true });
+    grid.addEventListener("wheel", pauseTemporarily, { passive: true });
+
+    document.addEventListener("visibilitychange", () => {
+      document.hidden ? stop() : start();
+    });
+
+    if (mq.addEventListener) {
+      mq.addEventListener("change", sync);
+    } else {
+      mq.addListener(sync);
+    }
+
+    sync();
+  }
+
+  initMobileWorksCarousel();
 if (portfolioGrid) {
     portfolioGrid.innerHTML = works.map((work) => workCard(work)).join("");
   }
@@ -786,8 +889,6 @@ if (portfolioGrid) {
   const modalDesc = $("#galleryModalDesc");
   const modalTags = $("#galleryModalTags");
   const modalThumbs = $("#galleryThumbs");
-  const photoPrev = $("#galleryPhotoPrev");
-  const photoNext = $("#galleryPhotoNext");
   const galleryOrderBtn = $("#galleryOrderBtn");
 
   function updateGalleryItems() {
@@ -1004,8 +1105,6 @@ if (portfolioGrid) {
   $("#galleryPrev")?.addEventListener("click", previousProject);
   $("#galleryNext")?.addEventListener("click", nextProject);
 
-  photoPrev?.addEventListener("click", previousPhoto);
-  photoNext?.addEventListener("click", nextPhoto);
 
   if (modal) {
     modal.addEventListener("click", (event) => {
@@ -1018,21 +1117,8 @@ if (portfolioGrid) {
 
     if (event.key === "Escape") closeGallery();
 
-    if (event.key === "ArrowLeft") {
-      if (projectImages.length > 1) {
-        previousPhoto();
-      } else {
-        previousProject();
-      }
-    }
-
-    if (event.key === "ArrowRight") {
-      if (projectImages.length > 1) {
-        nextPhoto();
-      } else {
-        nextProject();
-      }
-    }
+    if (event.key === "ArrowLeft") previousProject();
+    if (event.key === "ArrowRight") nextProject();
   });
 
   /*

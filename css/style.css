@@ -6225,3 +6225,391 @@ body.gallery-open {
     font-size: .7rem;
   }
 }
+
+
+/* =========================================================
+   V8 — MODAL STABIL + CAROUSEL MOBIL CU 2 CARDURI
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   MODAL: dimensiune constantă indiferent de fotografia activă
+   --------------------------------------------------------- */
+
+.gallery-box {
+  width: min(1120px, calc(100vw - 120px)) !important;
+  height: min(720px, calc(100dvh - 86px)) !important;
+  max-height: none !important;
+
+  grid-template-columns:
+    minmax(0, 1.45fr)
+    minmax(300px, .55fr) !important;
+
+  overflow: hidden !important;
+}
+
+.gallery-media-column {
+  min-height: 0 !important;
+  height: 100% !important;
+
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) auto !important;
+}
+
+.gallery-image-stage {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+.gallery-image-stage > img {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+
+  object-fit: contain !important;
+}
+
+/*
+  Thumbnails au o înălțime fixă.
+  Dacă există o singură imagine, rândul dispare și imaginea mare
+  folosește automat tot spațiul disponibil.
+*/
+.gallery-thumbs {
+  min-height: 74px !important;
+  height: 74px !important;
+}
+
+.gallery-thumbs[hidden] {
+  display: none !important;
+}
+
+/* al doilea set de săgeți nu mai există */
+.gallery-photo-nav,
+#galleryPhotoPrev,
+#galleryPhotoNext {
+  display: none !important;
+}
+
+/*
+  Rămâne un singur set de săgeți:
+  stânga / dreapta = proiect precedent / proiect următor.
+*/
+.gallery-nav {
+  display: grid !important;
+  place-items: center !important;
+}
+
+
+/* ---------------------------------------------------------
+   TABLETĂ
+   --------------------------------------------------------- */
+
+@media (max-width: 1050px) and (min-width: 761px) {
+  .gallery-box {
+    width: min(900px, calc(100vw - 92px)) !important;
+    height: min(680px, calc(100dvh - 78px)) !important;
+
+    grid-template-columns:
+      minmax(0, 1.2fr)
+      minmax(270px, .8fr) !important;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   MOBIL — modal stabil
+   --------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .gallery-modal {
+    align-items: flex-start !important;
+
+    padding:
+      max(52px, env(safe-area-inset-top))
+      8px
+      max(10px, env(safe-area-inset-bottom))
+      !important;
+
+    overflow-y: auto !important;
+  }
+
+  .gallery-box {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+
+    display: block !important;
+
+    border-radius: 16px !important;
+  }
+
+  .gallery-media-column {
+    height: auto !important;
+
+    display: block !important;
+
+    padding: 8px !important;
+  }
+
+  .gallery-image-stage {
+    width: 100% !important;
+    height: auto !important;
+
+    aspect-ratio: 4 / 3 !important;
+  }
+
+  .gallery-image-stage > img {
+    width: 100% !important;
+    height: 100% !important;
+
+    object-fit: contain !important;
+  }
+
+  .gallery-thumbs {
+    width: 100% !important;
+    height: 60px !important;
+    min-height: 60px !important;
+
+    margin-top: 8px !important;
+  }
+
+  .gallery-thumb {
+    flex: 0 0 78px !important;
+
+    height: 58px !important;
+  }
+
+  .gallery-details {
+    padding: 1rem !important;
+  }
+
+  /*
+    Un singur set de arrows pentru proiecte.
+    Pe mobil stau discret pe marginile ecranului.
+  */
+  .gallery-nav {
+    top: 32vh !important;
+
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .gallery-prev {
+    left: 10px !important;
+  }
+
+  .gallery-next {
+    right: 10px !important;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   HOMEPAGE MOBIL — 2 CARDURI VIZIBILE + CAROUSEL CLAR
+   --------------------------------------------------------- */
+
+.mobile-works-carousel-hint {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  #homeWorksGrid.mobile-two-card-carousel {
+    display: flex !important;
+
+    grid-template-columns: none !important;
+
+    gap: 10px !important;
+
+    width: calc(100% + 18px) !important;
+
+    margin-right: -18px !important;
+
+    padding:
+      2px
+      18px
+      10px
+      0
+      !important;
+
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+
+    scroll-snap-type: x mandatory !important;
+    scroll-padding-left: 0 !important;
+
+    overscroll-behavior-x: contain;
+
+    -webkit-overflow-scrolling: touch;
+
+    scrollbar-width: none;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-card {
+    flex: 0 0 calc((100vw - 54px) / 2) !important;
+
+    width: calc((100vw - 54px) / 2) !important;
+    max-width: none !important;
+
+    scroll-snap-align: start !important;
+    scroll-snap-stop: always !important;
+
+    margin: 0 !important;
+
+    border-radius: 15px !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-img {
+    min-height: 0 !important;
+
+    aspect-ratio: 1 / 1 !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-img > span {
+    top: 8px !important;
+    left: 8px !important;
+
+    max-width: calc(100% - 16px);
+
+    padding: .32rem .45rem !important;
+
+    font-size: .58rem !important;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .media-overlay {
+    display: none !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-info {
+    min-height: 132px !important;
+
+    padding: .75rem !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-info > small {
+    display: none !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-info h3 {
+    margin: 0 !important;
+
+    font-size: .9rem !important;
+    line-height: 1.22 !important;
+  }
+
+  /*
+    Pe cardurile mici lăsăm un singur CTA vizual.
+    "Vezi exemple" rămâne accesibil prin pagina Lucrări,
+    dar nu înghesuim două butoane în jumătate de ecran.
+  */
+  #homeWorksGrid.mobile-two-card-carousel .work-actions-double {
+    display: block !important;
+
+    margin-top: .7rem !important;
+    padding-top: .65rem !important;
+
+    border-top: 1px solid rgba(247,244,235,.08) !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-order-primary {
+    width: 100% !important;
+
+    min-height: 34px !important;
+
+    display: flex !important;
+    justify-content: space-between !important;
+
+    padding: 0 !important;
+
+    border: 0 !important;
+    border-radius: 0 !important;
+
+    background: transparent !important;
+
+    color: var(--green) !important;
+
+    font-size: .68rem !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-order-secondary {
+    display: none !important;
+  }
+
+  /*
+    Hint clar că secțiunea poate fi glisată.
+    Nu este un control, doar o indicație vizuală.
+  */
+  .mobile-works-carousel-hint {
+    margin-top: 8px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    color: rgba(247,244,235,.42);
+
+    font-size: .68rem;
+    font-weight: 700;
+  }
+
+  .mobile-works-carousel-hint span:first-child {
+    color: rgba(247,244,235,.62);
+  }
+
+  .mobile-works-carousel-hint span:nth-child(2) {
+    margin-left: auto;
+  }
+
+  .mobile-works-carousel-hint i {
+    color: var(--green);
+
+    animation: mobileWorksHint 1.7s ease-in-out infinite;
+  }
+
+  @keyframes mobileWorksHint {
+    0%, 100% {
+      transform: translateX(0);
+      opacity: .65;
+    }
+
+    50% {
+      transform: translateX(4px);
+      opacity: 1;
+    }
+  }
+}
+
+
+/* ecrane foarte înguste — păstrăm tot 2 carduri, dar compacte */
+@media (max-width: 390px) {
+  #homeWorksGrid.mobile-two-card-carousel {
+    gap: 8px !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-card {
+    flex-basis: calc((100vw - 48px) / 2) !important;
+    width: calc((100vw - 48px) / 2) !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-info {
+    min-height: 124px !important;
+
+    padding: .65rem !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-info h3 {
+    font-size: .82rem !important;
+  }
+
+  #homeWorksGrid.mobile-two-card-carousel .work-order-primary {
+    font-size: .64rem !important;
+  }
+}
