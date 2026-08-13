@@ -4342,3 +4342,9 @@ body.artlife-chat-resetting .bpWebchat {
       !important;
   }
 }
+
+/* Ascunde launcher-ul mic personalizat din stânga-jos */
+#artlifeChatLauncher,
+.artlife-chat-launcher {
+  display: none !important;
+}
