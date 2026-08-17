@@ -1,8 +1,30 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const works = Array.isArray(window.ARTLIFE_PROJECTS)
-    ? window.ARTLIFE_PROJECTS
-    : [];
+document.addEventListener("DOMContentLoaded", async () => {
+  let works = [];
 
+  try {
+    const response = await fetch("api/projects.php", {
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const payload = await response.json();
+
+    if (!payload.ok || !Array.isArray(payload.projects)) {
+      throw new Error(
+        payload.message || "Răspuns invalid de la API."
+      );
+    }
+
+    works = payload.projects;
+  } catch (error) {
+    console.error(
+      "Proiectele nu au putut fi încărcate din baza de date:",
+      error
+    );
+  }
 
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => document.querySelectorAll(selector);
@@ -134,7 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
       selectService(service);
       contact.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
-      window.location.href = `index.php?service=${encodeURIComponent(service)}#contact`;
+      window.location.href = `index.html?service=${encodeURIComponent(service)}#contact`;
     }
   });
 
@@ -153,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!media?.src) {
       return `
         <div class="public-media-placeholder">
-          Fără imagine
+          Fără media
         </div>
       `;
     }
@@ -193,26 +215,25 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function workCard(work, isHome = false) {
+    const orderHref = isHome
+      ? "#contact"
+      : `index.html?service=${encodeURIComponent(work.service)}#contact`;
+
+    const examplesHref =
+      work.category === "laser"
+        ? "lucrari.html?search=plotter"
+        : `lucrari.html?filter=${encodeURIComponent(work.category)}`;
+
+    const encodedMedia = encodeURIComponent(
+      JSON.stringify(work.media || [])
+    );
+
     const safeTitle = escapeHTML(work.title);
     const safeService = escapeHTML(work.service);
     const safeCategory = escapeHTML(work.category);
     const safeSearch = escapeHTML(work.search);
     const safeDesc = escapeHTML(work.desc);
     const safeTags = escapeHTML(work.tags);
-
-    const orderHref = isHome
-      ? "#contact"
-      : `index.php?service=${encodeURIComponent(work.service)}#contact`;
-
-    const examplesHref =
-      work.category === "laser"
-        ? "lucrari.php?search=plotter"
-        : `lucrari.php?filter=${encodeURIComponent(work.category)}`;
-
-    const encodedMedia = encodeURIComponent(
-      JSON.stringify(work.media || [])
-    );
-
     const mediaHTML = cardMediaHTML(work);
 
     const shortService = escapeHTML(
@@ -224,7 +245,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const commonData = `
       data-category="${safeCategory}"
-      data-full="${escapeHTML(work.image || "")}"
       data-media="${encodedMedia}"
       data-title="${safeTitle}"
       data-service="${safeService}"
@@ -842,67 +862,20 @@ if (portfolioGrid) {
     if (!item) return [];
 
     try {
-      const decoded = decodeURIComponent(item.dataset.media || "");
+      const decoded = decodeURIComponent(
+        item.dataset.media || ""
+      );
+
       const parsed = JSON.parse(decoded);
 
       if (Array.isArray(parsed)) {
         return parsed.slice(0, 4);
       }
     } catch (error) {
-      // fallback mai jos
+      console.warn("Media proiect invalidă:", error);
     }
 
-    return item.dataset.full
-      ? [{ src: item.dataset.full, type: "image" }]
-      : [];
-  }
-
-  function renderThumbnails() {
-    if (!modalThumbs) return;
-
-    modalThumbs.innerHTML = "";
-
-    if (projectMedia.length <= 1) {
-      modalThumbs.hidden = true;
-      return;
-    }
-
-    modalThumbs.hidden = false;
-
-    projectMedia.forEach((media, index) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "gallery-thumb";
-      button.classList.toggle("active", index === projectMediaIndex);
-      button.setAttribute(
-        "aria-label",
-        `Afișează fișierul ${index + 1} din proiect`
-      );
-
-      let preview;
-
-      if (media.type === "video") {
-        preview = document.createElement("video");
-        preview.src = media.src;
-        preview.muted = true;
-        preview.preload = "metadata";
-        preview.playsInline = true;
-      } else {
-        preview = document.createElement("img");
-        preview.src = media.src;
-        preview.alt = "";
-        preview.loading = "lazy";
-      }
-
-      button.appendChild(preview);
-
-      button.addEventListener("click", () => {
-        projectMediaIndex = index;
-        renderProjectMedia();
-      });
-
-      modalThumbs.appendChild(button);
-    });
+    return [];
   }
 
   function stopModalVideo() {
@@ -940,18 +913,72 @@ if (portfolioGrid) {
         modalImg.hidden = false;
         modalImg.src = media.src;
         modalImg.alt =
-          `${modalTitle?.textContent || "Proiect Art Life Design"} — imaginea ${projectMediaIndex + 1}`;
+          `${modalTitle?.textContent || "Proiect ArtLife Design"} — imaginea ${projectMediaIndex + 1}`;
       }
     }
 
     renderThumbnails();
   }
 
+  function renderThumbnails() {
+    if (!modalThumbs) return;
+
+    modalThumbs.innerHTML = "";
+
+    if (projectMedia.length <= 1) {
+      modalThumbs.hidden = true;
+      return;
+    }
+
+    modalThumbs.hidden = false;
+
+    projectMedia.forEach((media, index) => {
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.className = "gallery-thumb";
+      button.classList.toggle(
+        "active",
+        index === projectMediaIndex
+      );
+
+      button.setAttribute(
+        "aria-label",
+        `Afișează fișierul ${index + 1} din proiect`
+      );
+
+      let preview;
+
+      if (media.type === "video") {
+        preview = document.createElement("video");
+        preview.src = media.src;
+        preview.muted = true;
+        preview.preload = "metadata";
+        preview.playsInline = true;
+      } else {
+        preview = document.createElement("img");
+        preview.src = media.src;
+        preview.alt = "";
+        preview.loading = "lazy";
+      }
+
+      button.appendChild(preview);
+
+      button.addEventListener("click", () => {
+        projectMediaIndex = index;
+        renderProjectMedia();
+      });
+
+      modalThumbs.appendChild(button);
+    });
+  }
+
   function previousPhoto() {
     if (projectMedia.length <= 1) return;
 
     projectMediaIndex =
-      (projectMediaIndex - 1 + projectMedia.length) % projectMedia.length;
+      (projectMediaIndex - 1 + projectMedia.length) %
+      projectMedia.length;
 
     renderProjectMedia();
   }
@@ -970,9 +997,17 @@ if (portfolioGrid) {
 
     if (!item) return;
 
-    if (modalTitle) modalTitle.textContent = item.dataset.title || "";
-    if (modalService) modalService.textContent = item.dataset.service || "";
-    if (modalDesc) modalDesc.textContent = item.dataset.desc || "";
+    if (modalTitle) {
+      modalTitle.textContent = item.dataset.title || "";
+    }
+
+    if (modalService) {
+      modalService.textContent = item.dataset.service || "";
+    }
+
+    if (modalDesc) {
+      modalDesc.textContent = item.dataset.desc || "";
+    }
 
     if (modalTags) {
       modalTags.innerHTML = "";
@@ -992,9 +1027,10 @@ if (portfolioGrid) {
       const service = item.dataset.service || "";
 
       galleryOrderBtn.dataset.orderService = service;
+
       galleryOrderBtn.href = $("#contact")
         ? "#contact"
-        : `index.php?service=${encodeURIComponent(service)}#contact`;
+        : `index.html?service=${encodeURIComponent(service)}#contact`;
     }
 
     projectMedia = getProjectMedia(item);
@@ -1009,7 +1045,10 @@ if (portfolioGrid) {
     updateGalleryItems();
 
     let sourceItem = item;
-    const cloneCard = item.closest("[data-carousel-clone]");
+
+    const cloneCard = item.closest(
+      "[data-carousel-clone]"
+    );
 
     if (cloneCard) {
       const sourceIndex = Number(
@@ -1023,7 +1062,8 @@ if (portfolioGrid) {
       ];
 
       sourceItem =
-        originalCards[sourceIndex]?.querySelector(".gallery-item") ||
+        originalCards[sourceIndex]
+          ?.querySelector(".gallery-item") ||
         item;
     }
 
@@ -1056,7 +1096,9 @@ if (portfolioGrid) {
 
     if (!galleryItems.length) return;
 
-    galleryIndex = (galleryIndex + 1) % galleryItems.length;
+    galleryIndex =
+      (galleryIndex + 1) % galleryItems.length;
+
     renderGallery(galleryIndex);
   }
 
@@ -1066,7 +1108,8 @@ if (portfolioGrid) {
     if (!galleryItems.length) return;
 
     galleryIndex =
-      (galleryIndex - 1 + galleryItems.length) % galleryItems.length;
+      (galleryIndex - 1 + galleryItems.length) %
+      galleryItems.length;
 
     renderGallery(galleryIndex);
   }
@@ -1080,7 +1123,9 @@ if (portfolioGrid) {
       return;
     }
 
-    const openButton = event.target.closest("[data-open-card-work]");
+    const openButton = event.target.closest(
+      "[data-open-card-work]"
+    );
 
     if (openButton) {
       event.preventDefault();
@@ -1089,11 +1134,16 @@ if (portfolioGrid) {
         .closest(".portfolio-card")
         ?.querySelector(".gallery-item");
 
-      if (media) openGalleryFromItem(media);
+      if (media) {
+        openGalleryFromItem(media);
+      }
+
       return;
     }
 
-    const card = event.target.closest(".work-card, .portfolio-card");
+    const card = event.target.closest(
+      ".work-card, .portfolio-card"
+    );
 
     if (
       card &&
@@ -1109,22 +1159,42 @@ if (portfolioGrid) {
     }
   });
 
-  $("#galleryModalClose")?.addEventListener("click", closeGallery);
-  $("#galleryPrev")?.addEventListener("click", previousProject);
-  $("#galleryNext")?.addEventListener("click", nextProject);
+  $("#galleryModalClose")
+    ?.addEventListener("click", closeGallery);
+
+  $("#galleryPrev")
+    ?.addEventListener("click", previousProject);
+
+  $("#galleryNext")
+    ?.addEventListener("click", nextProject);
 
   if (modal) {
     modal.addEventListener("click", (event) => {
-      if (event.target === modal) closeGallery();
+      if (event.target === modal) {
+        closeGallery();
+      }
     });
   }
 
   document.addEventListener("keydown", (event) => {
-    if (!modal || !modal.classList.contains("active")) return;
+    if (
+      !modal ||
+      !modal.classList.contains("active")
+    ) {
+      return;
+    }
 
-    if (event.key === "Escape") closeGallery();
-    if (event.key === "ArrowLeft") previousProject();
-    if (event.key === "ArrowRight") nextProject();
+    if (event.key === "Escape") {
+      closeGallery();
+    }
+
+    if (event.key === "ArrowLeft") {
+      previousProject();
+    }
+
+    if (event.key === "ArrowRight") {
+      nextProject();
+    }
   });
 
   const imageWrap = $(".gallery-image-stage");
@@ -1148,8 +1218,12 @@ if (portfolioGrid) {
       "touchend",
       (event) => {
         const touch = event.changedTouches[0];
-        const deltaX = touch.clientX - touchStartX;
-        const deltaY = touch.clientY - touchStartY;
+
+        const deltaX =
+          touch.clientX - touchStartX;
+
+        const deltaY =
+          touch.clientY - touchStartY;
 
         if (
           Math.abs(deltaX) < 50 ||
@@ -1159,9 +1233,13 @@ if (portfolioGrid) {
         }
 
         if (projectMedia.length > 1) {
-          deltaX < 0 ? nextPhoto() : previousPhoto();
+          deltaX < 0
+            ? nextPhoto()
+            : previousPhoto();
         } else {
-          deltaX < 0 ? nextProject() : previousProject();
+          deltaX < 0
+            ? nextProject()
+            : previousProject();
         }
       },
       { passive: true }
