@@ -286,4 +286,122 @@ input:focus,textarea:focus,select:focus{border-color:rgba(146,255,34,.55);box-sh
   flex-wrap:wrap;
 }
 
+
+/* =========================================================
+   FIX MODAL AJUSTARE — BUTOANELE DE SALVARE RĂMÂN VIZIBILE
+   ========================================================= */
+
+.crop-modal{
+  padding:12px !important;
+  overflow:hidden !important;
+}
+
+.crop-box{
+  width:min(820px,100%) !important;
+  max-height:calc(100vh - 24px) !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  scrollbar-width:none !important;
+  padding:16px !important;
+}
+
+.crop-box::-webkit-scrollbar{
+  width:0 !important;
+  height:0 !important;
+  display:none !important;
+}
+
+/* micșorăm puțin zona media ca să încapă și controalele */
+.crop-stage{
+  width:min(600px,100%) !important;
+  height:min(52vh,430px) !important;
+  aspect-ratio:auto !important;
+}
+
+/* controalele rămân compacte */
+.crop-controls{
+  gap:10px !important;
+  margin-top:12px !important;
+}
+
+.slider-row{
+  min-height:34px;
+}
+
+/* footer-ul cu salvare rămâne permanent vizibil */
+.crop-foot{
+  position:sticky !important;
+  bottom:-16px !important;
+  z-index:20 !important;
+  margin-top:14px !important;
+  padding:12px 0 16px !important;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(11,15,12,0),
+      #0b0f0c 18%,
+      #0b0f0c 100%
+    ) !important;
+}
+
+.crop-save-note{
+  flex:1 1 260px;
+}
+
+.crop-foot-actions{
+  flex:0 0 auto;
+}
+
+/* pe laptopuri cu înălțime mică */
+@media (max-height:780px){
+  .crop-stage{
+    height:min(46vh,350px) !important;
+  }
+
+  .crop-tip{
+    margin-top:7px !important;
+  }
+
+  .crop-controls{
+    gap:8px !important;
+    margin-top:9px !important;
+  }
+
+  .fit-switch button{
+    min-height:36px !important;
+  }
+
+  .slider-row{
+    min-height:30px;
+  }
+}
+
+/* pe telefon */
+@media (max-width:700px){
+  .crop-modal{
+    padding:6px !important;
+  }
+
+  .crop-box{
+    max-height:calc(100vh - 12px) !important;
+    padding:12px !important;
+  }
+
+  .crop-stage{
+    height:min(45vh,340px) !important;
+  }
+
+  .crop-foot{
+    bottom:-12px !important;
+  }
+
+  .crop-foot-actions{
+    width:100%;
+  }
+
+  .crop-foot-actions .btn{
+    flex:1;
+  }
+}
+
 </style>
