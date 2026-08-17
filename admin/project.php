@@ -15,7 +15,7 @@ $where = [];
 $params = [];
 
 if ($q !== '') {
-    $where[] = '(p.title LIKE :q OR p.service LIKE :q OR p.description LIKE :q)';
+    $where[] = '(p.title LIKE :q OR p.description LIKE :q)';
     $params['q'] = '%' . $q . '%';
 }
 
@@ -33,7 +33,14 @@ $sql = '
             WHERE pi.project_id = p.id
             ORDER BY pi.is_primary DESC, pi.sort_order ASC, pi.id ASC
             LIMIT 1
-        ) AS primary_image,
+        ) AS primary_media,
+        (
+            SELECT pi.media_type
+            FROM project_images pi
+            WHERE pi.project_id = p.id
+            ORDER BY pi.is_primary DESC, pi.sort_order ASC, pi.id ASC
+            LIMIT 1
+        ) AS media_type,
         (
             SELECT pi.crop_x
             FROM project_images pi
@@ -63,10 +70,17 @@ $sql = '
             LIMIT 1
         ) AS fit_mode,
         (
+            SELECT pi.rotation
+            FROM project_images pi
+            WHERE pi.project_id = p.id
+            ORDER BY pi.is_primary DESC, pi.sort_order ASC, pi.id ASC
+            LIMIT 1
+        ) AS rotation,
+        (
             SELECT COUNT(*)
             FROM project_images pi2
             WHERE pi2.project_id = p.id
-        ) AS image_count
+        ) AS media_count
     FROM projects p
 ';
 
@@ -75,9 +89,7 @@ if ($where) {
 }
 
 $sql .= '
-    ORDER BY
-        COALESCE(p.published_at, p.created_at) DESC,
-        p.id DESC
+    ORDER BY COALESCE(p.published_at, p.created_at) DESC, p.id DESC
 ';
 
 $stmt = $pdo->prepare($sql);
@@ -110,10 +122,10 @@ $success = trim((string) ($_GET['success'] ?? ''));
         <div>
             <span class="eyebrow">Portofoliu</span>
             <h1>Lucrări / Carduri</h1>
-            <p class="muted">Cele mai noi proiecte apar automat primele.</p>
+            <p class="muted">Ultimul proiect publicat apare automat primul.</p>
         </div>
 
-        <a class="btn btn-primary" href="proiect-nou.php">+ Adaugă proiect</a>
+        <a class="btn btn-primary" href="project-nou.php">+ Adaugă proiect</a>
     </div>
 
     <?php if ($success !== ''): ?>
@@ -136,7 +148,7 @@ $success = trim((string) ($_GET['success'] ?? ''));
             <button class="btn" type="submit">Filtrează</button>
 
             <?php if ($q !== '' || $category !== ''): ?>
-                <a class="btn btn-ghost" href="proiecte.php">Resetează</a>
+                <a class="btn btn-ghost" href="project.php">Resetează</a>
             <?php endif; ?>
         </form>
 
@@ -145,15 +157,15 @@ $success = trim((string) ($_GET['success'] ?? ''));
 
     <section class="card table-wrap">
         <?php if (!$projects): ?>
-            <div class="empty">Nu există proiecte pentru filtrele selectate.</div>
+            <div class="empty">Nu există proiecte.</div>
         <?php else: ?>
             <table>
                 <thead>
                     <tr>
-                        <th>Imagine</th>
+                        <th>Media</th>
                         <th>Proiect</th>
-                        <th>Categorie</th>
-                        <th>Imagini</th>
+                        <th>Categorie / Serviciu</th>
+                        <th>Fișiere</th>
                         <th>Status</th>
                         <th>Acțiuni</th>
                     </tr>
@@ -162,32 +174,49 @@ $success = trim((string) ($_GET['success'] ?? ''));
                 <?php foreach ($projects as $project): ?>
                     <tr>
                         <td>
-                            <?php if (!empty($project['primary_image'])): ?>
-                                <div class="thumb-wrap">
-                                    <img
-                                        class="thumb"
-                                        src="../<?= e((string) $project['primary_image']) ?>"
-                                        alt=""
-                                        style="
-                                            --crop-x:<?= (float) ($project['crop_x'] ?? 50) ?>%;
-                                            --crop-y:<?= (float) ($project['crop_y'] ?? 50) ?>%;
-                                            --zoom:<?= (float) ($project['crop_zoom'] ?? 1) ?>;
-                                            --fit:<?= e((string) ($project['fit_mode'] ?? 'cover')) ?>;
-                                        "
-                                    >
+                            <?php if (!empty($project['primary_media'])): ?>
+                                <div class="table-media">
+                                    <?php if (($project['media_type'] ?? 'image') === 'video'): ?>
+                                        <video
+                                            src="../<?= e((string) $project['primary_media']) ?>"
+                                            muted
+                                            loop
+                                            autoplay
+                                            playsinline
+                                            style="
+                                                --crop-x:<?= (float) ($project['crop_x'] ?? 50) ?>%;
+                                                --crop-y:<?= (float) ($project['crop_y'] ?? 50) ?>%;
+                                                --zoom:<?= (float) ($project['crop_zoom'] ?? 1) ?>;
+                                                --fit:<?= e((string) ($project['fit_mode'] ?? 'cover')) ?>;
+                                                --rotation:<?= (int) ($project['rotation'] ?? 0) ?>deg;
+                                            "
+                                        ></video>
+                                    <?php else: ?>
+                                        <img
+                                            src="../<?= e((string) $project['primary_media']) ?>"
+                                            alt=""
+                                            style="
+                                                --crop-x:<?= (float) ($project['crop_x'] ?? 50) ?>%;
+                                                --crop-y:<?= (float) ($project['crop_y'] ?? 50) ?>%;
+                                                --zoom:<?= (float) ($project['crop_zoom'] ?? 1) ?>;
+                                                --fit:<?= e((string) ($project['fit_mode'] ?? 'cover')) ?>;
+                                                --rotation:<?= (int) ($project['rotation'] ?? 0) ?>deg;
+                                            "
+                                        >
+                                    <?php endif; ?>
                                 </div>
                             <?php else: ?>
-                                <div class="no-thumb">Fără imagine</div>
+                                <div class="no-thumb">Fără media</div>
                             <?php endif; ?>
                         </td>
 
                         <td class="title-cell">
                             <strong><?= e((string) $project['title']) ?></strong>
-                            <span><?= e((string) $project['service']) ?></span>
+                            <span><?= e((string) ($project['description'] ?? '')) ?></span>
                         </td>
 
                         <td><?= e($categories[$project['category']] ?? (string) $project['category']) ?></td>
-                        <td><?= (int) $project['image_count'] ?>/4</td>
+                        <td><?= (int) $project['media_count'] ?>/4</td>
 
                         <td>
                             <?php if ((int) $project['is_published'] === 1): ?>
@@ -199,8 +228,8 @@ $success = trim((string) ($_GET['success'] ?? ''));
 
                         <td>
                             <div class="row-actions">
-                                <a class="btn" href="proiect-edit.php?id=<?= (int) $project['id'] ?>">Editează</a>
-                                <a class="btn btn-danger" href="proiect-sterge.php?id=<?= (int) $project['id'] ?>">Șterge</a>
+                                <a class="btn" href="project-edit.php?id=<?= (int) $project['id'] ?>">Editează</a>
+                                <a class="btn btn-danger" href="project-sterge.php?id=<?= (int) $project['id'] ?>">Șterge</a>
                             </div>
                         </td>
                     </tr>

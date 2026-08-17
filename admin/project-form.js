@@ -1,357 +1,279 @@
 (() => {
-  const $ = (selector, root = document) => root.querySelector(selector);
-  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+  const $=(s,r=document)=>r.querySelector(s);
+  const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
 
-  const titleInput = $('#title');
-  const serviceInput = $('#service');
-  const categoryInput = $('#category');
+  const titleInput=$('#title');
+  const categoryInput=$('#category');
+  const descriptionInput=$('#description');
 
-  const liveTitle = $('#liveTitle');
-  const liveService = $('#liveService');
-  const liveMedia = $('#liveMedia');
+  const smallTitle=$('#smallTitle');
+  const smallCategory=$('#smallCategory');
+  const smallMedia=$('#smallMedia');
 
-  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+  const largeTitle=$('#largeTitle');
+  const largeCategory=$('#largeCategory');
+  const largeDescription=$('#largeDescription');
+  const largeMedia=$('#largeMedia');
 
-  function updateTextPreview() {
-    if (liveTitle) {
-      liveTitle.textContent =
-        titleInput?.value.trim() || 'Titlul proiectului';
-    }
-
-    if (liveService) {
-      const serviceText =
-        serviceInput?.value.trim() ||
-        categoryInput?.selectedOptions?.[0]?.textContent?.trim() ||
-        'Serviciu';
-
-      liveService.textContent = serviceText;
-    }
+  function categoryLabel(){
+    return categoryInput?.selectedOptions?.[0]?.textContent?.trim() || 'Categorie';
   }
 
-  function getCropValues(slot) {
+  function updateTextPreview(){
+    const title=titleInput?.value.trim() || 'Titlul proiectului';
+    const category=categoryLabel();
+    const description=descriptionInput?.value.trim() || 'Descrierea proiectului va apărea aici.';
+
+    if(smallTitle) smallTitle.textContent=title;
+    if(smallCategory) smallCategory.textContent=category;
+    if(largeTitle) largeTitle.textContent=title;
+    if(largeCategory) largeCategory.textContent=category;
+    if(largeDescription) largeDescription.textContent=description;
+  }
+
+  function cropValues(slot){
     return {
-      x: slot.querySelector('[data-crop-x]')?.value || '50',
-      y: slot.querySelector('[data-crop-y]')?.value || '50',
-      zoom: slot.querySelector('[data-crop-zoom]')?.value || '1',
-      fit: slot.querySelector('[data-crop-fit]')?.value || 'cover',
+      x:slot.querySelector('[data-crop-x]')?.value||'50',
+      y:slot.querySelector('[data-crop-y]')?.value||'50',
+      zoom:slot.querySelector('[data-crop-zoom]')?.value||'1',
+      fit:slot.querySelector('[data-crop-fit]')?.value||'cover',
+      rotation:slot.querySelector('[data-rotation]')?.value||'0',
     };
   }
 
-  function getPreviewSource() {
-    const selectedPrimary = $(
-      '.existing-slot input[name="primary_image_id"]:checked'
-    )?.closest('[data-crop-target]');
+  function previewSource(){
+    const selected=$('.media-slot input[name="primary_image_id"]:checked')?.closest('.media-slot');
+    if(selected && !selected.querySelector('input[name="delete_image[]"]:checked')) return selected;
 
-    if (
-      selectedPrimary &&
-      !selectedPrimary.querySelector(
-        'input[name="delete_image[]"]:checked'
-      )
-    ) {
-      return selectedPrimary;
-    }
+    const existing=$$('.media-slot.existing').find(slot=>!slot.querySelector('input[name="delete_image[]"]:checked'));
+    if(existing) return existing;
 
-    const existing = $$('.existing-slot').find(
-      slot =>
-        !slot.querySelector(
-          'input[name="delete_image[]"]:checked'
-        )
-    );
-
-    if (existing) return existing;
-
-    const newSlots = $$('.upload-slot.has-image');
-
-    return newSlots[0] || null;
+    return $$('.media-slot.has-media')[0] || null;
   }
 
-  function updateImagePreview() {
-    if (!liveMedia) return;
+  function cloneMedia(slot){
+    const src=slot?.querySelector('[data-media-preview]');
+    if(!src) return null;
+    const crop=cropValues(slot);
+    let el;
 
-    const source = getPreviewSource();
-
-    liveMedia.innerHTML = '';
-
-    if (!source) {
-      liveMedia.innerHTML =
-        '<div class="live-card-placeholder">' +
-        'Imaginea principală va apărea aici' +
-        '</div>';
-
-      return;
+    if(src.tagName==='VIDEO'){
+      el=document.createElement('video');
+      el.src=src.currentSrc || src.src;
+      el.muted=true; el.loop=true; el.autoplay=true; el.playsInline=true;
+    } else {
+      el=document.createElement('img');
+      el.src=src.src;
+      el.alt='';
     }
 
-    const sourceImage = source.querySelector('[data-crop-image]');
-
-    if (!sourceImage || !sourceImage.src) {
-      liveMedia.innerHTML =
-        '<div class="live-card-placeholder">' +
-        'Imaginea principală va apărea aici' +
-        '</div>';
-
-      return;
-    }
-
-    const crop = getCropValues(source);
-
-    const img = document.createElement('img');
-    img.src = sourceImage.src;
-    img.alt = '';
-
-    img.style.setProperty('--crop-x', crop.x + '%');
-    img.style.setProperty('--crop-y', crop.y + '%');
-    img.style.setProperty('--zoom', crop.zoom);
-    img.style.setProperty('--fit', crop.fit);
-
-    liveMedia.appendChild(img);
+    el.style.setProperty('--crop-x',crop.x+'%');
+    el.style.setProperty('--crop-y',crop.y+'%');
+    el.style.setProperty('--zoom',crop.zoom);
+    el.style.setProperty('--fit',crop.fit);
+    el.style.setProperty('--rotation',crop.rotation+'deg');
+    return el;
   }
 
-  function updateLivePreview() {
+  function updateMediaPreview(){
+    const source=previewSource();
+
+    [smallMedia,largeMedia].forEach(target=>{
+      if(!target) return;
+      target.innerHTML='';
+      const media=cloneMedia(source);
+      if(media){
+        target.appendChild(media);
+      }else{
+        const p=document.createElement('div');
+        p.className='preview-placeholder';
+        p.textContent='Imaginea sau videoul principal va apărea aici';
+        target.appendChild(p);
+      }
+    });
+  }
+
+  function updateAll(){
     updateTextPreview();
-    updateImagePreview();
+    updateMediaPreview();
   }
 
-  titleInput?.addEventListener('input', updateTextPreview);
-  serviceInput?.addEventListener('input', updateTextPreview);
-  categoryInput?.addEventListener('change', updateTextPreview);
+  titleInput?.addEventListener('input',updateTextPreview);
+  descriptionInput?.addEventListener('input',updateTextPreview);
+  categoryInput?.addEventListener('change',updateTextPreview);
 
-  $$('.upload-slot input[type="file"]').forEach(input => {
-    input.addEventListener('change', () => {
-      const slot = input.closest('.upload-slot');
-      const file = input.files?.[0];
+  $$('.media-slot input[type=file]').forEach(input=>{
+    input.addEventListener('change',()=>{
+      const slot=input.closest('.media-slot');
+      const file=input.files?.[0];
+      if(!slot||!file) return;
 
-      if (!slot || !file) return;
+      const old=slot.querySelector('.slot-preview');
+      if(old) old.remove();
 
-      let preview = slot.querySelector('.slot-preview');
+      const wrap=document.createElement('div');
+      wrap.className='slot-preview';
 
-      if (!preview) {
-        preview = document.createElement('div');
-        preview.className = 'slot-preview';
-        preview.innerHTML =
-          '<img data-crop-image alt="">';
-
-        slot.appendChild(preview);
+      let media;
+      if(file.type.startsWith('video/')){
+        media=document.createElement('video');
+        media.muted=true; media.loop=true; media.autoplay=true; media.playsInline=true;
+      }else{
+        media=document.createElement('img');
+        media.alt='';
       }
 
-      const img = preview.querySelector('[data-crop-image]');
-      const objectUrl = URL.createObjectURL(file);
+      media.dataset.mediaPreview='1';
+      media.src=URL.createObjectURL(file);
+      wrap.appendChild(media);
+      slot.appendChild(wrap);
 
-      img.onload = () => {
-        updateLivePreview();
-      };
+      slot.classList.add('has-media');
+      const empty=slot.querySelector('.slot-empty');
+      if(empty) empty.style.display='none';
+      const adjust=slot.querySelector('.js-adjust');
+      if(adjust) adjust.style.display='';
 
-      img.src = objectUrl;
-
-      slot.classList.add('has-image');
-
-      const empty = slot.querySelector('.slot-empty');
-
-      if (empty) {
-        empty.style.display = 'none';
-      }
-
-      const adjustButton = slot.querySelector('.js-crop-open');
-
-      if (adjustButton) {
-        adjustButton.style.display = '';
-      }
-
-      updateLivePreview();
+      media.addEventListener('loadeddata',updateAll,{once:true});
+      media.addEventListener('load',updateAll,{once:true});
+      updateAll();
     });
   });
 
-  $$(
-    'input[name="primary_image_id"], ' +
-    'input[name="delete_image[]"]'
-  ).forEach(input => {
-    input.addEventListener('change', updateLivePreview);
+  $$('input[name="primary_image_id"],input[name="delete_image[]"]').forEach(el=>{
+    el.addEventListener('change',updateMediaPreview);
   });
 
-  /*
-   * Editor vizual imagine
-   */
-  const modal = $('#cropModal');
-  const stage = $('#cropStage');
-  const stageImg = $('#cropStageImg');
-  const zoomInput = $('#cropZoom');
-  const zoomValue = $('#cropZoomValue');
-  const fitButtons = $$('.fit-switch button');
-  const applyButton = $('#cropApply');
-  const cancelButton = $('#cropCancel');
-  const resetButton = $('#cropReset');
+  const modal=$('#cropModal');
+  const stage=$('#cropStage');
+  const zoom=$('#cropZoom');
+  const zoomValue=$('#cropZoomValue');
+  const fitButtons=$$('.fit-switch button');
+  let activeSlot=null;
+  let state={x:50,y:50,zoom:1,fit:'cover',rotation:0};
+  let drag=null;
 
-  let activeSlot = null;
-  let state = {
-    x: 50,
-    y: 50,
-    zoom: 1,
-    fit: 'cover',
-  };
-  let drag = null;
-
-  function renderCropEditor() {
-    if (!stageImg) return;
-
-    stageImg.style.setProperty('--crop-x', state.x + '%');
-    stageImg.style.setProperty('--crop-y', state.y + '%');
-    stageImg.style.setProperty('--zoom', state.zoom);
-    stageImg.style.setProperty('--fit', state.fit);
-
-    if (zoomInput) {
-      zoomInput.value = String(state.zoom);
-    }
-
-    if (zoomValue) {
-      zoomValue.textContent =
-        Number(state.zoom).toFixed(2) + '×';
-    }
-
-    fitButtons.forEach(button => {
-      button.classList.toggle(
-        'active',
-        button.dataset.fit === state.fit
-      );
-    });
+  function stageMedia(){
+    return $('#cropStageMedia');
   }
 
-  function openCropEditor(slot) {
-    if (!modal || !stageImg) return;
+  function renderStage(){
+    const media=stageMedia();
+    if(!media) return;
+    media.style.setProperty('--crop-x',state.x+'%');
+    media.style.setProperty('--crop-y',state.y+'%');
+    media.style.setProperty('--zoom',state.zoom);
+    media.style.setProperty('--fit',state.fit);
+    media.style.setProperty('--rotation',state.rotation+'deg');
+    if(zoom) zoom.value=state.zoom;
+    if(zoomValue) zoomValue.textContent=Number(state.zoom).toFixed(2)+'×';
+    fitButtons.forEach(b=>b.classList.toggle('active',b.dataset.fit===state.fit));
+  }
 
-    const img = slot.querySelector('[data-crop-image]');
+  function openEditor(slot){
+    const source=slot.querySelector('[data-media-preview]');
+    if(!source||!modal||!stage) return;
 
-    if (!img || !img.src) return;
-
-    activeSlot = slot;
-
-    const crop = getCropValues(slot);
-
-    state = {
-      x: parseFloat(crop.x),
-      y: parseFloat(crop.y),
-      zoom: parseFloat(crop.zoom),
-      fit: crop.fit,
+    activeSlot=slot;
+    const c=cropValues(slot);
+    state={
+      x:parseFloat(c.x),y:parseFloat(c.y),zoom:parseFloat(c.zoom),
+      fit:c.fit,rotation:parseInt(c.rotation,10)||0
     };
 
-    stageImg.src = img.src;
-
-    renderCropEditor();
+    stage.innerHTML='';
+    let media;
+    if(source.tagName==='VIDEO'){
+      media=document.createElement('video');
+      media.src=source.currentSrc||source.src;
+      media.muted=true; media.loop=true; media.autoplay=true; media.playsInline=true;
+    }else{
+      media=document.createElement('img');
+      media.src=source.src; media.alt='';
+    }
+    media.id='cropStageMedia';
+    stage.appendChild(media);
+    renderStage();
     modal.classList.add('open');
   }
 
-  function closeCropEditor() {
+  function closeEditor(){
     modal?.classList.remove('open');
-    activeSlot = null;
-    drag = null;
+    activeSlot=null; drag=null;
   }
 
-  function applyCrop() {
-    if (!activeSlot) return;
+  function applyEditor(){
+    if(!activeSlot) return;
+    const map=[
+      ['[data-crop-x]',state.x.toFixed(2)],
+      ['[data-crop-y]',state.y.toFixed(2)],
+      ['[data-crop-zoom]',state.zoom.toFixed(2)],
+      ['[data-crop-fit]',state.fit],
+      ['[data-rotation]',String(state.rotation)],
+    ];
+    map.forEach(([sel,val])=>{const el=activeSlot.querySelector(sel); if(el) el.value=val;});
 
-    const x = activeSlot.querySelector('[data-crop-x]');
-    const y = activeSlot.querySelector('[data-crop-y]');
-    const zoom = activeSlot.querySelector('[data-crop-zoom]');
-    const fit = activeSlot.querySelector('[data-crop-fit]');
-    const img = activeSlot.querySelector('[data-crop-image]');
-
-    if (x) x.value = state.x.toFixed(2);
-    if (y) y.value = state.y.toFixed(2);
-    if (zoom) zoom.value = state.zoom.toFixed(2);
-    if (fit) fit.value = state.fit;
-
-    if (img) {
-      img.style.setProperty('--crop-x', state.x + '%');
-      img.style.setProperty('--crop-y', state.y + '%');
-      img.style.setProperty('--zoom', state.zoom);
-      img.style.setProperty('--fit', state.fit);
+    const media=activeSlot.querySelector('[data-media-preview]');
+    if(media){
+      media.style.setProperty('--crop-x',state.x+'%');
+      media.style.setProperty('--crop-y',state.y+'%');
+      media.style.setProperty('--zoom',state.zoom);
+      media.style.setProperty('--fit',state.fit);
+      media.style.setProperty('--rotation',state.rotation+'deg');
     }
-
-    updateLivePreview();
-    closeCropEditor();
+    updateMediaPreview();
+    closeEditor();
   }
 
-  $$('.js-crop-open').forEach(button => {
-    button.addEventListener('click', event => {
-      event.preventDefault();
-      event.stopPropagation();
+  $$('.js-adjust').forEach(btn=>btn.addEventListener('click',e=>{
+    e.preventDefault(); e.stopPropagation();
+    const slot=btn.closest('.media-slot');
+    if(slot) openEditor(slot);
+  }));
 
-      const slot = button.closest('[data-crop-target]');
+  zoom?.addEventListener('input',()=>{state.zoom=parseFloat(zoom.value); renderStage();});
+  fitButtons.forEach(btn=>btn.addEventListener('click',()=>{state.fit=btn.dataset.fit||'cover'; renderStage();}));
 
-      if (slot) {
-        openCropEditor(slot);
-      }
-    });
+  $$('.js-move').forEach(btn=>btn.addEventListener('click',()=>{
+    const step=5;
+    if(btn.dataset.move==='left') state.x=clamp(state.x-step,0,100);
+    if(btn.dataset.move==='right') state.x=clamp(state.x+step,0,100);
+    if(btn.dataset.move==='up') state.y=clamp(state.y-step,0,100);
+    if(btn.dataset.move==='down') state.y=clamp(state.y+step,0,100);
+    renderStage();
+  }));
+
+  $$('.js-rotate').forEach(btn=>btn.addEventListener('click',()=>{
+    state.rotation += btn.dataset.rotate==='left' ? -90 : 90;
+    if(state.rotation>180) state.rotation-=360;
+    if(state.rotation<-180) state.rotation+=360;
+    renderStage();
+  }));
+
+  $('#cropReset')?.addEventListener('click',()=>{
+    state={x:50,y:50,zoom:1,fit:'cover',rotation:0};
+    renderStage();
   });
+  $('#cropApply')?.addEventListener('click',applyEditor);
+  $('#cropCancel')?.addEventListener('click',closeEditor);
+  modal?.addEventListener('click',e=>{if(e.target===modal) closeEditor();});
 
-  zoomInput?.addEventListener('input', () => {
-    state.zoom = parseFloat(zoomInput.value);
-    renderCropEditor();
+  stage?.addEventListener('pointerdown',e=>{
+    stage.setPointerCapture(e.pointerId);
+    drag={px:e.clientX,py:e.clientY,x:state.x,y:state.y};
   });
-
-  fitButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      state.fit = button.dataset.fit || 'cover';
-      renderCropEditor();
-    });
+  stage?.addEventListener('pointermove',e=>{
+    if(!drag) return;
+    const rect=stage.getBoundingClientRect();
+    const dx=(e.clientX-drag.px)/rect.width*100;
+    const dy=(e.clientY-drag.py)/rect.height*100;
+    state.x=clamp(drag.x-dx,0,100);
+    state.y=clamp(drag.y-dy,0,100);
+    renderStage();
   });
+  stage?.addEventListener('pointerup',()=>drag=null);
+  stage?.addEventListener('pointercancel',()=>drag=null);
 
-  resetButton?.addEventListener('click', () => {
-    state = {
-      x: 50,
-      y: 50,
-      zoom: 1,
-      fit: 'cover',
-    };
-
-    renderCropEditor();
-  });
-
-  cancelButton?.addEventListener('click', closeCropEditor);
-  applyButton?.addEventListener('click', applyCrop);
-
-  modal?.addEventListener('click', event => {
-    if (event.target === modal) {
-      closeCropEditor();
-    }
-  });
-
-  stage?.addEventListener('pointerdown', event => {
-    stage.setPointerCapture(event.pointerId);
-
-    drag = {
-      pointerX: event.clientX,
-      pointerY: event.clientY,
-      x: state.x,
-      y: state.y,
-    };
-  });
-
-  stage?.addEventListener('pointermove', event => {
-    if (!drag) return;
-
-    const rect = stage.getBoundingClientRect();
-
-    const dx =
-      ((event.clientX - drag.pointerX) / rect.width) * 100;
-
-    const dy =
-      ((event.clientY - drag.pointerY) / rect.height) * 100;
-
-    state.x = clamp(drag.x - dx, 0, 100);
-    state.y = clamp(drag.y - dy, 0, 100);
-
-    renderCropEditor();
-  });
-
-  stage?.addEventListener('pointerup', () => {
-    drag = null;
-  });
-
-  stage?.addEventListener('pointercancel', () => {
-    drag = null;
-  });
-
-  /*
-   * Completează preview-ul imediat la încărcarea paginii.
-   */
-  updateLivePreview();
+  updateAll();
 })();

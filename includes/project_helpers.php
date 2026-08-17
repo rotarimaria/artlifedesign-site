@@ -26,10 +26,8 @@ function ensureProjectUploadDir(): void
 {
     $dir = projectUploadDir();
 
-    if (!is_dir($dir)) {
-        if (!mkdir($dir, 0755, true) && !is_dir($dir)) {
-            throw new RuntimeException('Nu s-a putut crea folderul pentru imagini.');
-        }
+    if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
+        throw new RuntimeException('Nu s-a putut crea folderul pentru fișiere.');
     }
 }
 
@@ -51,11 +49,23 @@ function clampFloat(float $value, float $min, float $max): float
     return max($min, min($max, $value));
 }
 
-function normalizeImageDisplay(array $settings, int|string $key): array
+function normalizeRotation(int $value): int
 {
-    $x = clampFloat((float) ($settings['x'][$key] ?? 50), 0, 100);
-    $y = clampFloat((float) ($settings['y'][$key] ?? 50), 0, 100);
-    $zoom = clampFloat((float) ($settings['zoom'][$key] ?? 1), 1, 2.5);
+    $value %= 360;
+
+    if ($value > 180) {
+        $value -= 360;
+    }
+
+    if ($value < -180) {
+        $value += 360;
+    }
+
+    return $value;
+}
+
+function normalizeMediaDisplay(array $settings, int|string $key): array
+{
     $fit = (string) ($settings['fit'][$key] ?? 'cover');
 
     if (!in_array($fit, ['cover', 'contain'], true)) {
@@ -63,10 +73,11 @@ function normalizeImageDisplay(array $settings, int|string $key): array
     }
 
     return [
-        'crop_x' => $x,
-        'crop_y' => $y,
-        'crop_zoom' => $zoom,
-        'fit_mode' => $fit,
+        'crop_x'      => clampFloat((float) ($settings['x'][$key] ?? 50), 0, 100),
+        'crop_y'      => clampFloat((float) ($settings['y'][$key] ?? 50), 0, 100),
+        'crop_zoom'   => clampFloat((float) ($settings['zoom'][$key] ?? 1), 1, 3),
+        'fit_mode'    => $fit,
+        'rotation'    => normalizeRotation((int) ($settings['rotation'][$key] ?? 0)),
     ];
 }
 
@@ -83,7 +94,31 @@ function getProjectImages(int $projectId, PDO $pdo): array
     return $stmt->fetchAll();
 }
 
-function saveUploadedProjectImages(
+function detectUploadedMedia(string $tmpPath): array
+{
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mime = (string) $finfo->file($tmpPath);
+
+    $allowed = [
+        'image/jpeg'      => ['type' => 'image', 'ext' => 'jpg',  'max' => 8 * 1024 * 1024],
+        'image/png'       => ['type' => 'image', 'ext' => 'png',  'max' => 8 * 1024 * 1024],
+        'image/webp'      => ['type' => 'image', 'ext' => 'webp', 'max' => 8 * 1024 * 1024],
+        'image/gif'       => ['type' => 'image', 'ext' => 'gif',  'max' => 8 * 1024 * 1024],
+        'video/mp4'       => ['type' => 'video', 'ext' => 'mp4',  'max' => 80 * 1024 * 1024],
+        'video/webm'      => ['type' => 'video', 'ext' => 'webm', 'max' => 80 * 1024 * 1024],
+        'video/quicktime' => ['type' => 'video', 'ext' => 'mov',  'max' => 80 * 1024 * 1024],
+    ];
+
+    if (!isset($allowed[$mime])) {
+        throw new RuntimeException(
+            'Format neacceptat. Folosește JPG, PNG, WEBP, GIF, MP4, WEBM sau MOV.'
+        );
+    }
+
+    return $allowed[$mime];
+}
+
+function saveUploadedProjectMedia(
     array $files,
     int $projectId,
     PDO $pdo,
@@ -107,14 +142,6 @@ function saveUploadedProjectImages(
         return [];
     }
 
-    $allowed = [
-        'image/jpeg' => 'jpg',
-        'image/png'  => 'png',
-        'image/webp' => 'webp',
-        'image/gif'  => 'gif',
-    ];
-
-    $finfo = new finfo(FILEINFO_MIME_TYPE);
     $saved = [];
 
     foreach ($files['name'] as $i => $originalName) {
@@ -129,33 +156,31 @@ function saveUploadedProjectImages(
         }
 
         if ($error !== UPLOAD_ERR_OK) {
-            throw new RuntimeException('Una dintre imagini nu s-a încărcat corect.');
+            throw new RuntimeException(
+                'Un fișier nu s-a încărcat corect. Verifică și limita PHP pentru upload.'
+            );
         }
 
         $tmp = (string) ($files['tmp_name'][$i] ?? '');
         $size = (int) ($files['size'][$i] ?? 0);
+        $media = detectUploadedMedia($tmp);
 
-        if ($size <= 0 || $size > 8 * 1024 * 1024) {
-            throw new RuntimeException('Fiecare imagine trebuie să aibă maximum 8 MB.');
-        }
-
-        $mime = $finfo->file($tmp);
-
-        if (!isset($allowed[$mime])) {
-            throw new RuntimeException('Sunt acceptate doar JPG, PNG, WEBP și GIF.');
+        if ($size <= 0 || $size > $media['max']) {
+            $limit = $media['type'] === 'video' ? '80 MB' : '8 MB';
+            throw new RuntimeException("Fișierul depășește limita de {$limit}.");
         }
 
         $filename = sprintf(
             'project-%d-%s.%s',
             $projectId,
             bin2hex(random_bytes(8)),
-            $allowed[$mime]
+            $media['ext']
         );
 
         $target = projectUploadDir() . '/' . $filename;
 
         if (!move_uploaded_file($tmp, $target)) {
-            throw new RuntimeException('Imaginea nu a putut fi salvată.');
+            throw new RuntimeException('Fișierul nu a putut fi salvat.');
         }
 
         $orderStmt = $pdo->prepare(
@@ -174,7 +199,7 @@ function saveUploadedProjectImages(
         $primaryStmt->execute(['project_id' => $projectId]);
         $hasPrimary = (int) $primaryStmt->fetchColumn() > 0;
 
-        $display = normalizeImageDisplay($displaySettings, $i);
+        $display = normalizeMediaDisplay($displaySettings, $i);
 
         $insert = $pdo->prepare(
             'INSERT INTO project_images
@@ -187,7 +212,9 @@ function saveUploadedProjectImages(
                     crop_x,
                     crop_y,
                     crop_zoom,
-                    fit_mode
+                    fit_mode,
+                    media_type,
+                    rotation
                 )
              VALUES
                 (
@@ -199,7 +226,9 @@ function saveUploadedProjectImages(
                     :crop_x,
                     :crop_y,
                     :crop_zoom,
-                    :fit_mode
+                    :fit_mode,
+                    :media_type,
+                    :rotation
                 )'
         );
 
@@ -209,10 +238,12 @@ function saveUploadedProjectImages(
             'alt_text'   => null,
             'sort_order' => $sortOrder,
             'is_primary' => $hasPrimary ? 0 : 1,
-            'crop_x' => $display['crop_x'],
-            'crop_y' => $display['crop_y'],
-            'crop_zoom' => $display['crop_zoom'],
-            'fit_mode' => $display['fit_mode'],
+            'crop_x'     => $display['crop_x'],
+            'crop_y'     => $display['crop_y'],
+            'crop_zoom'  => $display['crop_zoom'],
+            'fit_mode'   => $display['fit_mode'],
+            'media_type' => $media['type'],
+            'rotation'   => $display['rotation'],
         ]);
 
         $saved[] = $filename;
@@ -221,15 +252,12 @@ function saveUploadedProjectImages(
     return $saved;
 }
 
-function updateExistingProjectImageDisplays(
+function updateExistingProjectMediaDisplays(
     int $projectId,
     PDO $pdo,
     array $displaySettings
 ): void {
-    if (
-        !isset($displaySettings['x']) ||
-        !is_array($displaySettings['x'])
-    ) {
+    if (!isset($displaySettings['x']) || !is_array($displaySettings['x'])) {
         return;
     }
 
@@ -239,40 +267,42 @@ function updateExistingProjectImageDisplays(
             crop_x = :crop_x,
             crop_y = :crop_y,
             crop_zoom = :crop_zoom,
-            fit_mode = :fit_mode
+            fit_mode = :fit_mode,
+            rotation = :rotation
          WHERE id = :id AND project_id = :project_id'
     );
 
-    foreach ($displaySettings['x'] as $imageId => $unused) {
-        $imageId = (int) $imageId;
+    foreach ($displaySettings['x'] as $mediaId => $unused) {
+        $mediaId = (int) $mediaId;
 
-        if ($imageId <= 0) {
+        if ($mediaId <= 0) {
             continue;
         }
 
-        $display = normalizeImageDisplay($displaySettings, $imageId);
+        $display = normalizeMediaDisplay($displaySettings, $mediaId);
 
         $update->execute([
-            'crop_x' => $display['crop_x'],
-            'crop_y' => $display['crop_y'],
-            'crop_zoom' => $display['crop_zoom'],
-            'fit_mode' => $display['fit_mode'],
-            'id' => $imageId,
+            'crop_x'     => $display['crop_x'],
+            'crop_y'     => $display['crop_y'],
+            'crop_zoom'  => $display['crop_zoom'],
+            'fit_mode'   => $display['fit_mode'],
+            'rotation'   => $display['rotation'],
+            'id'         => $mediaId,
             'project_id' => $projectId,
         ]);
     }
 }
 
-function deleteProjectImageFile(string $imagePath): void
+function deleteProjectImageFile(string $mediaPath): void
 {
-    $fullPath = projectUploadDir() . '/' . basename($imagePath);
+    $fullPath = projectUploadDir() . '/' . basename($mediaPath);
 
     if (is_file($fullPath)) {
         @unlink($fullPath);
     }
 }
 
-function deleteProjectImageById(int $imageId, int $projectId, PDO $pdo): void
+function deleteProjectImageById(int $mediaId, int $projectId, PDO $pdo): void
 {
     $stmt = $pdo->prepare(
         'SELECT id, image_path, is_primary
@@ -281,28 +311,28 @@ function deleteProjectImageById(int $imageId, int $projectId, PDO $pdo): void
          LIMIT 1'
     );
     $stmt->execute([
-        'id' => $imageId,
+        'id' => $mediaId,
         'project_id' => $projectId,
     ]);
 
-    $image = $stmt->fetch();
+    $media = $stmt->fetch();
 
-    if (!$image) {
+    if (!$media) {
         return;
     }
 
-    deleteProjectImageFile((string) $image['image_path']);
+    deleteProjectImageFile((string) $media['image_path']);
 
     $delete = $pdo->prepare(
         'DELETE FROM project_images
          WHERE id = :id AND project_id = :project_id'
     );
     $delete->execute([
-        'id' => $imageId,
+        'id' => $mediaId,
         'project_id' => $projectId,
     ]);
 
-    if ((int) $image['is_primary'] === 1) {
+    if ((int) $media['is_primary'] === 1) {
         $next = $pdo->prepare(
             'SELECT id
              FROM project_images
@@ -321,7 +351,7 @@ function deleteProjectImageById(int $imageId, int $projectId, PDO $pdo): void
     }
 }
 
-function setPrimaryProjectImage(int $imageId, int $projectId, PDO $pdo): void
+function setPrimaryProjectImage(int $mediaId, int $projectId, PDO $pdo): void
 {
     $check = $pdo->prepare(
         'SELECT id
@@ -330,7 +360,7 @@ function setPrimaryProjectImage(int $imageId, int $projectId, PDO $pdo): void
          LIMIT 1'
     );
     $check->execute([
-        'id' => $imageId,
+        'id' => $mediaId,
         'project_id' => $projectId,
     ]);
 
@@ -349,7 +379,7 @@ function setPrimaryProjectImage(int $imageId, int $projectId, PDO $pdo): void
          SET is_primary = 1
          WHERE id = :id AND project_id = :project_id'
     )->execute([
-        'id' => $imageId,
+        'id' => $mediaId,
         'project_id' => $projectId,
     ]);
 }

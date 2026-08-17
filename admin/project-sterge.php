@@ -14,9 +14,7 @@ if ($projectId <= 0) {
     exit('ID proiect invalid.');
 }
 
-$stmt = $pdo->prepare(
-    'SELECT id, title FROM projects WHERE id = :id LIMIT 1'
-);
+$stmt = $pdo->prepare('SELECT id, title FROM projects WHERE id = :id LIMIT 1');
 $stmt->execute(['id' => $projectId]);
 $project = $stmt->fetch();
 
@@ -34,10 +32,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
 
-            $images = getProjectImages($projectId, $pdo);
+            $mediaItems = getProjectImages($projectId, $pdo);
 
-            foreach ($images as $image) {
-                deleteProjectImageFile((string) $image['image_path']);
+            foreach ($mediaItems as $media) {
+                deleteProjectImageFile((string) $media['image_path']);
             }
 
             $delete = $pdo->prepare('DELETE FROM projects WHERE id = :id');
@@ -46,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->commit();
 
             header(
-                'Location: proiecte.php?success=' .
+                'Location: project.php?success=' .
                 rawurlencode('Proiectul a fost șters.')
             );
             exit;
@@ -73,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <header class="topbar">
     <a class="brand" href="index.php">ArtLife <span>Admin</span></a>
     <div class="top-actions">
-        <a class="btn btn-ghost" href="proiecte.php">← Proiecte</a>
+        <a class="btn btn-ghost" href="project.php">← Proiecte</a>
         <a class="btn btn-ghost" href="logout.php">Ieșire</a>
     </div>
 </header>
@@ -92,9 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <section class="card form-card">
-        <p style="margin-top:0;line-height:1.7;">
-            Proiectul și fotografiile lui vor fi eliminate definitiv.
-            Această acțiune nu poate fi anulată.
+        <p style="margin-top:0;line-height:1.7;font-weight:400;">
+            Proiectul și toate imaginile/video asociate vor fi eliminate definitiv.
         </p>
 
         <form method="post">
@@ -103,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <div class="form-actions">
                 <button class="btn btn-danger" type="submit">Da, șterge definitiv</button>
-                <a class="btn" href="proiecte.php">Nu, înapoi</a>
+                <a class="btn" href="project.php">Nu, înapoi</a>
             </div>
         </form>
     </section>

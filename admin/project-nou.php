@@ -12,7 +12,6 @@ $error = '';
 
 $data = [
     'title' => '',
-    'service' => '',
     'category' => 'poligrafie',
     'description' => '',
     'tags' => '',
@@ -21,18 +20,15 @@ $data = [
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data['title'] = trim((string) ($_POST['title'] ?? ''));
-    $data['service'] = trim((string) ($_POST['service'] ?? ''));
     $data['category'] = trim((string) ($_POST['category'] ?? ''));
     $data['description'] = trim((string) ($_POST['description'] ?? ''));
     $data['tags'] = normalizeTags((string) ($_POST['tags'] ?? ''));
     $data['is_published'] = isset($_POST['is_published']) ? 1 : 0;
 
     if (!verifyCsrf($_POST['csrf_token'] ?? null)) {
-        $error = 'Sesiunea a expirat. Reîncarcă pagina și încearcă din nou.';
+        $error = 'Sesiunea a expirat. Reîncarcă pagina.';
     } elseif ($data['title'] === '') {
         $error = 'Titlul proiectului este obligatoriu.';
-    } elseif ($data['service'] === '') {
-        $error = 'Serviciul este obligatoriu.';
     } elseif (!isset($categories[$data['category']])) {
         $error = 'Categoria selectată nu este validă.';
     } elseif ($data['description'] === '') {
@@ -41,38 +37,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
 
+            $service = $categories[$data['category']];
+
             $stmt = $pdo->prepare(
                 'INSERT INTO projects
                     (
-                        title,
-                        service,
-                        category,
-                        description,
-                        focus_x,
-                        focus_y,
-                        tags,
-                        sort_order,
-                        is_published,
-                        published_at
+                        title, service, category, description,
+                        focus_x, focus_y, tags, sort_order,
+                        is_published, published_at
                     )
                  VALUES
                     (
-                        :title,
-                        :service,
-                        :category,
-                        :description,
-                        50,
-                        50,
-                        :tags,
-                        0,
-                        :is_published,
-                        :published_at
+                        :title, :service, :category, :description,
+                        50, 50, :tags, 0,
+                        :is_published, :published_at
                     )'
             );
 
             $stmt->execute([
                 'title' => $data['title'],
-                'service' => $data['service'],
+                'service' => $service,
                 'category' => $data['category'],
                 'description' => $data['description'],
                 'tags' => $data['tags'],
@@ -82,27 +66,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $projectId = (int) $pdo->lastInsertId();
 
-            $displaySettings = [
+            $display = [
                 'x' => $_POST['new_crop_x'] ?? [],
                 'y' => $_POST['new_crop_y'] ?? [],
                 'zoom' => $_POST['new_crop_zoom'] ?? [],
                 'fit' => $_POST['new_fit_mode'] ?? [],
+                'rotation' => $_POST['new_rotation'] ?? [],
             ];
 
-            if (isset($_FILES['images'])) {
-                saveUploadedProjectImages(
-                    $_FILES['images'],
-                    $projectId,
-                    $pdo,
-                    $displaySettings,
-                    4
-                );
+            if (isset($_FILES['media'])) {
+                saveUploadedProjectMedia($_FILES['media'], $projectId, $pdo, $display, 4);
             }
 
             $pdo->commit();
 
             header(
-                'Location: proiecte.php?success=' .
+                'Location: project.php?success=' .
                 rawurlencode('Proiectul a fost adăugat cu succes.')
             );
             exit;
@@ -129,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <header class="topbar">
     <a class="brand" href="index.php">ArtLife <span>Admin</span></a>
     <div class="top-actions">
-        <a class="btn btn-ghost" href="proiecte.php">← Proiecte</a>
+        <a class="btn btn-ghost" href="project.php">← Proiecte</a>
         <a class="btn btn-ghost" href="logout.php">Ieșire</a>
     </div>
 </header>
@@ -139,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div>
             <span class="eyebrow">Proiect nou</span>
             <h1>Adaugă o lucrare</h1>
-            <p class="muted">Ultimul proiect publicat va apărea automat primul.</p>
+            <p class="muted">Cel mai nou proiect publicat apare automat primul.</p>
         </div>
     </div>
 
@@ -154,16 +133,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-grid">
                 <div class="field">
                     <label for="title">Titlu proiect *</label>
-                    <input id="title" name="title" value="<?= e((string) $data['title']) ?>" required>
+                    <input id="title" name="title" value="<?= e($data['title']) ?>" required>
                 </div>
 
                 <div class="field">
-                    <label for="service">Serviciu *</label>
-                    <input id="service" name="service" value="<?= e((string) $data['service']) ?>" required>
-                </div>
-
-                <div class="field">
-                    <label for="category">Categorie *</label>
+                    <label for="category">Categorie / Serviciu *</label>
                     <select id="category" name="category" required>
                         <?php foreach ($categories as $key => $label): ?>
                             <option value="<?= e($key) ?>" <?= $data['category'] === $key ? 'selected' : '' ?>>
@@ -173,137 +147,156 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </select>
                 </div>
 
-                <div class="field">
-                    <label>Publicare</label>
+                <div class="field field-full">
+                    <label for="description">Descriere *</label>
+                    <textarea id="description" name="description" required><?= e($data['description']) ?></textarea>
+                </div>
+
+                <div class="field field-full">
+                    <label for="tags">Taguri</label>
+                    <input id="tags" name="tags" value="<?= e($data['tags']) ?>" placeholder="branding, exterior, lightbox">
+                </div>
+
+                <div class="field field-full">
                     <label class="checkbox">
-                        <input
-                            type="checkbox"
-                            name="is_published"
-                            value="1"
-                            <?= (int) $data['is_published'] === 1 ? 'checked' : '' ?>
-                        >
+                        <input type="checkbox" name="is_published" value="1" <?= $data['is_published'] ? 'checked' : '' ?>>
                         Publică proiectul pe site
                     </label>
                 </div>
 
                 <div class="field field-full">
-                    <label for="description">Descriere *</label>
-                    <textarea id="description" name="description" required><?= e((string) $data['description']) ?></textarea>
-                </div>
-
-                <div class="field field-full">
-                    <label for="tags">Taguri</label>
-                    <input id="tags" name="tags" value="<?= e((string) $data['tags']) ?>" placeholder="branding, exterior, lightbox">
-                </div>
-
-                <div class="field field-full">
-                    <div class="media-section-title">
+                    <div class="media-title">
                         <div>
-                            <label>Imagini proiect</label>
-                            <p>Apasă pe fiecare cartonaș și alege imaginea.</p>
+                            <label>Imagini / video</label>
+                            <p>Apasă pe fiecare cartonaș pentru a încărca. Maximum 4 fișiere.</p>
                         </div>
-                        <span class="muted">maximum 4</span>
+                        <span class="muted">4 sloturi</span>
                     </div>
 
                     <div class="upload-grid">
                         <?php for ($i = 0; $i < 4; $i++): ?>
-                            <div class="upload-slot" data-crop-target>
+                            <div class="media-slot" data-media-slot>
                                 <div class="slot-empty">
                                     <div>
-                                        <strong>+ Imagine <?= $i + 1 ?></strong>
-                                        Apasă pentru a încărca
+                                        <strong>+ Fișier <?= $i + 1 ?></strong>
+                                        Imagine sau video
                                     </div>
                                 </div>
 
                                 <input
                                     type="file"
-                                    name="images[<?= $i ?>]"
-                                    accept="image/jpeg,image/png,image/webp,image/gif"
-                                    aria-label="Imagine <?= $i + 1 ?>"
+                                    name="media[<?= $i ?>]"
+                                    accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
                                 >
 
                                 <input type="hidden" name="new_crop_x[<?= $i ?>]" value="50" data-crop-x>
                                 <input type="hidden" name="new_crop_y[<?= $i ?>]" value="50" data-crop-y>
                                 <input type="hidden" name="new_crop_zoom[<?= $i ?>]" value="1" data-crop-zoom>
                                 <input type="hidden" name="new_fit_mode[<?= $i ?>]" value="cover" data-crop-fit>
+                                <input type="hidden" name="new_rotation[<?= $i ?>]" value="0" data-rotation>
 
                                 <div class="slot-actions">
-                                    <button
-                                        type="button"
-                                        class="js-crop-open"
-                                        style="display:none"
-                                    >
-                                        Ajustează
-                                    </button>
+                                    <button type="button" class="js-adjust" style="display:none">Ajustează</button>
                                 </div>
                             </div>
                         <?php endfor; ?>
                     </div>
 
                     <p class="help">
-                        JPG, PNG, WEBP sau GIF. Maximum 8 MB per imagine.
-                        Prima imagine încărcată devine imagine principală.
+                        Imagini: maximum 8 MB. Video: maximum 80 MB.
+                        Pentru compatibilitate bună pe web, MP4 sau WEBM sunt recomandate.
                     </p>
                 </div>
             </div>
 
             <div class="form-actions">
                 <button class="btn btn-primary" type="submit">Salvează proiectul</button>
-                <a class="btn" href="proiecte.php">Anulează</a>
+                <a class="btn" href="project.php">Anulează</a>
             </div>
         </form>
 
         <aside class="preview-panel">
-            <h3>Previzualizare card</h3>
-            <p>Așa va arăta aproximativ cartonașul în portofoliu.</p>
+            <section class="preview-box">
+                <h3>Previzualizare card</h3>
+                <p>Varianta compactă.</p>
 
-            <article class="live-card">
-                <div class="live-card-media" id="liveMedia">
-                    <div class="live-card-placeholder">Imaginea principală va apărea aici</div>
-                </div>
-                <div class="live-card-body">
-                    <div class="live-card-kicker" id="liveService">Serviciu</div>
-                    <h2 class="live-card-title" id="liveTitle">Titlul proiectului</h2>
-                    <div class="live-card-link">Vezi exemple →</div>
-                </div>
-            </article>
+                <article class="preview-small">
+                    <div class="preview-media" id="smallMedia">
+                        <div class="preview-placeholder">Imaginea sau videoul principal va apărea aici</div>
+                    </div>
+                    <div class="preview-body">
+                        <div class="preview-kicker" id="smallCategory">Categorie</div>
+                        <h2 class="preview-title" id="smallTitle">Titlul proiectului</h2>
+                        <div class="preview-link">Vezi exemple →</div>
+                    </div>
+                </article>
+            </section>
+
+            <section class="preview-box">
+                <h3>Previzualizare mare</h3>
+                <p>Varianta mare pentru pagina proiectului / galerie.</p>
+
+                <article class="preview-large">
+                    <div class="preview-media" id="largeMedia">
+                        <div class="preview-placeholder">Imaginea sau videoul principal va apărea aici</div>
+                    </div>
+                    <div class="preview-large-copy">
+                        <div class="preview-kicker" id="largeCategory">Categorie</div>
+                        <h2 class="preview-title" id="largeTitle">Titlul proiectului</h2>
+                        <p id="largeDescription">Descrierea proiectului va apărea aici.</p>
+                    </div>
+                </article>
+            </section>
         </aside>
     </div>
 </main>
 
-<div class="crop-modal" id="cropModal" aria-hidden="true">
+<div class="crop-modal" id="cropModal">
     <div class="crop-box">
         <div class="crop-head">
-            <h3>Ajustează imaginea în cartonaș</h3>
+            <h3>Ajustează fișierul</h3>
             <button class="btn btn-ghost" type="button" id="cropCancel">Închide</button>
         </div>
 
-        <div class="crop-stage" id="cropStage">
-            <img id="cropStageImg" alt="">
-        </div>
-
-        <p class="crop-tip">Trage imaginea în direcția dorită și reglează mărirea.</p>
+        <div class="crop-stage" id="cropStage"></div>
+        <p class="crop-tip">Poți trage direct fișierul sau folosi butoanele de mai jos.</p>
 
         <div class="crop-controls">
             <div class="fit-switch">
-                <button type="button" data-fit="cover" class="active">Umple cartonașul</button>
-                <button type="button" data-fit="contain">Imagine întreagă</button>
+                <button type="button" data-fit="cover" class="active">Umple cadrul</button>
+                <button type="button" data-fit="contain">Fișier întreg</button>
+            </div>
+
+            <div class="move-grid">
+                <span class="blank"></span>
+                <button type="button" class="js-move" data-move="up">↑ Sus</button>
+                <span class="blank"></span>
+                <button type="button" class="js-move" data-move="left">← Stânga</button>
+                <button type="button" id="cropReset">Reset</button>
+                <button type="button" class="js-move" data-move="right">Dreapta →</button>
+                <span class="blank"></span>
+                <button type="button" class="js-move" data-move="down">↓ Jos</button>
+                <span class="blank"></span>
+            </div>
+
+            <div class="rotate-row">
+                <button type="button" class="js-rotate" data-rotate="left">↶ Rotește stânga</button>
+                <button type="button" class="js-rotate" data-rotate="right">Rotește dreapta ↷</button>
             </div>
 
             <div class="zoom-row">
                 <span>Zoom</span>
-                <input id="cropZoom" type="range" min="1" max="2.5" step="0.01" value="1">
+                <input id="cropZoom" type="range" min="1" max="3" step="0.01" value="1">
                 <strong id="cropZoomValue">1.00×</strong>
             </div>
         </div>
 
         <div class="crop-foot">
-            <button class="btn" type="button" id="cropReset">Reset</button>
             <button class="btn btn-primary" type="button" id="cropApply">Aplică</button>
         </div>
     </div>
 </div>
 
-<script src="project-form.js"></script>
+<script src="project-form.js?v=4"></script>
 </body>
 </html>
