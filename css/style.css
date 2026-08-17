@@ -8880,3 +8880,14 @@ body.gallery-open {
     overflow: visible;
   }
 }
+
+
+/* Video principal: player complet cu autoplay + controale native */
+#galleryModalVideo {
+  background:#000;
+}
+
+/* Cursor normal pe controalele native ale playerului */
+#galleryModalVideo {
+  pointer-events:auto;
+}

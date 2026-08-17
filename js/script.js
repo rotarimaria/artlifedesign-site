@@ -909,7 +909,26 @@ if (portfolioGrid) {
       if (modalVideo) {
         modalVideo.src = media.src;
         modalVideo.hidden = false;
+
+        // Autoplay-ul modern funcționează sigur când video-ul
+        // pornește fără sunet. Utilizatorul poate activa sunetul
+        // din controalele playerului.
+        modalVideo.muted = true;
+        modalVideo.autoplay = true;
+        modalVideo.loop = true;
+        modalVideo.controls = true;
+        modalVideo.playsInline = true;
+
         modalVideo.load();
+
+        const playPromise = modalVideo.play();
+
+        if (playPromise?.catch) {
+          playPromise.catch(() => {
+            // Dacă browserul blochează autoplay-ul,
+            // controalele rămân disponibile pentru Play manual.
+          });
+        }
       }
     } else if (modalImg) {
       modalImg.src = media.src;
@@ -954,6 +973,8 @@ if (portfolioGrid) {
         preview = document.createElement("video");
         preview.src = media.src;
         preview.muted = true;
+        preview.loop = true;
+        preview.autoplay = true;
         preview.preload = "metadata";
         preview.playsInline = true;
       } else {
