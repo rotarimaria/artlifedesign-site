@@ -70,4 +70,31 @@ input:focus,textarea:focus,select:focus{border-color:rgba(146,255,34,.55);box-sh
 .new-delete-wrap button:hover{color:var(--danger)}
 .new-primary-wrap,.new-delete-wrap{border-top:1px solid var(--border)}
 
+
+/* FIX XY DRAG:
+   folosim translație reală, astfel media se poate muta vizibil
+   și stânga/dreapta, și sus/jos, indiferent de raportul imaginii. */
+.slot-preview img,
+.slot-preview video,
+.preview-media img,
+.preview-media video,
+.crop-stage img,
+.crop-stage video{
+  object-position:50% 50% !important;
+  transform:
+    translate(
+      calc(50% - var(--crop-x,50%)),
+      calc(50% - var(--crop-y,50%))
+    )
+    rotate(var(--rotation,0deg))
+    scale(var(--zoom,1)) !important;
+}
+
+/* În modalul mare real păstrăm media completă, fără crop-ul cardului. */
+.site-modal-main img,
+.site-modal-main video{
+  transform:none !important;
+  object-position:center center !important;
+}
+
 </style>
