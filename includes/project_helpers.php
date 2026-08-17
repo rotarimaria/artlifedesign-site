@@ -46,9 +46,28 @@ function normalizeTags(string $tags): string
     return implode(', ', array_slice(array_values(array_unique($items)), 0, 20));
 }
 
-function validateFocus(int $value): int
+function clampFloat(float $value, float $min, float $max): float
 {
-    return max(0, min(100, $value));
+    return max($min, min($max, $value));
+}
+
+function normalizeImageDisplay(array $settings, int|string $key): array
+{
+    $x = clampFloat((float) ($settings['x'][$key] ?? 50), 0, 100);
+    $y = clampFloat((float) ($settings['y'][$key] ?? 50), 0, 100);
+    $zoom = clampFloat((float) ($settings['zoom'][$key] ?? 1), 1, 2.5);
+    $fit = (string) ($settings['fit'][$key] ?? 'cover');
+
+    if (!in_array($fit, ['cover', 'contain'], true)) {
+        $fit = 'cover';
+    }
+
+    return [
+        'crop_x' => $x,
+        'crop_y' => $y,
+        'crop_zoom' => $zoom,
+        'fit_mode' => $fit,
+    ];
 }
 
 function getProjectImages(int $projectId, PDO $pdo): array
@@ -68,6 +87,7 @@ function saveUploadedProjectImages(
     array $files,
     int $projectId,
     PDO $pdo,
+    array $displaySettings = [],
     int $maxFiles = 4
 ): array {
     ensureProjectUploadDir();
@@ -81,7 +101,6 @@ function saveUploadedProjectImages(
     );
     $countStmt->execute(['project_id' => $projectId]);
     $existing = (int) $countStmt->fetchColumn();
-
     $remaining = max(0, $maxFiles - $existing);
 
     if ($remaining === 0) {
@@ -98,10 +117,14 @@ function saveUploadedProjectImages(
     $finfo = new finfo(FILEINFO_MIME_TYPE);
     $saved = [];
 
-    for ($i = 0; $i < count($files['name']) && count($saved) < $remaining; $i++) {
+    foreach ($files['name'] as $i => $originalName) {
+        if (count($saved) >= $remaining) {
+            break;
+        }
+
         $error = (int) ($files['error'][$i] ?? UPLOAD_ERR_NO_FILE);
 
-        if ($error === UPLOAD_ERR_NO_FILE) {
+        if ($error === UPLOAD_ERR_NO_FILE || trim((string) $originalName) === '') {
             continue;
         }
 
@@ -151,11 +174,33 @@ function saveUploadedProjectImages(
         $primaryStmt->execute(['project_id' => $projectId]);
         $hasPrimary = (int) $primaryStmt->fetchColumn() > 0;
 
+        $display = normalizeImageDisplay($displaySettings, $i);
+
         $insert = $pdo->prepare(
             'INSERT INTO project_images
-                (project_id, image_path, alt_text, sort_order, is_primary)
+                (
+                    project_id,
+                    image_path,
+                    alt_text,
+                    sort_order,
+                    is_primary,
+                    crop_x,
+                    crop_y,
+                    crop_zoom,
+                    fit_mode
+                )
              VALUES
-                (:project_id, :image_path, :alt_text, :sort_order, :is_primary)'
+                (
+                    :project_id,
+                    :image_path,
+                    :alt_text,
+                    :sort_order,
+                    :is_primary,
+                    :crop_x,
+                    :crop_y,
+                    :crop_zoom,
+                    :fit_mode
+                )'
         );
 
         $insert->execute([
@@ -164,12 +209,58 @@ function saveUploadedProjectImages(
             'alt_text'   => null,
             'sort_order' => $sortOrder,
             'is_primary' => $hasPrimary ? 0 : 1,
+            'crop_x' => $display['crop_x'],
+            'crop_y' => $display['crop_y'],
+            'crop_zoom' => $display['crop_zoom'],
+            'fit_mode' => $display['fit_mode'],
         ]);
 
         $saved[] = $filename;
     }
 
     return $saved;
+}
+
+function updateExistingProjectImageDisplays(
+    int $projectId,
+    PDO $pdo,
+    array $displaySettings
+): void {
+    if (
+        !isset($displaySettings['x']) ||
+        !is_array($displaySettings['x'])
+    ) {
+        return;
+    }
+
+    $update = $pdo->prepare(
+        'UPDATE project_images
+         SET
+            crop_x = :crop_x,
+            crop_y = :crop_y,
+            crop_zoom = :crop_zoom,
+            fit_mode = :fit_mode
+         WHERE id = :id AND project_id = :project_id'
+    );
+
+    foreach ($displaySettings['x'] as $imageId => $unused) {
+        $imageId = (int) $imageId;
+
+        if ($imageId <= 0) {
+            continue;
+        }
+
+        $display = normalizeImageDisplay($displaySettings, $imageId);
+
+        $update->execute([
+            'crop_x' => $display['crop_x'],
+            'crop_y' => $display['crop_y'],
+            'crop_zoom' => $display['crop_zoom'],
+            'fit_mode' => $display['fit_mode'],
+            'id' => $imageId,
+            'project_id' => $projectId,
+        ]);
+    }
 }
 
 function deleteProjectImageFile(string $imagePath): void
@@ -248,7 +339,9 @@ function setPrimaryProjectImage(int $imageId, int $projectId, PDO $pdo): void
     }
 
     $pdo->prepare(
-        'UPDATE project_images SET is_primary = 0 WHERE project_id = :project_id'
+        'UPDATE project_images
+         SET is_primary = 0
+         WHERE project_id = :project_id'
     )->execute(['project_id' => $projectId]);
 
     $pdo->prepare(

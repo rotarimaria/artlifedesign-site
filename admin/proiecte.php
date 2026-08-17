@@ -35,6 +35,34 @@ $sql = '
             LIMIT 1
         ) AS primary_image,
         (
+            SELECT pi.crop_x
+            FROM project_images pi
+            WHERE pi.project_id = p.id
+            ORDER BY pi.is_primary DESC, pi.sort_order ASC, pi.id ASC
+            LIMIT 1
+        ) AS crop_x,
+        (
+            SELECT pi.crop_y
+            FROM project_images pi
+            WHERE pi.project_id = p.id
+            ORDER BY pi.is_primary DESC, pi.sort_order ASC, pi.id ASC
+            LIMIT 1
+        ) AS crop_y,
+        (
+            SELECT pi.crop_zoom
+            FROM project_images pi
+            WHERE pi.project_id = p.id
+            ORDER BY pi.is_primary DESC, pi.sort_order ASC, pi.id ASC
+            LIMIT 1
+        ) AS crop_zoom,
+        (
+            SELECT pi.fit_mode
+            FROM project_images pi
+            WHERE pi.project_id = p.id
+            ORDER BY pi.is_primary DESC, pi.sort_order ASC, pi.id ASC
+            LIMIT 1
+        ) AS fit_mode,
+        (
             SELECT COUNT(*)
             FROM project_images pi2
             WHERE pi2.project_id = p.id
@@ -48,7 +76,6 @@ if ($where) {
 
 $sql .= '
     ORDER BY
-        p.sort_order DESC,
         COALESCE(p.published_at, p.created_at) DESC,
         p.id DESC
 ';
@@ -83,7 +110,7 @@ $success = trim((string) ($_GET['success'] ?? ''));
         <div>
             <span class="eyebrow">Portofoliu</span>
             <h1>Lucrări / Carduri</h1>
-            <p class="muted">Adaugă, editează, publică și șterge proiectele site-ului.</p>
+            <p class="muted">Cele mai noi proiecte apar automat primele.</p>
         </div>
 
         <a class="btn btn-primary" href="proiect-nou.php">+ Adaugă proiect</a>
@@ -95,15 +122,9 @@ $success = trim((string) ($_GET['success'] ?? ''));
 
     <div class="toolbar">
         <form method="get">
-            <input
-                class="search"
-                type="search"
-                name="q"
-                value="<?= e($q) ?>"
-                placeholder="Caută proiect..."
-            >
+            <input class="search" type="search" name="q" value="<?= e($q) ?>" placeholder="Caută proiect...">
 
-            <select name="category" style="width:auto; min-width:190px;">
+            <select name="category" style="width:auto;min-width:190px">
                 <option value="">Toate categoriile</option>
                 <?php foreach ($categories as $key => $label): ?>
                     <option value="<?= e($key) ?>" <?= $category === $key ? 'selected' : '' ?>>
@@ -133,47 +154,57 @@ $success = trim((string) ($_GET['success'] ?? ''));
                         <th>Proiect</th>
                         <th>Categorie</th>
                         <th>Imagini</th>
-                        <th>Ordine</th>
                         <th>Status</th>
                         <th>Acțiuni</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($projects as $project): ?>
-                        <tr>
-                            <td>
-                                <?php if (!empty($project['primary_image'])): ?>
-                                    <img class="thumb" src="../<?= e((string) $project['primary_image']) ?>" alt="">
-                                <?php else: ?>
-                                    <div class="no-thumb">Fără imagine</div>
-                                <?php endif; ?>
-                            </td>
-
-                            <td class="title-cell">
-                                <strong><?= e((string) $project['title']) ?></strong>
-                                <span><?= e((string) $project['service']) ?></span>
-                            </td>
-
-                            <td><?= e($categories[$project['category']] ?? (string) $project['category']) ?></td>
-                            <td><?= (int) $project['image_count'] ?>/4</td>
-                            <td><?= (int) $project['sort_order'] ?></td>
-
-                            <td>
-                                <?php if ((int) $project['is_published'] === 1): ?>
-                                    <span class="badge badge-green">Publicat</span>
-                                <?php else: ?>
-                                    <span class="badge">Ciornă</span>
-                                <?php endif; ?>
-                            </td>
-
-                            <td>
-                                <div class="row-actions">
-                                    <a class="btn" href="proiect-edit.php?id=<?= (int) $project['id'] ?>">Editează</a>
-                                    <a class="btn btn-danger" href="proiect-sterge.php?id=<?= (int) $project['id'] ?>">Șterge</a>
+                <?php foreach ($projects as $project): ?>
+                    <tr>
+                        <td>
+                            <?php if (!empty($project['primary_image'])): ?>
+                                <div class="thumb-wrap">
+                                    <img
+                                        class="thumb"
+                                        src="../<?= e((string) $project['primary_image']) ?>"
+                                        alt=""
+                                        style="
+                                            --crop-x:<?= (float) ($project['crop_x'] ?? 50) ?>%;
+                                            --crop-y:<?= (float) ($project['crop_y'] ?? 50) ?>%;
+                                            --zoom:<?= (float) ($project['crop_zoom'] ?? 1) ?>;
+                                            --fit:<?= e((string) ($project['fit_mode'] ?? 'cover')) ?>;
+                                        "
+                                    >
                                 </div>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="no-thumb">Fără imagine</div>
+                            <?php endif; ?>
+                        </td>
+
+                        <td class="title-cell">
+                            <strong><?= e((string) $project['title']) ?></strong>
+                            <span><?= e((string) $project['service']) ?></span>
+                        </td>
+
+                        <td><?= e($categories[$project['category']] ?? (string) $project['category']) ?></td>
+                        <td><?= (int) $project['image_count'] ?>/4</td>
+
+                        <td>
+                            <?php if ((int) $project['is_published'] === 1): ?>
+                                <span class="badge badge-green">Publicat</span>
+                            <?php else: ?>
+                                <span class="badge">Ciornă</span>
+                            <?php endif; ?>
+                        </td>
+
+                        <td>
+                            <div class="row-actions">
+                                <a class="btn" href="proiect-edit.php?id=<?= (int) $project['id'] ?>">Editează</a>
+                                <a class="btn btn-danger" href="proiect-sterge.php?id=<?= (int) $project['id'] ?>">Șterge</a>
+                            </div>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
                 </tbody>
             </table>
         <?php endif; ?>
