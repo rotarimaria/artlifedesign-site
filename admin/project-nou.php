@@ -41,17 +41,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt = $pdo->prepare(
                 'INSERT INTO projects
-                    (
-                        title, service, category, description,
-                        focus_x, focus_y, tags, sort_order,
-                        is_published, published_at
-                    )
+                    (title, service, category, description, focus_x, focus_y, tags, sort_order, is_published, published_at)
                  VALUES
-                    (
-                        :title, :service, :category, :description,
-                        50, 50, :tags, 0,
-                        :is_published, :published_at
-                    )'
+                    (:title, :service, :category, :description, 50, 50, :tags, 0, :is_published, :published_at)'
             );
 
             $stmt->execute([
@@ -153,8 +145,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="field field-full">
-                    <label for="tags">Taguri</label>
-                    <input id="tags" name="tags" value="<?= e($data['tags']) ?>" placeholder="branding, exterior, lightbox">
+                    <label>Cuvinte cheie</label>
+
+                    <input
+                        type="hidden"
+                        id="tags"
+                        name="tags"
+                        value="<?= e($data['tags']) ?>"
+                    >
+
+                    <div class="tag-editor">
+                        <div class="tag-list" id="tagList"></div>
+
+                        <div class="tag-add-row">
+                            <input
+                                id="tagInput"
+                                type="text"
+                                placeholder="Ex: carte de vizită"
+                                autocomplete="off"
+                            >
+                            <button class="btn" type="button" id="tagAdd">Adaugă</button>
+                        </div>
+
+                        <div class="tag-count" id="tagCount">0/14</div>
+                    </div>
+
+                    <p class="help">
+                        Expresiile cu spații rămân întregi. De exemplu:
+                        „carte de vizită” devine un singur tag.
+                    </p>
                 </div>
 
                 <div class="field field-full">
@@ -168,7 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="media-title">
                         <div>
                             <label>Imagini / video</label>
-                            <p>Apasă pe fiecare cartonaș pentru a încărca. Maximum 4 fișiere.</p>
+                            <p>Maximum 4 fișiere. După încărcare, apasă „Ajustează”.</p>
                         </div>
                         <span class="muted">4 sloturi</span>
                     </div>
@@ -201,11 +220,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         <?php endfor; ?>
                     </div>
-
-                    <p class="help">
-                        Imagini: maximum 8 MB. Video: maximum 80 MB.
-                        Pentru compatibilitate bună pe web, MP4 sau WEBM sunt recomandate.
-                    </p>
                 </div>
             </div>
 
@@ -218,11 +232,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <aside class="preview-panel">
             <section class="preview-box">
                 <h3>Previzualizare card</h3>
-                <p>Varianta compactă.</p>
+                <p>Varianta compactă din listă.</p>
 
                 <article class="preview-small">
                     <div class="preview-media" id="smallMedia">
-                        <div class="preview-placeholder">Imaginea sau videoul principal va apărea aici</div>
+                        <div class="preview-placeholder">Media principală va apărea aici</div>
                     </div>
                     <div class="preview-body">
                         <div class="preview-kicker" id="smallCategory">Categorie</div>
@@ -233,18 +247,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </section>
 
             <section class="preview-box">
-                <h3>Previzualizare mare</h3>
-                <p>Varianta mare pentru pagina proiectului / galerie.</p>
+                <h3>Previzualizare modal real</h3>
+                <p>Aproape identic cu modul de afișare de pe website.</p>
 
-                <article class="preview-large">
-                    <div class="preview-media" id="largeMedia">
-                        <div class="preview-placeholder">Imaginea sau videoul principal va apărea aici</div>
+                <article class="site-modal-preview">
+                    <div class="site-modal-left">
+                        <div class="site-modal-main" id="siteMain">
+                            <div class="preview-placeholder">Media principală va apărea aici</div>
+                        </div>
+                        <div class="site-modal-thumbs" id="siteThumbs"></div>
                     </div>
-                    <div class="preview-large-copy">
-                        <div class="preview-kicker" id="largeCategory">Categorie</div>
-                        <h2 class="preview-title" id="largeTitle">Titlul proiectului</h2>
-                        <p id="largeDescription">Descrierea proiectului va apărea aici.</p>
-                    </div>
+
+                    <aside class="site-modal-side">
+                        <div class="site-modal-category" id="siteCategory">Categorie</div>
+                        <h2 class="site-modal-title" id="siteTitle">Titlul proiectului</h2>
+                        <p class="site-modal-description" id="siteDescription">
+                            Descrierea proiectului va apărea aici.
+                        </p>
+                        <div class="site-modal-tags" id="siteTags"></div>
+
+                        <div class="site-modal-cta">
+                            Cere ofertă pentru un proiect similar ↗
+                        </div>
+                    </aside>
                 </article>
             </section>
         </aside>
@@ -254,12 +279,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="crop-modal" id="cropModal">
     <div class="crop-box">
         <div class="crop-head">
-            <h3>Ajustează fișierul</h3>
+            <h3>Ajustează media</h3>
             <button class="btn btn-ghost" type="button" id="cropCancel">Închide</button>
         </div>
 
         <div class="crop-stage" id="cropStage"></div>
-        <p class="crop-tip">Poți trage direct fișierul sau folosi butoanele de mai jos.</p>
+
+        <p class="crop-tip">
+            Trage direct imaginea/video-ul în cadru. Poți regla apoi zoom-ul și rotația.
+        </p>
 
         <div class="crop-controls">
             <div class="fit-switch">
@@ -267,36 +295,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="button" data-fit="contain">Fișier întreg</button>
             </div>
 
-            <div class="move-grid">
-                <span class="blank"></span>
-                <button type="button" class="js-move" data-move="up">↑ Sus</button>
-                <span class="blank"></span>
-                <button type="button" class="js-move" data-move="left">← Stânga</button>
-                <button type="button" id="cropReset">Reset</button>
-                <button type="button" class="js-move" data-move="right">Dreapta →</button>
-                <span class="blank"></span>
-                <button type="button" class="js-move" data-move="down">↓ Jos</button>
-                <span class="blank"></span>
-            </div>
-
-            <div class="rotate-row">
-                <button type="button" class="js-rotate" data-rotate="left">↶ Rotește stânga</button>
-                <button type="button" class="js-rotate" data-rotate="right">Rotește dreapta ↷</button>
-            </div>
-
-            <div class="zoom-row">
+            <div class="slider-row">
                 <span>Zoom</span>
                 <input id="cropZoom" type="range" min="1" max="3" step="0.01" value="1">
                 <strong id="cropZoomValue">1.00×</strong>
             </div>
+
+            <div class="slider-row">
+                <span>Rotire</span>
+                <input id="cropRotation" type="range" min="-180" max="180" step="1" value="0">
+                <strong id="cropRotationValue">0°</strong>
+            </div>
         </div>
 
         <div class="crop-foot">
+            <button class="btn" type="button" id="cropReset">Reset</button>
             <button class="btn btn-primary" type="button" id="cropApply">Aplică</button>
         </div>
     </div>
 </div>
 
-<script src="project-form.js?v=4"></script>
+<script src="project-form.js?v=5"></script>
 </body>
 </html>

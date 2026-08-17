@@ -101,14 +101,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if (is_array($deleteIds)) {
                     foreach ($deleteIds as $deleteId) {
-                        deleteProjectImageById((int) $deleteId, $projectId, $pdo);
+                        deleteProjectImageById(
+                            (int) $deleteId,
+                            $projectId,
+                            $pdo
+                        );
                     }
                 }
 
                 $primaryId = (int) ($_POST['primary_image_id'] ?? 0);
 
                 if ($primaryId > 0) {
-                    setPrimaryProjectImage($primaryId, $projectId, $pdo);
+                    setPrimaryProjectImage(
+                        $primaryId,
+                        $projectId,
+                        $pdo
+                    );
                 }
 
                 $newDisplay = [
@@ -151,6 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $stmt->execute(['id' => $projectId]);
 $project = $stmt->fetch();
+
 $mediaItems = getProjectImages($projectId, $pdo);
 $remaining = max(0, 4 - count($mediaItems));
 
@@ -170,6 +179,7 @@ if (isset($_GET['success'])) {
 <body>
 <header class="topbar">
     <a class="brand" href="index.php">ArtLife <span>Admin</span></a>
+
     <div class="top-actions">
         <a class="btn btn-ghost" href="project.php">← Proiecte</a>
         <a class="btn btn-ghost" href="logout.php">Ieșire</a>
@@ -201,14 +211,23 @@ if (isset($_GET['success'])) {
             <div class="form-grid">
                 <div class="field">
                     <label for="title">Titlu proiect *</label>
-                    <input id="title" name="title" value="<?= e((string) $project['title']) ?>" required>
+                    <input
+                        id="title"
+                        name="title"
+                        value="<?= e((string) $project['title']) ?>"
+                        required
+                    >
                 </div>
 
                 <div class="field">
                     <label for="category">Categorie / Serviciu *</label>
+
                     <select id="category" name="category" required>
                         <?php foreach ($categories as $key => $label): ?>
-                            <option value="<?= e($key) ?>" <?= $project['category'] === $key ? 'selected' : '' ?>>
+                            <option
+                                value="<?= e($key) ?>"
+                                <?= $project['category'] === $key ? 'selected' : '' ?>
+                            >
                                 <?= e($label) ?>
                             </option>
                         <?php endforeach; ?>
@@ -217,12 +236,51 @@ if (isset($_GET['success'])) {
 
                 <div class="field field-full">
                     <label for="description">Descriere *</label>
-                    <textarea id="description" name="description" required><?= e((string) $project['description']) ?></textarea>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        required
+                    ><?= e((string) $project['description']) ?></textarea>
                 </div>
 
                 <div class="field field-full">
-                    <label for="tags">Taguri</label>
-                    <input id="tags" name="tags" value="<?= e((string) ($project['tags'] ?? '')) ?>">
+                    <label>Cuvinte cheie</label>
+
+                    <input
+                        type="hidden"
+                        id="tags"
+                        name="tags"
+                        value="<?= e((string) ($project['tags'] ?? '')) ?>"
+                    >
+
+                    <div class="tag-editor">
+                        <div class="tag-list" id="tagList"></div>
+
+                        <div class="tag-add-row">
+                            <input
+                                id="tagInput"
+                                type="text"
+                                placeholder="Ex: carte de vizită"
+                                autocomplete="off"
+                            >
+
+                            <button
+                                class="btn"
+                                type="button"
+                                id="tagAdd"
+                            >
+                                Adaugă
+                            </button>
+                        </div>
+
+                        <div class="tag-count" id="tagCount">0/14</div>
+                    </div>
+
+                    <p class="help">
+                        Scrii expresia completă și apeși Enter sau „Adaugă”.
+                        Spațiile din expresie nu o separă.
+                    </p>
                 </div>
 
                 <div class="field field-full">
@@ -241,14 +299,20 @@ if (isset($_GET['success'])) {
                     <div class="media-title">
                         <div>
                             <label>Imagini / video</label>
-                            <p>Selectează fișierul principal și ajustează poziția, zoom-ul sau rotația.</p>
+                            <p>
+                                Alege fișierul principal și ajustează fiecare fișier prin drag,
+                                zoom și rotație.
+                            </p>
                         </div>
-                        <span class="muted"><?= count($mediaItems) ?>/4</span>
+
+                        <span class="muted">
+                            <?= count($mediaItems) ?>/4
+                        </span>
                     </div>
 
                     <div class="upload-grid">
                         <?php foreach ($mediaItems as $media): ?>
-                            <div class="media-slot has-media existing" data-media-slot>
+                            <div class="media-slot has-media" data-media-slot>
                                 <div class="slot-preview">
                                     <?php if (($media['media_type'] ?? 'image') === 'video'): ?>
                                         <video
@@ -301,14 +365,48 @@ if (isset($_GET['success'])) {
                                     Șterge
                                 </label>
 
-                                <input type="hidden" name="existing_crop_x[<?= (int) $media['id'] ?>]" value="<?= e((string) ($media['crop_x'] ?? 50)) ?>" data-crop-x>
-                                <input type="hidden" name="existing_crop_y[<?= (int) $media['id'] ?>]" value="<?= e((string) ($media['crop_y'] ?? 50)) ?>" data-crop-y>
-                                <input type="hidden" name="existing_crop_zoom[<?= (int) $media['id'] ?>]" value="<?= e((string) ($media['crop_zoom'] ?? 1)) ?>" data-crop-zoom>
-                                <input type="hidden" name="existing_fit_mode[<?= (int) $media['id'] ?>]" value="<?= e((string) ($media['fit_mode'] ?? 'cover')) ?>" data-crop-fit>
-                                <input type="hidden" name="existing_rotation[<?= (int) $media['id'] ?>]" value="<?= (int) ($media['rotation'] ?? 0) ?>" data-rotation>
+                                <input
+                                    type="hidden"
+                                    name="existing_crop_x[<?= (int) $media['id'] ?>]"
+                                    value="<?= e((string) ($media['crop_x'] ?? 50)) ?>"
+                                    data-crop-x
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="existing_crop_y[<?= (int) $media['id'] ?>]"
+                                    value="<?= e((string) ($media['crop_y'] ?? 50)) ?>"
+                                    data-crop-y
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="existing_crop_zoom[<?= (int) $media['id'] ?>]"
+                                    value="<?= e((string) ($media['crop_zoom'] ?? 1)) ?>"
+                                    data-crop-zoom
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="existing_fit_mode[<?= (int) $media['id'] ?>]"
+                                    value="<?= e((string) ($media['fit_mode'] ?? 'cover')) ?>"
+                                    data-crop-fit
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="existing_rotation[<?= (int) $media['id'] ?>]"
+                                    value="<?= (int) ($media['rotation'] ?? 0) ?>"
+                                    data-rotation
+                                >
 
                                 <div class="slot-actions">
-                                    <button type="button" class="js-adjust">Ajustează</button>
+                                    <button
+                                        type="button"
+                                        class="js-adjust"
+                                    >
+                                        Ajustează
+                                    </button>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -335,7 +433,13 @@ if (isset($_GET['success'])) {
                                 <input type="hidden" name="new_rotation[<?= $i ?>]" value="0" data-rotation>
 
                                 <div class="slot-actions">
-                                    <button type="button" class="js-adjust" style="display:none">Ajustează</button>
+                                    <button
+                                        type="button"
+                                        class="js-adjust"
+                                        style="display:none"
+                                    >
+                                        Ajustează
+                                    </button>
                                 </div>
                             </div>
                         <?php endfor; ?>
@@ -344,18 +448,24 @@ if (isset($_GET['success'])) {
             </div>
 
             <div class="form-actions">
-                <button class="btn btn-primary" type="submit">Salvează modificările</button>
-                <a class="btn" href="project.php">Înapoi</a>
+                <button class="btn btn-primary" type="submit">
+                    Salvează modificările
+                </button>
+
+                <a class="btn" href="project.php">
+                    Înapoi
+                </a>
             </div>
         </form>
 
         <aside class="preview-panel">
             <section class="preview-box">
                 <h3>Previzualizare card</h3>
-                <p>Varianta compactă.</p>
+                <p>Varianta compactă din listă.</p>
 
                 <article class="preview-small">
                     <div class="preview-media" id="smallMedia"></div>
+
                     <div class="preview-body">
                         <div class="preview-kicker" id="smallCategory"></div>
                         <h2 class="preview-title" id="smallTitle"></h2>
@@ -365,74 +475,155 @@ if (isset($_GET['success'])) {
             </section>
 
             <section class="preview-box">
-                <h3>Previzualizare mare</h3>
-                <p>Varianta mare pentru proiect / galerie.</p>
+                <h3>Previzualizare modal real</h3>
+                <p>
+                    Structură apropiată de modalul de pe pagina Lucrări.
+                </p>
 
-                <article class="preview-large">
-                    <div class="preview-media" id="largeMedia"></div>
-                    <div class="preview-large-copy">
-                        <div class="preview-kicker" id="largeCategory"></div>
-                        <h2 class="preview-title" id="largeTitle"></h2>
-                        <p id="largeDescription"></p>
+                <article class="site-modal-preview">
+                    <div class="site-modal-left">
+                        <div class="site-modal-main" id="siteMain"></div>
+                        <div class="site-modal-thumbs" id="siteThumbs"></div>
                     </div>
+
+                    <aside class="site-modal-side">
+                        <div class="site-modal-category" id="siteCategory"></div>
+                        <h2 class="site-modal-title" id="siteTitle"></h2>
+
+                        <p
+                            class="site-modal-description"
+                            id="siteDescription"
+                        ></p>
+
+                        <div
+                            class="site-modal-tags"
+                            id="siteTags"
+                        ></div>
+
+                        <div class="site-modal-cta">
+                            Cere ofertă pentru un proiect similar ↗
+                        </div>
+                    </aside>
                 </article>
             </section>
         </aside>
     </div>
 
     <section class="danger-zone">
-        <h3 style="margin-top:0;color:#ff9a9a;font-weight:500;">Ștergere proiect</h3>
-        <p class="muted">Ștergerea elimină proiectul și toate fișierele lui.</p>
-        <a class="btn btn-danger" href="project-sterge.php?id=<?= $projectId ?>">Șterge proiectul</a>
+        <h3 style="margin-top:0;color:#ff9a9a;font-weight:500;">
+            Ștergere proiect
+        </h3>
+
+        <p class="muted">
+            Ștergerea elimină proiectul și toate fișierele lui.
+        </p>
+
+        <a
+            class="btn btn-danger"
+            href="project-sterge.php?id=<?= $projectId ?>"
+        >
+            Șterge proiectul
+        </a>
     </section>
 </main>
 
 <div class="crop-modal" id="cropModal">
     <div class="crop-box">
         <div class="crop-head">
-            <h3>Ajustează fișierul</h3>
-            <button class="btn btn-ghost" type="button" id="cropCancel">Închide</button>
+            <h3>Ajustează media</h3>
+
+            <button
+                class="btn btn-ghost"
+                type="button"
+                id="cropCancel"
+            >
+                Închide
+            </button>
         </div>
 
-        <div class="crop-stage" id="cropStage"></div>
-        <p class="crop-tip">Poți trage direct fișierul sau folosi butoanele.</p>
+        <div
+            class="crop-stage"
+            id="cropStage"
+        ></div>
+
+        <p class="crop-tip">
+            Trage direct imaginea/video-ul în cadru.
+            Reglează apoi zoom-ul și rotația.
+        </p>
 
         <div class="crop-controls">
             <div class="fit-switch">
-                <button type="button" data-fit="cover" class="active">Umple cadrul</button>
-                <button type="button" data-fit="contain">Fișier întreg</button>
+                <button
+                    type="button"
+                    data-fit="cover"
+                    class="active"
+                >
+                    Umple cadrul
+                </button>
+
+                <button
+                    type="button"
+                    data-fit="contain"
+                >
+                    Fișier întreg
+                </button>
             </div>
 
-            <div class="move-grid">
-                <span class="blank"></span>
-                <button type="button" class="js-move" data-move="up">↑ Sus</button>
-                <span class="blank"></span>
-                <button type="button" class="js-move" data-move="left">← Stânga</button>
-                <button type="button" id="cropReset">Reset</button>
-                <button type="button" class="js-move" data-move="right">Dreapta →</button>
-                <span class="blank"></span>
-                <button type="button" class="js-move" data-move="down">↓ Jos</button>
-                <span class="blank"></span>
-            </div>
-
-            <div class="rotate-row">
-                <button type="button" class="js-rotate" data-rotate="left">↶ Rotește stânga</button>
-                <button type="button" class="js-rotate" data-rotate="right">Rotește dreapta ↷</button>
-            </div>
-
-            <div class="zoom-row">
+            <div class="slider-row">
                 <span>Zoom</span>
-                <input id="cropZoom" type="range" min="1" max="3" step="0.01" value="1">
-                <strong id="cropZoomValue">1.00×</strong>
+
+                <input
+                    id="cropZoom"
+                    type="range"
+                    min="1"
+                    max="3"
+                    step="0.01"
+                    value="1"
+                >
+
+                <strong id="cropZoomValue">
+                    1.00×
+                </strong>
+            </div>
+
+            <div class="slider-row">
+                <span>Rotire</span>
+
+                <input
+                    id="cropRotation"
+                    type="range"
+                    min="-180"
+                    max="180"
+                    step="1"
+                    value="0"
+                >
+
+                <strong id="cropRotationValue">
+                    0°
+                </strong>
             </div>
         </div>
 
         <div class="crop-foot">
-            <button class="btn btn-primary" type="button" id="cropApply">Aplică</button>
+            <button
+                class="btn"
+                type="button"
+                id="cropReset"
+            >
+                Reset
+            </button>
+
+            <button
+                class="btn btn-primary"
+                type="button"
+                id="cropApply"
+            >
+                Aplică
+            </button>
         </div>
     </div>
 </div>
 
-<script src="project-form.js?v=4"></script>
+<script src="project-form.js?v=5"></script>
 </body>
 </html>
