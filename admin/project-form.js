@@ -7,46 +7,13 @@
   const siteTitle=$('#siteTitle'), siteCategory=$('#siteCategory'), siteDescription=$('#siteDescription');
   const siteMain=$('#siteMain'), siteThumbs=$('#siteThumbs'), siteTags=$('#siteTags');
 
-  /* ---------- TAGS ---------- */
+  /* TAGURI */
   const tagsHidden=$('#tags'), tagInput=$('#tagInput'), tagAdd=$('#tagAdd'), tagList=$('#tagList'), tagCount=$('#tagCount');
   const MAX_TAGS=14;
   let tags=(tagsHidden?.value||'').split(',').map(v=>v.trim()).filter(Boolean);
 
-  function syncTags(){
-    tags=[...new Set(tags)].slice(0,MAX_TAGS);
-    if(tagsHidden) tagsHidden.value=tags.join(', ');
-    if(tagCount) tagCount.textContent=`${tags.length}/${MAX_TAGS}`;
-    if(tagList){
-      tagList.innerHTML='';
-      tags.forEach((tag,i)=>{
-        const chip=document.createElement('span');
-        chip.className='tag-chip';
-        chip.append(document.createTextNode(tag));
-        const remove=document.createElement('button');
-        remove.type='button'; remove.textContent='×'; remove.title='Șterge';
-        remove.addEventListener('click',()=>{tags.splice(i,1);syncTags();renderSiteTags();});
-        chip.appendChild(remove);
-        tagList.appendChild(chip);
-      });
-    }
-    renderSiteTags();
-  }
-
-  function addTag(){
-    const value=tagInput?.value.trim();
-    if(!value||tags.length>=MAX_TAGS) return;
-    if(!tags.some(t=>t.toLowerCase()===value.toLowerCase())) tags.push(value);
-    tagInput.value='';
-    syncTags();
-  }
-
-  tagAdd?.addEventListener('click',addTag);
-  tagInput?.addEventListener('keydown',e=>{
-    if(e.key==='Enter'){e.preventDefault();addTag();}
-  });
-
   function renderSiteTags(){
-    if(!siteTags) return;
+    if(!siteTags)return;
     siteTags.innerHTML='';
     tags.forEach(tag=>{
       const span=document.createElement('span');
@@ -56,23 +23,75 @@
     });
   }
 
-  /* ---------- TEXT PREVIEW ---------- */
-  const catLabel=()=>category?.selectedOptions?.[0]?.textContent?.trim()||'Categorie';
+  function syncTags(){
+    tags=[...new Set(tags)].slice(0,MAX_TAGS);
+    if(tagsHidden)tagsHidden.value=tags.join(', ');
+    if(tagCount)tagCount.textContent=`${tags.length}/${MAX_TAGS}`;
+
+    if(tagList){
+      tagList.innerHTML='';
+      tags.forEach((tag,i)=>{
+        const chip=document.createElement('span');
+        chip.className='tag-chip';
+        chip.append(document.createTextNode(tag));
+
+        const remove=document.createElement('button');
+        remove.type='button';
+        remove.textContent='×';
+        remove.title='Șterge';
+        remove.addEventListener('click',()=>{
+          tags.splice(i,1);
+          syncTags();
+        });
+
+        chip.appendChild(remove);
+        tagList.appendChild(chip);
+      });
+    }
+
+    renderSiteTags();
+  }
+
+  function addTag(){
+    const value=tagInput?.value.trim();
+    if(!value||tags.length>=MAX_TAGS)return;
+
+    if(!tags.some(t=>t.toLowerCase()===value.toLowerCase())){
+      tags.push(value);
+    }
+
+    if(tagInput)tagInput.value='';
+    syncTags();
+  }
+
+  tagAdd?.addEventListener('click',addTag);
+  tagInput?.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){
+      e.preventDefault();
+      addTag();
+    }
+  });
+
+  /* TEXTE PREVIEW */
+  const categoryLabel=()=>category?.selectedOptions?.[0]?.textContent?.trim()||'Categorie';
+
   function updateText(){
     const t=title?.value.trim()||'Titlul proiectului';
-    const c=catLabel();
+    const c=categoryLabel();
     const d=description?.value.trim()||'Descrierea proiectului va apărea aici.';
+
     if(smallTitle)smallTitle.textContent=t;
     if(smallCategory)smallCategory.textContent=c;
     if(siteTitle)siteTitle.textContent=t;
     if(siteCategory)siteCategory.textContent=c;
     if(siteDescription)siteDescription.textContent=d;
   }
+
   title?.addEventListener('input',updateText);
   category?.addEventListener('change',updateText);
   description?.addEventListener('input',updateText);
 
-  /* ---------- MEDIA ---------- */
+  /* MEDIA */
   function crop(slot){
     return {
       x:slot.querySelector('[data-crop-x]')?.value||'50',
@@ -91,20 +110,46 @@
   }
 
   function primarySlot(){
-    const selected=$('.media-slot input[name="primary_image_id"]:checked')?.closest('.media-slot');
-    return selected&&!selected.querySelector('input[name="delete_image[]"]:checked') ? selected : usableSlots()[0]||null;
+    const existing=$('.media-slot input[name="primary_image_id"]:checked')?.closest('.media-slot');
+
+    if(
+      existing &&
+      !existing.querySelector('input[name="delete_image[]"]:checked')
+    ){
+      return existing;
+    }
+
+    const fresh=$('.media-slot .js-new-primary:checked')?.closest('.media-slot');
+
+    if(fresh){
+      return fresh;
+    }
+
+    return usableSlots()[0]||null;
   }
 
   function cloneMedia(slot,forModal=false){
     const src=slot?.querySelector('[data-media-preview]');
     if(!src)return null;
+
     let el;
+
     if(src.tagName==='VIDEO'){
       el=document.createElement('video');
-      el.src=src.currentSrc||src.src; el.muted=true; el.playsInline=true;
-      if(forModal) el.controls=true; else {el.loop=true;el.autoplay=true;}
+      el.src=src.currentSrc||src.src;
+      el.muted=true;
+      el.playsInline=true;
+
+      if(forModal){
+        el.controls=true;
+      }else{
+        el.loop=true;
+        el.autoplay=true;
+      }
     }else{
-      el=document.createElement('img'); el.src=src.src; el.alt='';
+      el=document.createElement('img');
+      el.src=src.src;
+      el.alt='';
     }
 
     if(!forModal){
@@ -115,24 +160,47 @@
       el.style.setProperty('--fit',c.fit);
       el.style.setProperty('--rotation',c.rotation+'deg');
     }
+
     return el;
   }
 
   function updateSmall(){
     if(!smallMedia)return;
+
     smallMedia.innerHTML='';
-    const m=cloneMedia(primarySlot());
-    smallMedia.append(m||Object.assign(document.createElement('div'),{className:'preview-placeholder',textContent:'Media principală va apărea aici'}));
+
+    const media=cloneMedia(primarySlot());
+
+    if(media){
+      smallMedia.appendChild(media);
+    }else{
+      const p=document.createElement('div');
+      p.className='preview-placeholder';
+      p.textContent='Media principală va apărea aici';
+      smallMedia.appendChild(p);
+    }
   }
 
   function updateSiteModal(){
     if(!siteMain||!siteThumbs)return;
-    const slots=usableSlots(), primary=primarySlot()||slots[0]||null;
+
+    const slots=usableSlots();
+    const primary=primarySlot()||slots[0]||null;
+
     siteMain.innerHTML='';
     const main=cloneMedia(primary,true);
-    siteMain.append(main||Object.assign(document.createElement('div'),{className:'preview-placeholder',textContent:'Media principală va apărea aici'}));
+
+    if(main){
+      siteMain.appendChild(main);
+    }else{
+      const p=document.createElement('div');
+      p.className='preview-placeholder';
+      p.textContent='Media principală va apărea aici';
+      siteMain.appendChild(p);
+    }
 
     siteThumbs.innerHTML='';
+
     if(!slots.length){
       const t=document.createElement('span');
       t.style.cssText='color:rgba(245,242,233,.36);font-size:11px';
@@ -143,96 +211,440 @@
 
     slots.forEach(slot=>{
       const btn=document.createElement('button');
-      btn.type='button';btn.className='site-thumb'+(slot===primary?' active':'');
+      btn.type='button';
+      btn.className='site-thumb'+(slot===primary?' active':'');
+
       const media=cloneMedia(slot,true);
-      if(media){if(media.tagName==='VIDEO')media.controls=false;btn.appendChild(media);}
+
+      if(media){
+        if(media.tagName==='VIDEO'){
+          media.controls=false;
+        }
+        btn.appendChild(media);
+      }
+
       btn.addEventListener('click',()=>{
         siteMain.innerHTML='';
+
         const chosen=cloneMedia(slot,true);
-        if(chosen)siteMain.appendChild(chosen);
+
+        if(chosen){
+          siteMain.appendChild(chosen);
+        }
+
         $$('.site-thumb',siteThumbs).forEach(x=>x.classList.remove('active'));
         btn.classList.add('active');
       });
+
       siteThumbs.appendChild(btn);
     });
   }
 
-  function updateAll(){updateText();updateSmall();updateSiteModal();renderSiteTags();}
+  function updateAll(){
+    updateText();
+    updateSmall();
+    updateSiteModal();
+    renderSiteTags();
+  }
 
-  $$('.media-slot input[type=file]').forEach(input=>{
-    input.addEventListener('change',()=>{
-      const slot=input.closest('.media-slot'), file=input.files?.[0];
-      if(!slot||!file)return;
-      slot.querySelector('.slot-preview')?.remove();
+  const newPrimaryIndex=$('#newPrimaryIndex');
 
-      const wrap=document.createElement('div');wrap.className='slot-preview';
-      const media=document.createElement(file.type.startsWith('video/')?'video':'img');
-      if(media.tagName==='VIDEO'){media.muted=true;media.loop=true;media.autoplay=true;media.playsInline=true;} else media.alt='';
-      media.dataset.mediaPreview='1';media.src=URL.createObjectURL(file);
-      wrap.appendChild(media);slot.prepend(wrap);slot.classList.add('has-media');
-      const empty=slot.querySelector('.slot-empty');if(empty)empty.style.display='none';
-      const adjust=slot.querySelector('.js-adjust');if(adjust)adjust.style.display='';
-      media.addEventListener('loadeddata',updateAll,{once:true});
-      media.addEventListener('load',updateAll,{once:true});
+  function showNewMediaControls(slot){
+    const primaryWrap=slot.querySelector('.new-primary-wrap');
+    const deleteWrap=slot.querySelector('.new-delete-wrap');
+    const adjust=slot.querySelector('.js-adjust');
+
+    if(primaryWrap)primaryWrap.style.display='flex';
+    if(deleteWrap)deleteWrap.style.display='flex';
+    if(adjust)adjust.style.display='';
+  }
+
+  function clearNewSlot(slot){
+    const fileInput=slot.querySelector('input[type=file]');
+    const primary=slot.querySelector('.js-new-primary');
+
+    if(
+      primary?.checked &&
+      newPrimaryIndex
+    ){
+      newPrimaryIndex.value='';
+    }
+
+    if(fileInput)fileInput.value='';
+    if(primary)primary.checked=false;
+
+    slot.querySelector('.slot-preview')?.remove();
+    slot.classList.remove('has-media');
+
+    const empty=slot.querySelector('.slot-empty');
+    if(empty)empty.style.display='grid';
+
+    const primaryWrap=slot.querySelector('.new-primary-wrap');
+    const deleteWrap=slot.querySelector('.new-delete-wrap');
+    const adjust=slot.querySelector('.js-adjust');
+
+    if(primaryWrap)primaryWrap.style.display='none';
+    if(deleteWrap)deleteWrap.style.display='none';
+    if(adjust)adjust.style.display='none';
+
+    const resetMap=[
+      ['[data-crop-x]','50'],
+      ['[data-crop-y]','50'],
+      ['[data-crop-zoom]','1'],
+      ['[data-crop-fit]','cover'],
+      ['[data-rotation]','0']
+    ];
+
+    resetMap.forEach(([selector,value])=>{
+      const el=slot.querySelector(selector);
+      if(el)el.value=value;
+    });
+
+    updateAll();
+  }
+
+  $$('.js-new-primary').forEach(radio=>{
+    radio.addEventListener('change',()=>{
+      if(!radio.checked)return;
+
+      const slot=radio.closest('.media-slot');
+      const fileInput=slot?.querySelector('input[type=file]');
+      const match=fileInput?.name.match(/media\[(\d+)\]/);
+      const index=match?.[1];
+
+      if(index!==undefined && newPrimaryIndex){
+        newPrimaryIndex.value=index;
+      }
+
+      $$('input[name="primary_image_id"]').forEach(oldRadio=>{
+        oldRadio.checked=false;
+      });
+
+      $$('.js-new-primary').forEach(other=>{
+        if(other!==radio)other.checked=false;
+      });
+
       updateAll();
     });
   });
 
-  $$('input[name="primary_image_id"],input[name="delete_image[]"]').forEach(el=>el.addEventListener('change',updateAll));
+  $$('input[name="primary_image_id"]').forEach(radio=>{
+    radio.addEventListener('change',()=>{
+      if(!radio.checked)return;
 
-  /* ---------- FREE DRAG EDITOR ---------- */
-  const modal=$('#cropModal'), stage=$('#cropStage');
-  const zoom=$('#cropZoom'), zoomValue=$('#cropZoomValue');
-  const rotation=$('#cropRotation'), rotationValue=$('#cropRotationValue');
+      if(newPrimaryIndex)newPrimaryIndex.value='';
+
+      $$('.js-new-primary').forEach(newRadio=>{
+        newRadio.checked=false;
+      });
+
+      updateAll();
+    });
+  });
+
+  $$('.js-remove-new').forEach(button=>{
+    button.addEventListener('click',event=>{
+      event.preventDefault();
+      event.stopPropagation();
+
+      const slot=button.closest('.media-slot');
+
+      if(slot){
+        clearNewSlot(slot);
+      }
+    });
+  });
+
+  $$('.media-slot input[type=file]').forEach(input=>{
+    input.addEventListener('change',()=>{
+      const slot=input.closest('.media-slot');
+      const file=input.files?.[0];
+
+      if(!slot||!file)return;
+
+      slot.querySelector('.slot-preview')?.remove();
+
+      const wrap=document.createElement('div');
+      wrap.className='slot-preview';
+
+      const media=document.createElement(
+        file.type.startsWith('video/')?'video':'img'
+      );
+
+      if(media.tagName==='VIDEO'){
+        media.muted=true;
+        media.loop=true;
+        media.autoplay=true;
+        media.playsInline=true;
+      }else{
+        media.alt='';
+      }
+
+      media.dataset.mediaPreview='1';
+      media.src=URL.createObjectURL(file);
+
+      wrap.appendChild(media);
+      slot.prepend(wrap);
+      slot.classList.add('has-media');
+
+      const empty=slot.querySelector('.slot-empty');
+      if(empty)empty.style.display='none';
+
+      showNewMediaControls(slot);
+
+      const freshPrimary=slot.querySelector('.js-new-primary');
+
+      if(
+        freshPrimary &&
+        !$('.media-slot input[name="primary_image_id"]:checked') &&
+        !$('.media-slot .js-new-primary:checked')
+      ){
+        freshPrimary.checked=true;
+        freshPrimary.dispatchEvent(new Event('change',{bubbles:true}));
+      }
+
+      media.addEventListener('loadeddata',updateAll,{once:true});
+      media.addEventListener('load',updateAll,{once:true});
+
+      updateAll();
+    });
+  });
+
+  $$(
+    'input[name="primary_image_id"],' +
+    'input[name="delete_image[]"]'
+  ).forEach(el=>el.addEventListener('change',updateAll));
+
+  /* EDITOR NATURAL: TRAGI CU MOUSE-UL / DEGETUL */
+  const modal=$('#cropModal');
+  const stage=$('#cropStage');
+  const zoom=$('#cropZoom');
+  const zoomValue=$('#cropZoomValue');
+  const rotation=$('#cropRotation');
+  const rotationValue=$('#cropRotationValue');
   const fitButtons=$$('.fit-switch button');
-  let active=null, state={x:50,y:50,zoom:1,fit:'cover',rotation:0}, drag=null;
 
-  function stageMedia(){return $('#cropStageMedia');}
+  let active=null;
+  let state={
+    x:50,
+    y:50,
+    zoom:1,
+    fit:'cover',
+    rotation:0
+  };
+
+  let drag=null;
+
+  function stageMedia(){
+    return $('#cropStageMedia');
+  }
+
   function renderEditor(){
-    const m=stageMedia();if(!m)return;
-    m.style.setProperty('--crop-x',state.x+'%');
-    m.style.setProperty('--crop-y',state.y+'%');
-    m.style.setProperty('--zoom',state.zoom);
-    m.style.setProperty('--fit',state.fit);
-    m.style.setProperty('--rotation',state.rotation+'deg');
-    if(zoom)zoom.value=state.zoom;if(zoomValue)zoomValue.textContent=Number(state.zoom).toFixed(2)+'×';
-    if(rotation)rotation.value=state.rotation;if(rotationValue)rotationValue.textContent=Math.round(state.rotation)+'°';
-    fitButtons.forEach(b=>b.classList.toggle('active',b.dataset.fit===state.fit));
+    const media=stageMedia();
+
+    if(!media)return;
+
+    media.style.setProperty('--crop-x',state.x+'%');
+    media.style.setProperty('--crop-y',state.y+'%');
+    media.style.setProperty('--zoom',state.zoom);
+    media.style.setProperty('--fit',state.fit);
+    media.style.setProperty('--rotation',state.rotation+'deg');
+
+    if(zoom)zoom.value=state.zoom;
+    if(zoomValue)zoomValue.textContent=Number(state.zoom).toFixed(2)+'×';
+
+    if(rotation)rotation.value=state.rotation;
+    if(rotationValue)rotationValue.textContent=Math.round(state.rotation)+'°';
+
+    fitButtons.forEach(button=>{
+      button.classList.toggle(
+        'active',
+        button.dataset.fit===state.fit
+      );
+    });
   }
 
   function openEditor(slot){
-    const src=slot.querySelector('[data-media-preview]');if(!src||!modal||!stage)return;
-    active=slot;const c=crop(slot);
-    state={x:+c.x,y:+c.y,zoom:+c.zoom,fit:c.fit,rotation:+c.rotation};
+    const src=slot.querySelector('[data-media-preview]');
+
+    if(!src||!modal||!stage)return;
+
+    active=slot;
+
+    const c=crop(slot);
+
+    state={
+      x:+c.x,
+      y:+c.y,
+      zoom:+c.zoom,
+      fit:c.fit,
+      rotation:+c.rotation
+    };
+
     stage.innerHTML='';
-    const m=document.createElement(src.tagName==='VIDEO'?'video':'img');
-    m.id='cropStageMedia';m.src=src.currentSrc||src.src;
-    if(m.tagName==='VIDEO'){m.muted=true;m.loop=true;m.autoplay=true;m.playsInline=true;}else m.alt='';
-    stage.appendChild(m);renderEditor();modal.classList.add('open');
+
+    const media=document.createElement(
+      src.tagName==='VIDEO'?'video':'img'
+    );
+
+    media.id='cropStageMedia';
+    media.src=src.currentSrc||src.src;
+
+    if(media.tagName==='VIDEO'){
+      media.muted=true;
+      media.loop=true;
+      media.autoplay=true;
+      media.playsInline=true;
+    }else{
+      media.alt='';
+    }
+
+    stage.appendChild(media);
+    renderEditor();
+
+    modal.classList.add('open');
   }
 
-  function closeEditor(){modal?.classList.remove('open');active=null;drag=null;}
+  function closeEditor(){
+    modal?.classList.remove('open');
+    active=null;
+    drag=null;
+  }
+
   function applyEditor(){
     if(!active)return;
-    const set=(sel,val)=>{const el=active.querySelector(sel);if(el)el.value=val;};
-    set('[data-crop-x]',state.x.toFixed(2));set('[data-crop-y]',state.y.toFixed(2));
-    set('[data-crop-zoom]',state.zoom.toFixed(2));set('[data-crop-fit]',state.fit);set('[data-rotation]',Math.round(state.rotation));
-    const m=active.querySelector('[data-media-preview]');
-    if(m){m.style.setProperty('--crop-x',state.x+'%');m.style.setProperty('--crop-y',state.y+'%');m.style.setProperty('--zoom',state.zoom);m.style.setProperty('--fit',state.fit);m.style.setProperty('--rotation',state.rotation+'deg');}
-    updateAll();closeEditor();
+
+    const set=(selector,value)=>{
+      const el=active.querySelector(selector);
+      if(el)el.value=value;
+    };
+
+    set('[data-crop-x]',state.x.toFixed(2));
+    set('[data-crop-y]',state.y.toFixed(2));
+    set('[data-crop-zoom]',state.zoom.toFixed(2));
+    set('[data-crop-fit]',state.fit);
+    set('[data-rotation]',Math.round(state.rotation));
+
+    const media=active.querySelector('[data-media-preview]');
+
+    if(media){
+      media.style.setProperty('--crop-x',state.x+'%');
+      media.style.setProperty('--crop-y',state.y+'%');
+      media.style.setProperty('--zoom',state.zoom);
+      media.style.setProperty('--fit',state.fit);
+      media.style.setProperty('--rotation',state.rotation+'deg');
+    }
+
+    updateAll();
+    closeEditor();
   }
 
-  $$('.js-adjust').forEach(btn=>btn.addEventListener('click',e=>{e.preventDefault();const slot=btn.closest('.media-slot');if(slot)openEditor(slot);}));
-  zoom?.addEventListener('input',()=>{state.zoom=+zoom.value;renderEditor();});
-  rotation?.addEventListener('input',()=>{state.rotation=+rotation.value;renderEditor();});
-  fitButtons.forEach(btn=>btn.addEventListener('click',()=>{state.fit=btn.dataset.fit||'cover';renderEditor();}));
-  $('#cropReset')?.addEventListener('click',()=>{state={x:50,y:50,zoom:1,fit:'cover',rotation:0};renderEditor();});
-  $('#cropApply')?.addEventListener('click',applyEditor);$('#cropCancel')?.addEventListener('click',closeEditor);
-  modal?.addEventListener('click',e=>{if(e.target===modal)closeEditor();});
+  $$('.js-adjust').forEach(button=>{
+    button.addEventListener('click',event=>{
+      event.preventDefault();
 
-  stage?.addEventListener('pointerdown',e=>{stage.setPointerCapture(e.pointerId);drag={px:e.clientX,py:e.clientY,x:state.x,y:state.y};});
-  stage?.addEventListener('pointermove',e=>{if(!drag)return;const r=stage.getBoundingClientRect();state.x=clamp(drag.x-(e.clientX-drag.px)/r.width*100,0,100);state.y=clamp(drag.y-(e.clientY-drag.py)/r.height*100,0,100);renderEditor();});
-  stage?.addEventListener('pointerup',()=>drag=null);stage?.addEventListener('pointercancel',()=>drag=null);
+      const slot=button.closest('.media-slot');
 
-  syncTags();updateAll();
+      if(slot){
+        openEditor(slot);
+      }
+    });
+  });
+
+  zoom?.addEventListener('input',()=>{
+    state.zoom=+zoom.value;
+    renderEditor();
+  });
+
+  rotation?.addEventListener('input',()=>{
+    state.rotation=+rotation.value;
+    renderEditor();
+  });
+
+  fitButtons.forEach(button=>{
+    button.addEventListener('click',()=>{
+      state.fit=button.dataset.fit||'cover';
+      renderEditor();
+    });
+  });
+
+  $('#cropReset')?.addEventListener('click',()=>{
+    state={
+      x:50,
+      y:50,
+      zoom:1,
+      fit:'cover',
+      rotation:0
+    };
+
+    renderEditor();
+  });
+
+  $('#cropApply')?.addEventListener('click',applyEditor);
+  $('#cropCancel')?.addEventListener('click',closeEditor);
+
+  modal?.addEventListener('click',event=>{
+    if(event.target===modal){
+      closeEditor();
+    }
+  });
+
+  /*
+   * Drag intuitiv:
+   * - tragi imaginea la dreapta -> imaginea se mută la dreapta
+   * - tragi la stânga -> se mută la stânga
+   * - sus/jos la fel
+   *
+   * Folosim pointer events, deci funcționează și cu mouse,
+   * touchpad, stylus și deget pe telefon/tabletă.
+   */
+  stage?.addEventListener('pointerdown',event=>{
+    if(event.button!==undefined && event.button!==0)return;
+
+    stage.setPointerCapture(event.pointerId);
+    stage.classList.add('dragging');
+
+    drag={
+      startX:event.clientX,
+      startY:event.clientY,
+      cropX:state.x,
+      cropY:state.y
+    };
+
+    event.preventDefault();
+  });
+
+  stage?.addEventListener('pointermove',event=>{
+    if(!drag)return;
+
+    const rect=stage.getBoundingClientRect();
+
+    const dx=
+      ((event.clientX-drag.startX)/rect.width)*100;
+
+    const dy=
+      ((event.clientY-drag.startY)/rect.height)*100;
+
+    /*
+     * object-position funcționează invers față de gestul vizual,
+     * de aceea scădem deplasarea ca imaginea să urmeze mâna.
+     */
+    state.x=clamp(drag.cropX-dx,0,100);
+    state.y=clamp(drag.cropY-dy,0,100);
+
+    renderEditor();
+    event.preventDefault();
+  });
+
+  function endDrag(){
+    drag=null;
+    stage?.classList.remove('dragging');
+  }
+
+  stage?.addEventListener('pointerup',endDrag);
+  stage?.addEventListener('pointercancel',endDrag);
+  stage?.addEventListener('lostpointercapture',endDrag);
+
+  syncTags();
+  updateAll();
 })();

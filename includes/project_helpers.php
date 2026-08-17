@@ -246,7 +246,10 @@ function saveUploadedProjectMedia(
             'rotation'   => $display['rotation'],
         ]);
 
-        $saved[] = $filename;
+        $saved[(int) $i] = [
+            'id' => (int) $pdo->lastInsertId(),
+            'filename' => $filename,
+        ];
     }
 
     return $saved;

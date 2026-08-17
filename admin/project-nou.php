@@ -66,8 +66,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'rotation' => $_POST['new_rotation'] ?? [],
             ];
 
+            $savedMedia = [];
+
             if (isset($_FILES['media'])) {
-                saveUploadedProjectMedia($_FILES['media'], $projectId, $pdo, $display, 4);
+                $savedMedia = saveUploadedProjectMedia(
+                    $_FILES['media'],
+                    $projectId,
+                    $pdo,
+                    $display,
+                    4
+                );
+            }
+
+            $newPrimaryIndex = $_POST['new_primary_index'] ?? '';
+
+            if (
+                $newPrimaryIndex !== '' &&
+                isset($savedMedia[(int) $newPrimaryIndex]['id'])
+            ) {
+                setPrimaryProjectImage(
+                    (int) $savedMedia[(int) $newPrimaryIndex]['id'],
+                    $projectId,
+                    $pdo
+                );
             }
 
             $pdo->commit();
@@ -121,6 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="form-layout">
         <form class="card form-card" method="post" enctype="multipart/form-data">
             <input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>">
+            <input type="hidden" name="new_primary_index" id="newPrimaryIndex" value="">
 
             <div class="form-grid">
                 <div class="field">
@@ -213,6 +235,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <input type="hidden" name="new_crop_zoom[<?= $i ?>]" value="1" data-crop-zoom>
                                 <input type="hidden" name="new_fit_mode[<?= $i ?>]" value="cover" data-crop-fit>
                                 <input type="hidden" name="new_rotation[<?= $i ?>]" value="0" data-rotation>
+
+                                
+                                <label class="primary-wrap new-primary-wrap" style="display:none">
+                                    <input type="radio" class="js-new-primary" value="<?= $i ?>">
+                                    Principal
+                                </label>
+
+                                <div class="delete-wrap new-delete-wrap" style="display:none">
+                                    <button type="button" class="js-remove-new">Șterge</button>
+                                </div>
 
                                 <div class="slot-actions">
                                     <button type="button" class="js-adjust" style="display:none">Ajustează</button>

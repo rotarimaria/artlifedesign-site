@@ -46,4 +46,28 @@ input:focus,textarea:focus,select:focus{border-color:rgba(146,255,34,.55);box-sh
 @media(max-width:850px){.site-modal-preview{grid-template-columns:1fr}.site-modal-side{min-height:340px}.upload-grid{grid-template-columns:1fr}}
 @media(max-width:700px){.topbar{padding:0 16px}.page-head{align-items:stretch;flex-direction:column}.form-grid{grid-template-columns:1fr}.field-full{grid-column:auto}}
 @media(max-width:480px){.tag-add-row{grid-template-columns:1fr}}
+
+/* FIX: inputul de upload nu trebuie să reapară după selectarea fișierului */
+.media-slot.has-media > input[type="file"]{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  overflow:hidden!important;
+}
+
+/* Controale pentru media nouă: identice vizual cu cele salvate */
+.new-delete-wrap button{
+  border:0;
+  padding:0;
+  background:transparent;
+  color:var(--muted);
+  font:inherit;
+  font-size:12px;
+  cursor:pointer;
+}
+.new-delete-wrap button:hover{color:var(--danger)}
+.new-primary-wrap,.new-delete-wrap{border-top:1px solid var(--border)}
+
 </style>
