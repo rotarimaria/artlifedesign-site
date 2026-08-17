@@ -1,238 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const works = [
-    {
-      title: "Bonjour Tour",
-      service: "Litere în volum & Standuri",
-      category: "volum",
-      image: "images/BonjourLightBox.jpg",
-      focus: "48% 45%",
-      images: [
-        "images/BonjourLightBox.jpg",
-        "images/litere_volum1.jpg",
-        "images/litere_volum2.jpg",
-        "images/litere_volum3.jpg"
-      ],
-      date: "2025",
-      desc: "Light box personalizat pentru promovare vizuală, realizat pentru o prezență clară și elegantă. Construcția pune în valoare identitatea brandului atât pe timp de zi, cât și seara, iar finisajele sunt gândite pentru un aspect curat și profesional.",
-      tags: "Light Box, Exterior, Vizibilitate",
-      search: "bonjour tour light box litere volum stand"
-    },
-    {
-      title: "Urnă personalizată",
-      service: "P.O.S.M.",
-      category: "posm",
-      image: "images/box.jpg",
-      focus: "52% 58%",
-      images: [
-        "images/box.jpg"
-      ],
-      date: "2025",
-      desc: "Urnă promoțională personalizată pentru campanii și acțiuni de colectare. Designul este adaptat identității vizuale a clientului, cu suprafețe pregătite pentru print clar, mesaje ușor de citit și utilizare practică în spații comerciale sau la evenimente.",
-      tags: "Urnă, Print, P.O.S.M.",
-      search: "urna box donatie posm campanie"
-    },
-    {
-      title: "Ambalaj Market",
-      service: "Branding Auto",
-      category: "auto",
-      image: "images/brand_auto1.jpg",
-      focus: "52% 50%",
-      images: [
-        "images/brand_auto1.jpg",
-        "images/brand_auto2.jpg",
-        "images/lux-tavene.jpg"
-      ],
-      date: "2025",
-      desc: "Colantare auto realizată pentru transport comercial, cu accent pe vizibilitate și recunoașterea rapidă a brandului. Grafica este adaptată formei vehiculului și păstrează informațiile importante clare din mers și de la distanță.",
-      tags: "Auto, Colantare, Comercial",
-      search: "ambalaj market auto branding colantare"
-    },
-    {
-      title: "Documente MD",
-      service: "Branding Auto",
-      category: "auto",
-      image: "images/brand_auto2.jpg",
-      focus: "50% 50%",
-      images: [
-        "images/brand_auto2.jpg",
-        "images/brand_auto1.jpg"
-      ],
-      date: "2025",
-      desc: "Branding auto pentru transport comercial, realizat cu grafică aplicată pe suprafețe mari și elemente vizuale bine delimitate. Proiectul urmărește să păstreze lizibilitatea mesajului și coerența brandului pe întreg vehiculul.",
-      tags: "Microbuz, Colantare, Grafică",
-      search: "documente md auto microbus branding colantare"
-    },
-    {
-      title: "Cub promoțional",
-      service: "P.O.S.M.",
-      category: "posm",
-      image: "images/cub-sticla.jpg",
-      focus: "50% 52%",
-      images: [
-        "images/cub-sticla.jpg",
-        "images/cub-sticla0.jpg",
-        "images/box.jpg",
-        "images/fise_pret.jpg"
-      ],
-      date: "2025",
-      desc: "Element promoțional personalizat pentru expunere vizuală în campanii, evenimente și spații comerciale. Suprafețele permit integrarea graficii de brand, a mesajelor promoționale și a elementelor informative într-o formă compactă și ușor de remarcat.",
-      tags: "Display, Print, Expunere",
-      search: "cub sticla vara aquacity posm stand"
-    },
-    {
-      title: "Stand promoțional",
-      service: "P.O.S.M.",
-      category: "posm",
-      image: "images/cub-sticla0.jpg",
-      focus: "50% 52%",
-      images: [
-        "images/cub-sticla0.jpg",
-        "images/cub-sticla.jpg"
-      ],
-      date: "2025",
-      desc: "Stand promoțional realizat pentru campanii și prezentări de produs. Construcția este gândită pentru vizibilitate bună, montaj practic și integrarea elementelor grafice într-un format coerent cu identitatea vizuală a brandului.",
-      tags: "Stand, Print, P.O.S.M.",
-      search: "stand vara aquacity posm"
-    },
-    {
-      title: "Fișe de preț",
-      service: "Poligrafie",
-      category: "poligrafie",
-      image: "images/fise_pret.jpg",
-      focus: "50% 50%",
-      images: [
-        "images/fise_pret.jpg",
-        "images/inghetata_uv.jpg",
-        "images/inghetata-uv1.jpg"
-      ],
-      date: "2025",
-      desc: "Fișe de preț și materiale tipărite pentru prezentarea clară a produselor și ofertelor. Formatul poate fi adaptat pentru restaurante, magazine, showroom-uri sau campanii, cu accent pe lizibilitate și organizarea informației.",
-      tags: "Print, Meniu, Produs",
-      search: "fise pret meniuri poligrafie print"
-    },
-    {
-      title: "Good Break",
-      service: "Litere în volum & Standuri",
-      category: "volum",
-      image: "images/good-break.jpg",
-      focus: "50% 48%",
-      images: [
-        "images/good-break.jpg"
-      ],
-      date: "2025",
-      desc: "Reclamă luminoasă pentru fațadă, realizată pentru vizibilitate bună atât ziua, cât și noaptea. Proporțiile și iluminarea sunt adaptate spațiului, astfel încât brandul să rămână ușor de recunoscut de la distanță.",
-      tags: "Fațadă, Luminos, Volumetric",
-      search: "good break litere volum light box fatada"
-    },
-    {
-      title: "Etichete produs",
-      service: "Poligrafie",
-      category: "poligrafie",
-      image: "images/inghetata_uv.jpg",
-      focus: "50% 50%",
-      images: [
-        "images/inghetata_uv.jpg",
-        "images/inghetata-uv1.jpg"
-      ],
-      date: "2025",
-      desc: "Etichete personalizate pentru produse, realizate pentru un aspect curat și o prezentare coerentă a brandului. Pot fi adaptate diferitelor dimensiuni și suprafețe, cu print clar, culori bine definite și finisaje potrivite utilizării finale.",
-      tags: "Etichete, Print, Produs",
-      search: "inghetata uv print etichete poligrafie"
-    },
-    {
-      title: "Mango Passion Fruit",
-      service: "Poligrafie",
-      category: "poligrafie",
-      image: "images/inghetata-uv1.jpg",
-      focus: "50% 50%",
-      images: [
-        "images/inghetata-uv1.jpg",
-        "images/inghetata_uv.jpg",
-        "images/fise_pret.jpg",
-        "images/plotter-2.jpg"
-      ],
-      date: "2025",
-      desc: "Etichete personalizate pentru ambalaje de produs, cu accent pe culori, lizibilitate și diferențiere la raft. Grafica este pregătită pentru print de calitate și poate fi adaptată în mai multe dimensiuni sau variante vizuale.",
-      tags: "Etichete, UV, Produs",
-      search: "mango passion fruit uv print etichete poligrafie"
-    },
-    {
-      title: "Logo ArtLife Design",
-      service: "Litere în volum & Standuri",
-      category: "volum",
-      image: "images/litere_volum1.jpg",
-      focus: "50% 48%",
-      images: [
-        "images/litere_volum1.jpg",
-        "images/litere_volum2.jpg",
-        "images/litere_volum3.jpg"
-      ],
-      date: "2025",
-      desc: "Element volumetric pentru identitate vizuală, realizat pentru interior și prezentare de brand. Construcția și finisajele urmăresc un aspect precis, curat și premium, potrivit pentru recepții, showroom-uri sau spații comerciale.",
-      tags: "Logo, Interior, Volumetric",
-      search: "art life design litere volum logo interior"
-    },
-    {
-      title: "Smile Dent",
-      service: "Litere în volum & Standuri",
-      category: "volum",
-      image: "images/litere_volum2.jpg",
-      focus: "50% 48%",
-      images: [
-        "images/litere_volum2.jpg",
-        "images/litere_volum1.jpg"
-      ],
-      date: "2025",
-      desc: "Reclamă de fațadă cu litere volumetrice, realizată pentru identificarea clară a locației și vizibilitate din exterior. Dimensiunile, contrastul și poziționarea sunt adaptate fațadei pentru un rezultat echilibrat și ușor de remarcat.",
-      tags: "Fațadă, Clinică, Volumetric",
-      search: "smile dent litere volum fatada"
-    },
-    {
-      title: "Ambalaj Market",
-      service: "Litere în volum & Standuri",
-      category: "volum",
-      image: "images/litere_volum3.jpg",
-      focus: "50% 48%",
-      images: [
-        "images/litere_volum3.jpg"
-      ],
-      date: "2025",
-      desc: "Elemente de fațadă pentru spațiu comercial, realizate pentru a crește vizibilitatea brandului și pentru a integra identitatea vizuală direct în arhitectura locației. Finisajele și proporțiile sunt adaptate suprafeței pentru un rezultat coerent și profesional.",
-      tags: "Fațadă, Litere, Exterior",
-      search: "ambalaj market litere volum stand"
-    },
-    {
-      title: "Lux Tavane",
-      service: "Branding Auto",
-      category: "auto",
-      image: "images/lux-tavene.jpg",
-      focus: "50% 50%",
-      images: [
-        "images/lux-tavene.jpg",
-        "images/brand_auto1.jpg",
-        "images/brand_auto2.jpg"
-      ],
-      date: "2025",
-      desc: "Colantare auto pentru promovarea serviciilor locale, cu grafică adaptată caroseriei și zonelor cu vizibilitate maximă. Designul urmărește să transmită rapid serviciul oferit și să păstreze brandul ușor de recunoscut în trafic.",
-      tags: "Auto, Colantare, Grafică",
-      search: "lux tavane auto branding colantare"
-    },
-    {
-      title: "Stickere personalizate",
-      service: "Poligrafie",
-      category: "poligrafie",
-      image: "images/plotter-2.jpg",
-      focus: "50% 50%",
-      images: [
-        "images/plotter-2.jpg",
-        "images/fise_pret.jpg"
-      ],
-      date: "2025",
-      desc: "Stickere și etichete decupate la plotter pentru branding, ambalaje și materiale promoționale. Pot fi realizate în forme și dimensiuni diferite, cu margini curate și finisaj potrivit pentru aplicare pe diverse suprafețe.",
-      tags: "Stickere, Plotter, Etichete",
-      search: "stickere etichete plotter poligrafie"
-    }
-  ];
+  const works = Array.isArray(window.ARTLIFE_PROJECTS)
+    ? window.ARTLIFE_PROJECTS
+    : [];
+
 
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => document.querySelectorAll(selector);
@@ -364,57 +134,120 @@ document.addEventListener("DOMContentLoaded", () => {
       selectService(service);
       contact.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
-      window.location.href = `index.html?service=${encodeURIComponent(service)}#contact`;
+      window.location.href = `index.php?service=${encodeURIComponent(service)}#contact`;
     }
   });
 
+  function escapeHTML(value = "") {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function cardMediaHTML(work) {
+    const media = work.media?.[0];
+
+    if (!media?.src) {
+      return `
+        <div class="public-media-placeholder">
+          Fără imagine
+        </div>
+      `;
+    }
+
+    const vars = [
+      `--crop-x:${Number(media.cropX ?? 50)}%`,
+      `--crop-y:${Number(media.cropY ?? 50)}%`,
+      `--crop-zoom:${Number(media.zoom ?? 1)}`,
+      `--crop-fit:${media.fit === "contain" ? "contain" : "cover"}`,
+      `--crop-rotation:${Number(media.rotation ?? 0)}deg`
+    ].join(";");
+
+    if (media.type === "video") {
+      return `
+        <video
+          src="${escapeHTML(media.src)}"
+          muted
+          loop
+          autoplay
+          playsinline
+          preload="metadata"
+          style="${vars}"
+          aria-label="${escapeHTML(work.title)}"
+        ></video>
+      `;
+    }
+
+    return `
+      <img
+        src="${escapeHTML(media.src)}"
+        alt="${escapeHTML(work.title)}"
+        loading="lazy"
+        decoding="async"
+        style="${vars}"
+      >
+    `;
+  }
+
   function workCard(work, isHome = false) {
+    const safeTitle = escapeHTML(work.title);
+    const safeService = escapeHTML(work.service);
+    const safeCategory = escapeHTML(work.category);
+    const safeSearch = escapeHTML(work.search);
+    const safeDesc = escapeHTML(work.desc);
+    const safeTags = escapeHTML(work.tags);
+
     const orderHref = isHome
       ? "#contact"
-      : `index.html?service=${encodeURIComponent(work.service)}#contact`;
+      : `index.php?service=${encodeURIComponent(work.service)}#contact`;
 
     const examplesHref =
       work.category === "laser"
-        ? "lucrari.html?search=plotter"
-        : `lucrari.html?filter=${encodeURIComponent(work.category)}`;
+        ? "lucrari.php?search=plotter"
+        : `lucrari.php?filter=${encodeURIComponent(work.category)}`;
 
-    const encodedImages = encodeURIComponent(
-      JSON.stringify(work.images || [work.image])
+    const encodedMedia = encodeURIComponent(
+      JSON.stringify(work.media || [])
     );
+
+    const mediaHTML = cardMediaHTML(work);
+
+    const shortService = escapeHTML(
+      String(work.service || "").replace(
+        "Litere în volum & Standuri",
+        "Litere & Standuri"
+      )
+    );
+
+    const commonData = `
+      data-category="${safeCategory}"
+      data-full="${escapeHTML(work.image || "")}"
+      data-media="${encodedMedia}"
+      data-title="${safeTitle}"
+      data-service="${safeService}"
+      data-desc="${safeDesc}"
+      data-tags="${safeTags}"
+    `;
 
     if (isHome) {
       return `
         <article
           class="work-card reveal"
-          data-category="${work.category}"
-          data-search="${work.search}"
+          data-category="${safeCategory}"
+          data-search="${safeSearch}"
         >
           <button
             class="work-img gallery-item"
             type="button"
-            style="--card-focus:${work.focus || "50% 50%"};"
-            data-category="${work.category}"
-            data-full="${work.image}"
-            data-images="${encodedImages}"
-            data-title="${work.title}"
-            data-service="${work.service}"
-            data-date="${work.date}"
-            data-desc="${work.desc}"
-            data-tags="${work.tags}"
-            aria-label="Deschide proiectul ${work.title}"
+            ${commonData}
+            aria-label="Deschide proiectul ${safeTitle}"
           >
-            <img
-              src="${work.image}"
-              alt="${work.title}"
-              loading="lazy"
-            >
+            ${mediaHTML}
 
-            <span>
-              ${work.service.replace(
-                "Litere în volum & Standuri",
-                "Litere & Standuri"
-              )}
-            </span>
+            <span>${shortService}</span>
 
             <div class="media-overlay">
               <i class="bi bi-arrows-fullscreen"></i>
@@ -423,14 +256,14 @@ document.addEventListener("DOMContentLoaded", () => {
           </button>
 
           <div class="work-info">
-            <small>${work.service}</small>
-            <h3>${work.title}</h3>
+            <small>${safeService}</small>
+            <h3>${safeTitle}</h3>
 
             <div class="work-actions work-actions-double">
               <a
                 href="${orderHref}"
                 class="work-order-btn work-order-primary"
-                data-order-service="${work.service}"
+                data-order-service="${safeService}"
               >
                 Cere ofertă
                 <i class="bi bi-arrow-up-right"></i>
@@ -452,35 +285,18 @@ document.addEventListener("DOMContentLoaded", () => {
     return `
       <article
         class="portfolio-card reveal"
-        data-category="${work.category}"
-        data-search="${work.search}"
+        data-category="${safeCategory}"
+        data-search="${safeSearch}"
       >
         <button
           class="portfolio-media gallery-item"
           type="button"
-          style="--card-focus:${work.focus || "50% 50%"};"
-          data-category="${work.category}"
-          data-full="${work.image}"
-          data-images="${encodedImages}"
-          data-title="${work.title}"
-          data-service="${work.service}"
-          data-date="${work.date}"
-          data-desc="${work.desc}"
-          data-tags="${work.tags}"
-          aria-label="Deschide proiectul ${work.title}"
+          ${commonData}
+          aria-label="Deschide proiectul ${safeTitle}"
         >
-          <img
-            src="${work.image}"
-            alt="${work.title}"
-            loading="lazy"
-          >
+          ${mediaHTML}
 
-          <span>
-            ${work.service.replace(
-              "Litere în volum & Standuri",
-              "Litere & Standuri"
-            )}
-          </span>
+          <span>${shortService}</span>
 
           <div class="portfolio-media-overlay">
             <span>Vezi proiectul</span>
@@ -489,14 +305,14 @@ document.addEventListener("DOMContentLoaded", () => {
         </button>
 
         <div class="portfolio-content">
-          <small>${work.service}</small>
-          <h3>${work.title}</h3>
+          <small>${safeService}</small>
+          <h3>${safeTitle}</h3>
 
           <div class="portfolio-card-actions">
             <a
               href="${orderHref}"
               class="portfolio-action portfolio-action-primary"
-              data-order-service="${work.service}"
+              data-order-service="${safeService}"
             >
               Cere ofertă
               <i class="bi bi-arrow-up-right"></i>
@@ -991,11 +807,12 @@ if (portfolioGrid) {
 
   let galleryItems = [];
   let galleryIndex = 0;
-  let projectImages = [];
-  let projectImageIndex = 0;
+  let projectMedia = [];
+  let projectMediaIndex = 0;
 
   const modal = $("#galleryModal");
   const modalImg = $("#galleryModalImage");
+  const modalVideo = $("#galleryModalVideo");
   const modalTitle = $("#galleryModalTitle");
   const modalService = $("#galleryModalService");
   const modalDesc = $("#galleryModalDesc");
@@ -1021,21 +838,23 @@ if (portfolioGrid) {
     });
   }
 
-  function getProjectImages(item) {
+  function getProjectMedia(item) {
     if (!item) return [];
 
     try {
-      const decoded = decodeURIComponent(item.dataset.images || "");
+      const decoded = decodeURIComponent(item.dataset.media || "");
       const parsed = JSON.parse(decoded);
 
-      if (Array.isArray(parsed) && parsed.length) {
+      if (Array.isArray(parsed)) {
         return parsed.slice(0, 4);
       }
     } catch (error) {
-      // fallback la imaginea principală
+      // fallback mai jos
     }
 
-    return [item.dataset.full || ""].filter(Boolean);
+    return item.dataset.full
+      ? [{ src: item.dataset.full, type: "image" }]
+      : [];
   }
 
   function renderThumbnails() {
@@ -1043,66 +862,107 @@ if (portfolioGrid) {
 
     modalThumbs.innerHTML = "";
 
-    if (projectImages.length <= 1) {
+    if (projectMedia.length <= 1) {
       modalThumbs.hidden = true;
       return;
     }
 
     modalThumbs.hidden = false;
 
-    projectImages.forEach((src, index) => {
+    projectMedia.forEach((media, index) => {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "gallery-thumb";
-      button.classList.toggle("active", index === projectImageIndex);
+      button.classList.toggle("active", index === projectMediaIndex);
       button.setAttribute(
         "aria-label",
-        `Afișează fotografia ${index + 1} din proiect`
+        `Afișează fișierul ${index + 1} din proiect`
       );
 
-      const image = document.createElement("img");
-      image.src = src;
-      image.alt = "";
-      image.loading = "lazy";
+      let preview;
 
-      button.appendChild(image);
+      if (media.type === "video") {
+        preview = document.createElement("video");
+        preview.src = media.src;
+        preview.muted = true;
+        preview.preload = "metadata";
+        preview.playsInline = true;
+      } else {
+        preview = document.createElement("img");
+        preview.src = media.src;
+        preview.alt = "";
+        preview.loading = "lazy";
+      }
+
+      button.appendChild(preview);
 
       button.addEventListener("click", () => {
-        projectImageIndex = index;
-        renderProjectImage();
+        projectMediaIndex = index;
+        renderProjectMedia();
       });
 
       modalThumbs.appendChild(button);
     });
   }
 
-  function renderProjectImage() {
-    if (!modalImg || !projectImages.length) return;
+  function stopModalVideo() {
+    if (!modalVideo) return;
 
-    modalImg.src = projectImages[projectImageIndex];
-    modalImg.alt =
-      `${modalTitle?.textContent || "Proiect Art Life Design"} — fotografia ${projectImageIndex + 1}`;
+    modalVideo.pause();
+    modalVideo.removeAttribute("src");
+    modalVideo.load();
+  }
+
+  function renderProjectMedia() {
+    const media = projectMedia[projectMediaIndex];
+
+    if (!media) return;
+
+    if (media.type === "video") {
+      if (modalImg) {
+        modalImg.hidden = true;
+        modalImg.removeAttribute("src");
+      }
+
+      if (modalVideo) {
+        modalVideo.hidden = false;
+        modalVideo.src = media.src;
+        modalVideo.load();
+      }
+    } else {
+      stopModalVideo();
+
+      if (modalVideo) {
+        modalVideo.hidden = true;
+      }
+
+      if (modalImg) {
+        modalImg.hidden = false;
+        modalImg.src = media.src;
+        modalImg.alt =
+          `${modalTitle?.textContent || "Proiect Art Life Design"} — imaginea ${projectMediaIndex + 1}`;
+      }
+    }
 
     renderThumbnails();
-
   }
 
   function previousPhoto() {
-    if (projectImages.length <= 1) return;
+    if (projectMedia.length <= 1) return;
 
-    projectImageIndex =
-      (projectImageIndex - 1 + projectImages.length) % projectImages.length;
+    projectMediaIndex =
+      (projectMediaIndex - 1 + projectMedia.length) % projectMedia.length;
 
-    renderProjectImage();
+    renderProjectMedia();
   }
 
   function nextPhoto() {
-    if (projectImages.length <= 1) return;
+    if (projectMedia.length <= 1) return;
 
-    projectImageIndex =
-      (projectImageIndex + 1) % projectImages.length;
+    projectMediaIndex =
+      (projectMediaIndex + 1) % projectMedia.length;
 
-    renderProjectImage();
+    renderProjectMedia();
   }
 
   function renderGallery(index) {
@@ -1134,13 +994,13 @@ if (portfolioGrid) {
       galleryOrderBtn.dataset.orderService = service;
       galleryOrderBtn.href = $("#contact")
         ? "#contact"
-        : `index.html?service=${encodeURIComponent(service)}#contact`;
+        : `index.php?service=${encodeURIComponent(service)}#contact`;
     }
 
-    projectImages = getProjectImages(item);
-    projectImageIndex = 0;
+    projectMedia = getProjectMedia(item);
+    projectMediaIndex = 0;
 
-    renderProjectImage();
+    renderProjectMedia();
   }
 
   function openGalleryFromItem(item) {
@@ -1149,7 +1009,6 @@ if (portfolioGrid) {
     updateGalleryItems();
 
     let sourceItem = item;
-
     const cloneCard = item.closest("[data-carousel-clone]");
 
     if (cloneCard) {
@@ -1164,8 +1023,7 @@ if (portfolioGrid) {
       ];
 
       sourceItem =
-        originalCards[sourceIndex]
-          ?.querySelector(".gallery-item") ||
+        originalCards[sourceIndex]?.querySelector(".gallery-item") ||
         item;
     }
 
@@ -1186,7 +1044,11 @@ if (portfolioGrid) {
     modal.classList.remove("active");
     document.body.classList.remove("gallery-open");
 
-    if (modalImg) modalImg.src = "";
+    if (modalImg) {
+      modalImg.removeAttribute("src");
+    }
+
+    stopModalVideo();
   }
 
   function nextProject() {
@@ -1231,10 +1093,6 @@ if (portfolioGrid) {
       return;
     }
 
-    /*
-      Click pe zona liberă / titlul cardului deschide proiectul.
-      Linkurile "Cere ofertă" și "Vezi exemple" rămân independente.
-    */
     const card = event.target.closest(".work-card, .portfolio-card");
 
     if (
@@ -1255,7 +1113,6 @@ if (portfolioGrid) {
   $("#galleryPrev")?.addEventListener("click", previousProject);
   $("#galleryNext")?.addEventListener("click", nextProject);
 
-
   if (modal) {
     modal.addEventListener("click", (event) => {
       if (event.target === modal) closeGallery();
@@ -1266,15 +1123,10 @@ if (portfolioGrid) {
     if (!modal || !modal.classList.contains("active")) return;
 
     if (event.key === "Escape") closeGallery();
-
     if (event.key === "ArrowLeft") previousProject();
     if (event.key === "ArrowRight") nextProject();
   });
 
-  /*
-    Swipe pe imagine schimbă fotografiile din proiect.
-    Dacă proiectul are o singură fotografie, swipe-ul schimbă proiectul.
-  */
   const imageWrap = $(".gallery-image-stage");
 
   if (imageWrap) {
@@ -1306,7 +1158,7 @@ if (portfolioGrid) {
           return;
         }
 
-        if (projectImages.length > 1) {
+        if (projectMedia.length > 1) {
           deltaX < 0 ? nextPhoto() : previousPhoto();
         } else {
           deltaX < 0 ? nextProject() : previousProject();
