@@ -8713,3 +8713,170 @@ body.gallery-open {
     max-height: 55vh;
   }
 }
+
+
+/* =========================================================
+   MODAL GALERIE V2
+   Media principală mare + miniaturi jos
+   ========================================================= */
+
+/* Ascunde cu adevărat elementele schimbate din JS.
+   Previne suprapunerea imaginii cu videoul. */
+#galleryModalImage[hidden],
+#galleryModalVideo[hidden] {
+  display: none !important;
+}
+
+/* Modalul nu mai afișează scrollbar alb. */
+.gallery-modal {
+  overflow: hidden !important;
+  scrollbar-width: none;
+}
+
+.gallery-modal::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* Caseta rămâne stabilă pe desktop. */
+.gallery-box {
+  height: min(82vh, 760px);
+  max-height: min(82vh, 760px);
+  overflow: hidden;
+}
+
+/* Coloana media:
+   principală mare sus, miniaturi jos. */
+.gallery-media-column {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.gallery-image-stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #020302;
+}
+
+/* Imaginea/video-ul activ ocupă DOAR zona principală. */
+.gallery-image-stage > #galleryModalImage,
+.gallery-image-stage > #galleryModalVideo {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  background: #020302;
+}
+
+/* Video fără suprapuneri sau dimensiuni independente. */
+.gallery-image-stage > #galleryModalVideo {
+  position: static;
+}
+
+/* Miniaturile sunt mereu jos când sunt > 1. */
+.gallery-thumbs {
+  flex: 0 0 auto;
+  width: 100%;
+  min-height: 76px;
+  max-height: 76px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 1px;
+  scrollbar-width: none;
+}
+
+.gallery-thumbs::-webkit-scrollbar {
+  display: none;
+}
+
+.gallery-thumbs[hidden] {
+  display: none !important;
+}
+
+.gallery-thumb {
+  flex: 0 0 108px;
+  width: 108px;
+  height: 72px;
+}
+
+.gallery-thumb img,
+.gallery-thumb video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  background: #000;
+}
+
+/* Panoul de text poate fi derulat cu rotița,
+   dar scrollbar-ul nu mai este vizibil. */
+.gallery-details {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  overscroll-behavior: contain;
+}
+
+.gallery-details::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* Textul explicativ nu mai există în HTML;
+   îl ascundem și ca protecție pentru versiuni cache-uite. */
+.gallery-project-hint {
+  display: none !important;
+}
+
+/* CTA-ul rămâne jos când textul este scurt. */
+.gallery-order-simple {
+  margin-top: auto;
+}
+
+/* Pe telefon permitem modalului să se adapteze,
+   dar fără scrollbar vizibil. */
+@media (max-width: 768px) {
+  .gallery-modal {
+    overflow-y: auto !important;
+    scrollbar-width: none;
+  }
+
+  .gallery-modal::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gallery-box {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .gallery-image-stage {
+    min-height: 320px;
+    max-height: 55vh;
+  }
+
+  .gallery-image-stage > #galleryModalImage,
+  .gallery-image-stage > #galleryModalVideo {
+    height: 100%;
+    max-height: 55vh;
+    object-fit: contain;
+  }
+
+  .gallery-details {
+    overflow: visible;
+  }
+}

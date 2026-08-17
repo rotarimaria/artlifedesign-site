@@ -891,30 +891,31 @@ if (portfolioGrid) {
 
     if (!media) return;
 
-    if (media.type === "video") {
-      if (modalImg) {
-        modalImg.hidden = true;
-        modalImg.removeAttribute("src");
-      }
+    // Mai întâi ascundem ambele tipuri de media.
+    // Apoi afișăm doar elementul activ.
+    if (modalImg) {
+      modalImg.hidden = true;
+      modalImg.removeAttribute("src");
+    }
 
+    if (modalVideo) {
+      modalVideo.pause();
+      modalVideo.hidden = true;
+      modalVideo.removeAttribute("src");
+      modalVideo.load();
+    }
+
+    if (media.type === "video") {
       if (modalVideo) {
-        modalVideo.hidden = false;
         modalVideo.src = media.src;
+        modalVideo.hidden = false;
         modalVideo.load();
       }
-    } else {
-      stopModalVideo();
-
-      if (modalVideo) {
-        modalVideo.hidden = true;
-      }
-
-      if (modalImg) {
-        modalImg.hidden = false;
-        modalImg.src = media.src;
-        modalImg.alt =
-          `${modalTitle?.textContent || "Proiect ArtLife Design"} — imaginea ${projectMediaIndex + 1}`;
-      }
+    } else if (modalImg) {
+      modalImg.src = media.src;
+      modalImg.alt =
+        `${modalTitle?.textContent || "Proiect ArtLife Design"} — imaginea ${projectMediaIndex + 1}`;
+      modalImg.hidden = false;
     }
 
     renderThumbnails();
