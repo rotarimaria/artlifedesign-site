@@ -341,8 +341,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div class="crop-foot">
-            <button class="btn" type="button" id="cropReset">Reset</button>
-            <button class="btn btn-primary" type="button" id="cropApply">Aplică</button>
+            <p class="crop-save-note">
+                „Aplică” actualizează previzualizarea. „Aplică și salvează” scrie modificarea în baza de date.
+            </p>
+
+            <div class="crop-foot-actions">
+                <button class="btn" type="button" id="cropReset">Reset</button>
+                <button class="btn" type="button" id="cropApply">Aplică</button>
+                <button class="btn btn-primary" type="button" id="cropSave">Aplică și salvează</button>
+            </div>
         </div>
     </div>
 </div>

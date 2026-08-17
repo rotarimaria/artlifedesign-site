@@ -511,8 +511,10 @@
     drag=null;
   }
 
-  function applyEditor(){
+  function applyEditor(saveAfter=false){
     if(!active)return;
+
+    const form=active.closest('form');
 
     const set=(selector,value)=>{
       const el=active.querySelector(selector);
@@ -536,6 +538,19 @@
     }
 
     updateAll();
+
+    if(saveAfter && form){
+      closeEditor();
+
+      if(typeof form.requestSubmit==='function'){
+        form.requestSubmit();
+      }else{
+        form.submit();
+      }
+
+      return;
+    }
+
     closeEditor();
   }
 
@@ -580,7 +595,8 @@
     renderEditor();
   });
 
-  $('#cropApply')?.addEventListener('click',applyEditor);
+  $('#cropApply')?.addEventListener('click',()=>applyEditor(false));
+  $('#cropSave')?.addEventListener('click',()=>applyEditor(true));
   $('#cropCancel')?.addEventListener('click',closeEditor);
 
   modal?.addEventListener('click',event=>{
