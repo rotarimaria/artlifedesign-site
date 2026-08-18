@@ -10,10 +10,12 @@ requireAdmin();
 $error = '';
 $success = trim((string)($_GET['success'] ?? ''));
 
+// Escapez textele înainte să le afișez.
 function h(string $v): string {
     return htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
 }
 
+// Pregătesc imaginea selectată.
 function uploadAt(int $slot): ?array {
     if (!isset($_FILES['images']['error'][$slot])) return null;
     if ((int)$_FILES['images']['error'][$slot] === UPLOAD_ERR_NO_FILE) return null;
@@ -33,6 +35,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             $id = (int)($_POST['id'] ?? 0);
+            $action = (string)($_POST['action'] ?? 'save');
+
+            // Șterg serviciul doar dacă nu este folosit de proiecte.
+            if ($action === 'delete') {
+                $stmt = $pdo->prepare('SELECT slug, name FROM services WHERE id = ?');
+                $stmt->execute([$id]);
+                $service = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if (!$service) {
+                    throw new RuntimeException('Serviciul nu există.');
+                }
+
+                $stmt = $pdo->prepare('SELECT COUNT(*) FROM projects WHERE category = ?');
+                $stmt->execute([$service['slug']]);
+                $used = (int)$stmt->fetchColumn();
+
+                if ($used > 0) {
+                    throw new RuntimeException(
+                        'Nu pot elimina serviciul deoarece are ' . $used .
+                        ' proiect(e). Mută sau șterge proiectele din această categorie mai întâi.'
+                    );
+                }
+
+                $stmt = $pdo->prepare('DELETE FROM services WHERE id = ?');
+                $stmt->execute([$id]);
+
+                header('Location: services.php?success=' .
+                    rawurlencode('Serviciul a fost eliminat.'));
+                exit;
+            }
+
             $name = trim((string)($_POST['name'] ?? ''));
             $slug = $id > 0
                 ? trim((string)($_POST['slug'] ?? ''))
@@ -218,7 +251,7 @@ function mediaCard(array $s, int $i): void {
       </div>
 
       <div class="service-actions">
-        <button class="btn btn-primary" type="submit">Adaugă serviciul</button>
+        <button class="btn btn-primary" type="submit" name="action" value="save">Adaugă serviciul</button>
       </div>
     </form>
   </details>
@@ -250,7 +283,13 @@ function mediaCard(array $s, int $i): void {
         </div>
 
         <div class="service-actions">
-          <button class="btn btn-primary" type="submit">Salvează serviciul</button>
+          <button class="btn btn-ghost" type="submit" name="action" value="delete"
+          onclick="return confirm('Sigur vrei să elimini acest serviciu?')">
+          Elimină serviciul
+        </button>
+        <button class="btn btn-primary" type="submit" name="action" value="save">
+          Salvează serviciul
+        </button>
         </div>
       </form>
     </details>

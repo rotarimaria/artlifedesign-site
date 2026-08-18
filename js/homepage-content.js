@@ -84,7 +84,7 @@
     text(".services-heading h2", c.services_title);
     text(".services-heading > p", c.services_text);
 
-    // Serviciile sunt încărcate din api/services.php de js/script.js.
+    // Las serviciile în script.js, fiindcă acolo le iau direct din BD.
 
 
     // CTA

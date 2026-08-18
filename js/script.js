@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   let works = [];
   let services = [];
 
+  // Iau datele din API și întorc doar lista de care am nevoie.
   async function load(url, key) {
     try {
       const response = await fetch(url, { cache: "no-store" });
@@ -586,6 +587,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     ].join(";");
   }
 
+  // Generez serviciile din BD, ca să nu le repet manual în HTML.
   function renderDynamicServices() {
     if (!services.length) return;
 
@@ -631,7 +633,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (detailWrap) {
       detailWrap.innerHTML = services.map(s => {
         const examples = (s.examples || [])
-          .filter(Boolean)
+          .filter(v => String(v).trim())
           .map(v => `<li>${escapeHTML(v)}</li>`)
           .join("");
 
@@ -648,6 +650,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             </figure>
           `).join("");
 
+        // Iau exemplele direct din BD prin API.
         return `
           <article class="service-detail-panel" data-service-detail="${escapeHTML(s.slug)}">
             <div class="service-detail-copy">
