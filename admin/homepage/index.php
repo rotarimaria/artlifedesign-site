@@ -252,7 +252,7 @@ function renderMediaCard(string $key, array $def, array $content): void
                     <?php if ($media): ?>
                         <?php if (isServiceSection($sectionName)): ?>
                             <p class="media-layout-note">
-                                Imaginea 1 este principală. Imaginile 2 și 3 apar mai mici dedesubt.
+                                Imaginea 1 este principală; imaginile 2 și 3 sunt secundare.
                             </p>
                         <?php endif; ?>
 

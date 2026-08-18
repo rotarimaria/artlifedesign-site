@@ -1,111 +1,93 @@
-/* ArtLife Homepage Admin V2 */
 .homepage-admin{
-  width:min(1240px,calc(100% - 32px));
-  margin:0 auto;
-  padding:34px 0 120px;
+  width:min(1180px,calc(100% - 32px));
+  margin:auto;
+  padding:30px 0 100px;
 }
-.page-head{margin-bottom:24px}
-.page-head h1{margin:7px 0 8px}
+.page-head{margin-bottom:20px}
+.page-head h1{margin:6px 0}
 .page-head p{margin:0;color:var(--muted)}
-.section-list{display:grid;gap:14px}
+.section-list{display:grid;gap:12px}
 .edit-section{
   border:1px solid var(--border);
-  border-radius:18px;
+  border-radius:16px;
   background:var(--panel);
   overflow:hidden;
 }
 .edit-section summary{
-  min-height:68px;
-  padding:0 20px;
+  min-height:62px;
+  padding:0 18px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:16px;
   cursor:pointer;
   list-style:none;
   font-weight:600;
 }
 .edit-section summary::-webkit-details-marker{display:none}
-.edit-section summary b{
-  color:var(--green);
-  font-size:20px;
-  font-weight:400;
-}
+.edit-section summary b{color:var(--green);font-size:19px;font-weight:400}
 .edit-section[open] summary b{transform:rotate(45deg)}
-.section-body{
-  padding:20px;
-  border-top:1px solid var(--border);
-}
+.section-body{padding:18px;border-top:1px solid var(--border)}
+
 .field-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:15px;
+  gap:14px;
 }
-.field{display:grid;gap:7px}
+.field{display:grid;gap:6px}
 .field.full{grid-column:1/-1}
 .field>span{font-size:12px;font-weight:600}
-.field textarea{min-height:108px;resize:vertical}
+.field textarea{min-height:96px;resize:vertical}
 
+/* media generică */
 .media-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:14px;
-  margin-top:18px;
-}
-.service-media-grid{
-  grid-template-columns:repeat(2,minmax(0,1fr));
-}
-
-/* Galeria serviciului oglindește forma reală din homepage:
-   prima imagine mare, următoarele două mai mici. */
-.service-media-grid .media-card:first-child{
-  grid-column:1/-1;
-}
-
-.service-media-grid .media-card:first-child .media-preview{
-  height:auto;
-  aspect-ratio:16/9;
-}
-
-.service-media-grid .media-card:nth-child(2) .media-preview,
-.service-media-grid .media-card:nth-child(3) .media-preview{
-  height:auto;
-  aspect-ratio:4/3;
+  gap:12px;
+  margin-top:16px;
 }
 .media-card{
   min-width:0;
-  border:1px solid var(--border);
-  border-radius:15px;
   overflow:hidden;
+  border:1px solid var(--border);
+  border-radius:14px;
   background:#070a08;
 }
-.media-card-head,
-.media-card-foot{
-  padding:11px 12px;
+.media-card-head,.media-card-foot{
+  padding:9px 10px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:10px;
+  gap:8px;
 }
 .media-card-head strong{font-size:12px}
-.mini-btn{
+.mini-btn,.upload-btn{
   border:1px solid var(--border);
-  border-radius:9px;
+  border-radius:8px;
   background:transparent;
   color:var(--green);
   padding:7px 9px;
-  cursor:pointer;
   font:inherit;
   font-size:11px;
 }
-.media-preview{
-  height:220px;
+.mini-btn{cursor:pointer}
+.upload-btn{position:relative;overflow:hidden;cursor:pointer}
+.upload-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.media-card-foot{border-top:1px solid var(--border)}
+.media-card-foot small{
+  color:var(--muted);
+  max-width:48%;
   overflow:hidden;
-  background:#000;
-  position:relative;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
-.media-preview img,
-.media-preview video{
+
+.media-preview{
+  height:190px;
+  overflow:hidden;
+  position:relative;
+  background:#000;
+}
+.media-preview img,.media-preview video{
   width:100%;
   height:100%;
   display:block;
@@ -115,56 +97,52 @@
   object-fit:var(--crop-fit,cover);
   object-position:50% 50%;
   transform:
-    translate(
-      calc(50% - var(--crop-x,50%)),
-      calc(50% - var(--crop-y,50%))
-    )
+    translate(calc(50% - var(--crop-x,50%)),calc(50% - var(--crop-y,50%)))
     rotate(var(--crop-rotation,0deg))
     scale(var(--crop-zoom,1));
   transform-origin:center;
   user-select:none;
 }
 .media-preview video{object-fit:contain}
-.media-card-foot{border-top:1px solid var(--border)}
-.media-card-foot small{
-  color:var(--muted);
-  max-width:45%;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
+
+/* Servicii: exact 1 mare + 2 mici, dar compact */
+.service-media-grid{
+  width:min(860px,100%);
+  margin:14px auto 0;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
 }
-.upload-btn{
-  position:relative;
-  overflow:hidden;
-  border:1px solid var(--border);
-  border-radius:9px;
-  padding:8px 10px;
-  cursor:pointer;
+.service-media-grid .media-card:first-child{grid-column:1/-1}
+.service-media-grid .media-card:first-child .media-preview{
+  height:clamp(230px,28vw,300px);
+}
+.service-media-grid .media-card:nth-child(2) .media-preview,
+.service-media-grid .media-card:nth-child(3) .media-preview{
+  height:clamp(165px,19vw,210px);
+}
+.media-layout-note{
+  width:min(860px,100%);
+  margin:16px auto 8px;
+  color:var(--muted);
   font-size:11px;
 }
-.upload-btn input{
-  position:absolute;
-  inset:0;
-  opacity:0;
-  cursor:pointer;
-}
 
+/* salvare */
 .save-bar{
   position:sticky;
-  bottom:12px;
+  bottom:10px;
   z-index:30;
-  margin-top:20px;
-  padding:12px;
+  margin-top:18px;
+  padding:10px;
   display:flex;
   justify-content:flex-end;
-  gap:10px;
   border:1px solid var(--border);
-  border-radius:14px;
+  border-radius:13px;
   background:rgba(6,9,7,.94);
   backdrop-filter:blur(14px);
 }
 
-/* Media editor */
+/* editor media */
 .media-editor[hidden]{display:none!important}
 .media-editor{
   position:fixed;
@@ -172,39 +150,53 @@
   z-index:500;
   display:grid;
   place-items:center;
-  padding:14px;
-  background:rgba(0,0,0,.78);
+  padding:12px;
+  background:rgba(0,0,0,.8);
 }
 .editor-box{
-  width:min(820px,100%);
-  max-height:calc(100vh - 28px);
+  width:min(780px,100%);
+  max-height:calc(100vh - 24px);
   overflow:auto;
   scrollbar-width:none;
+  padding:16px;
   border:1px solid var(--border);
-  border-radius:20px;
+  border-radius:18px;
   background:#0b0f0c;
-  padding:18px;
 }
 .editor-box::-webkit-scrollbar{display:none}
 .editor-head{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:14px;
-  margin-bottom:14px;
+  gap:12px;
+  margin-bottom:12px;
 }
 .editor-head small{color:var(--green)}
-.editor-head h2{margin:3px 0 0;font-size:20px}
+.editor-head h2{margin:3px 0 0;font-size:19px}
+
+/* principală */
 .editor-stage{
-  width:min(650px,100%);
-  height:min(54vh,470px);
-  margin:0 auto;
+  width:min(680px,100%);
+  height:auto;
+  aspect-ratio:var(--editor-ratio,16/9);
+  max-height:46vh;
+  margin:auto;
   overflow:hidden;
+  border-radius:13px;
   background:#000;
-  border-radius:14px;
   cursor:grab;
   touch-action:none;
 }
+
+/* imagine secundară = editor mai mic */
+.media-editor[data-size="secondary"] .editor-box{
+  width:min(650px,100%);
+}
+.media-editor[data-size="secondary"] .editor-stage{
+  width:min(500px,100%);
+  max-height:38vh;
+}
+
 .editor-stage.dragging{cursor:grabbing}
 .editor-stage img{
   width:100%;
@@ -213,10 +205,7 @@
   object-fit:var(--crop-fit,cover);
   object-position:50% 50%;
   transform:
-    translate(
-      calc(50% - var(--crop-x,50%)),
-      calc(50% - var(--crop-y,50%))
-    )
+    translate(calc(50% - var(--crop-x,50%)),calc(50% - var(--crop-y,50%)))
     rotate(var(--crop-rotation,0deg))
     scale(var(--crop-zoom,1));
   transform-origin:center;
@@ -224,77 +213,50 @@
   pointer-events:none;
 }
 .editor-help{
-  margin:9px 0 12px;
+  margin:8px 0 10px;
   text-align:center;
   color:var(--muted);
   font-size:11px;
 }
-.fit-switch{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
+.fit-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .fit-switch button{
-  min-height:42px;
+  min-height:40px;
   border:1px solid var(--border);
-  border-radius:10px;
+  border-radius:9px;
   background:transparent;
   color:#fff;
   cursor:pointer;
   font:inherit;
 }
-.fit-switch button.active{
-  color:var(--green);
-  border-color:var(--green);
-}
+.fit-switch button.active{color:var(--green);border-color:var(--green)}
 .range-row{
-  margin-top:12px;
+  margin-top:10px;
   display:grid;
-  grid-template-columns:75px 1fr 62px;
+  grid-template-columns:65px 1fr 58px;
   align-items:center;
-  gap:10px;
+  gap:9px;
 }
 .range-row input{width:100%}
 .range-row output{text-align:right}
 .editor-actions{
   position:sticky;
-  bottom:-18px;
-  margin-top:16px;
-  padding:14px 0 4px;
+  bottom:-16px;
+  margin-top:13px;
+  padding:12px 0 2px;
   display:flex;
   justify-content:flex-end;
-  gap:9px;
-  background:linear-gradient(to bottom,transparent 0,#0b0f0c 24%);
+  gap:8px;
+  background:linear-gradient(to bottom,transparent,#0b0f0c 28%);
 }
 
-@media(max-width:900px){
-  .service-media-grid{grid-template-columns:1fr 1fr}
-}
-@media(max-width:680px){
-  .field-grid,
-  .media-grid,
-  .service-media-grid{grid-template-columns:1fr}
-  .media-preview,
-  .service-media-grid .media-preview{height:230px}
-  .editor-stage{height:min(46vh,360px)}
+@media(max-width:720px){
+  .field-grid,.media-grid,.service-media-grid{grid-template-columns:1fr}
+  .field.full{grid-column:auto}
+  .service-media-grid .media-card:first-child{grid-column:auto}
+  .service-media-grid .media-card:first-child .media-preview,
+  .service-media-grid .media-card:nth-child(2) .media-preview,
+  .service-media-grid .media-card:nth-child(3) .media-preview{height:220px}
+  .editor-stage,
+  .media-editor[data-size="secondary"] .editor-stage{width:100%;max-height:38vh}
   .editor-actions{flex-wrap:wrap}
-}
-
-
-.media-layout-note{
-  margin:18px 0 10px;
-  color:var(--muted);
-  font-size:11px;
-  line-height:1.5;
-}
-
-.save-bar{
-  justify-content:flex-end;
-}
-
-/* Editorul își primește raportul real din JS. */
-.editor-stage{
-  height:auto;
-  aspect-ratio:var(--editor-ratio,16/9);
-  max-height:58vh;
 }

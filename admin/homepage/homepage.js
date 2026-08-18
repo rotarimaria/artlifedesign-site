@@ -64,6 +64,12 @@
       stage.style.setProperty("--editor-ratio", `${rect.width} / ${rect.height}`);
     }
 
+    const serviceGrid = card.closest(".service-media-grid");
+    const secondary =
+      serviceGrid && card !== serviceGrid.querySelector(".media-card");
+
+    editor.dataset.size = secondary ? "secondary" : "primary";
+
     paint();
     editor.hidden = false;
     document.body.style.overflow = "hidden";
@@ -71,6 +77,7 @@
 
   function closeEditor() {
     editor.hidden = true;
+    editor.removeAttribute("data-size");
     document.body.style.overflow = "";
     drag = null;
   }
