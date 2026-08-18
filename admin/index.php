@@ -59,11 +59,11 @@ $publishedCount = (int) $pdo->query(
             <strong>Editează pagina →</strong>
         </a>
 
-        <a class="admin-card soon" href="#">
+        <a class="admin-card" href="lucrari/">
             <small>Portofoliu</small>
             <h2>Pagina Lucrări</h2>
             <p>Aranjament, filtre și opțiuni de afișare.</p>
-            <strong>Urmează →</strong>
+            <strong>Editează pagina →</strong>
         </a>
 
         <a class="admin-card" href="project.php">
