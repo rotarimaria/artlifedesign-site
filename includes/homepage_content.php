@@ -5,62 +5,6 @@ declare(strict_types=1);
  * Homepage config.
  * Lucrările NU sunt incluse aici: sunt administrate separat.
  */
-function homepageServices(): array
-{
-    return [
-        'poligrafie' => [
-            'section' => 'Serviciu — Poligrafie',
-            'name' => 'Poligrafie',
-            'title' => 'Print, stickere și materiale promoționale',
-            'short' => 'Etichete, bannere, meniuri, fișe de preț și materiale tipărite.',
-            'detail_title' => 'Materiale tipărite pentru prezentare, promovare și vânzare',
-            'detail_text' => 'Poligrafia acoperă materialele tipărite folosite pentru prezentare, informare și promovare. Este potrivită atât pentru utilizarea zilnică într-un magazin sau restaurant, cât și pentru campanii, lansări și evenimente.',
-            'examples' => "Etichete și stickere pentru produse\nMeniuri și fișe de preț\nBannere și materiale promoționale\nPrint personalizat pentru campanii",
-            'images' => ['images/fise_pret.jpg', 'images/inghetata_uv.jpg', 'images/tipar_mare.jpg'],
-        ],
-        'volum' => [
-            'section' => 'Serviciu — Litere & Standuri',
-            'name' => 'Litere în volum & Standuri',
-            'title' => 'Elemente vizuale pentru fațade și interior',
-            'short' => 'Litere volumetrice, light box-uri, standuri și casete luminoase.',
-            'detail_title' => 'Elemente vizuale care fac brandul ușor de observat',
-            'detail_text' => 'Literele volumetrice și standurile transformă identitatea vizuală într-un element fizic ușor de remarcat. Sunt potrivite pentru fațade, recepții, spații comerciale, expoziții și zone de prezentare.',
-            'examples' => "Litere volumetrice pentru fațadă\nLight box-uri și casete luminoase\nLogo-uri pentru interior\nStanduri și elemente de prezentare",
-            'images' => ['images/BonjourLightBox.jpg', 'images/good-break.jpg', 'images/litere_volum1.jpg'],
-        ],
-        'posm' => [
-            'section' => 'Serviciu — P.O.S.M.',
-            'name' => 'P.O.S.M.',
-            'title' => 'Materiale pentru retail și campanii',
-            'short' => 'Display-uri, urne, suporturi, standuri și produse personalizate.',
-            'detail_title' => 'Materiale pentru expunere, retail și campanii promoționale',
-            'detail_text' => 'P.O.S.M. înseamnă materiale vizuale folosite direct în punctul de vânzare sau în campanii promoționale. Ele ajută la prezentarea produselor și evidențierea ofertelor.',
-            'examples' => "Display-uri și suporturi\nUrne și box-uri personalizate\nStanduri promoționale\nElemente pentru campanii și retail",
-            'images' => ['images/box.jpg', 'images/cub-sticla.jpg', 'images/stand sticla.jpg'],
-        ],
-        'auto' => [
-            'section' => 'Serviciu — Branding Auto',
-            'name' => 'Branding Auto',
-            'title' => 'Promovare vizibilă pe mașini și flote',
-            'short' => 'Colantări auto pentru transport comercial, microbuze și automobile.',
-            'detail_title' => 'Transformă transportul companiei într-un suport vizibil de promovare',
-            'detail_text' => 'Brandingul auto transformă automobilul sau flota companiei într-un suport vizual de promovare. Grafica poate integra logo-ul, datele de contact și identitatea vizuală.',
-            'examples' => "Automobile pentru companii\nMicrobuze și transport comercial\nElemente grafice și date de contact\nBranding pentru mai multe unități din flotă",
-            'images' => ['images/brand_auto1.jpg', 'images/brand_auto2.jpg', 'images/lux-tavene.jpg'],
-        ],
-        'laser' => [
-            'section' => 'Serviciu — Laser / Plotter',
-            'name' => 'Laser / Plotter',
-            'title' => 'Tăiere, gravare și decupare personalizată',
-            'short' => 'Servicii pentru proiecte promoționale, decorative și tehnice.',
-            'detail_title' => 'Tăiere, gravare și decupare pentru proiecte personalizate',
-            'detail_text' => 'Laserul și plotterul sunt folosite pentru proiecte în care contează forma, conturul și precizia decupării. Sunt potrivite pentru inscripții, stickere și elemente promoționale.',
-            'examples' => "Stickere și elemente decupate\nForme și inscripții personalizate\nElemente promoționale și decorative\nProiecte care necesită tăiere sau gravare",
-            'images' => ['images/taiere_laser.jpg', 'images/taiere_plotter.jpg', 'images/plotter-2.jpg'],
-        ],
-    ];
-}
-
 function homepageFields(): array
 {
     $sections = [
@@ -150,29 +94,7 @@ function homepageFields(): array
         ],
     ];
 
-    // Serviciile sunt generate dintr-o singură configurație.
-    $serviceSections = [];
-    foreach (homepageServices() as $key => $service) {
-        $serviceSections[$service['section']] = [
-            "{$key}_name" => ['Nume serviciu', 'text', $service['name']],
-            "{$key}_title" => ['Titlu card', 'text', $service['title']],
-            "{$key}_short" => ['Descriere card', 'textarea', $service['short']],
-            "{$key}_detail_title" => ['Titlu detalii', 'text', $service['detail_title']],
-            "{$key}_detail_text" => ['Text detalii', 'textarea', $service['detail_text']],
-            "{$key}_examples" => ['Exemple — câte unul pe rând', 'textarea', $service['examples']],
-            "{$key}_btn_examples" => ['Buton exemple', 'text', 'Vezi exemple'],
-            "{$key}_btn_quote" => ['Buton ofertă', 'text', 'Solicită o ofertă'],
-            "{$key}_image_1" => ['Imagine 1', 'image', $service['images'][0]],
-            "{$key}_image_2" => ['Imagine 2', 'image', $service['images'][1]],
-            "{$key}_image_3" => ['Imagine 3', 'image', $service['images'][2]],
-        ];
-    }
-
-    // Serviciile rămân după introducere, înainte de CTA.
-    $before = array_slice($sections, 0, 4, true);
-    $after = array_slice($sections, 4, null, true);
-
-    return $before + $serviceSections + $after;
+    return $sections;
 }
 
 function homepageMediaKeys(): array

@@ -1,199 +1,148 @@
 (() => {
-  const form = document.querySelector("#homepageForm");
   const editor = document.querySelector("#mediaEditor");
   const stage = document.querySelector("#editorStage");
   const image = document.querySelector("#editorImage");
-  const title = document.querySelector("#editorTitle");
   const zoom = document.querySelector("#editorZoom");
   const rotation = document.querySelector("#editorRotation");
   const zoomValue = document.querySelector("#editorZoomValue");
   const rotationValue = document.querySelector("#editorRotationValue");
 
-  if (!form || !editor || !stage || !image) return;
+  if (!editor || !stage || !image) return;
 
-  let card = null;
-  let state = null;
-  let drag = null;
+  let card = null, state = null, drag = null;
 
-  const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-  const meta = (name) => card?.querySelector(`[data-meta="${name}"]`);
+  const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
+  const meta = name => card?.querySelector(`[data-meta="${name}"]`);
 
-  function readState() {
+  function read() {
     return {
-      x: Number(meta("crop_x")?.value || 50),
-      y: Number(meta("crop_y")?.value || 50),
-      zoom: Number(meta("zoom")?.value || 1),
-      rotation: Number(meta("rotation")?.value || 0),
-      fit: meta("fit")?.value || "cover"
+      x:+(meta("crop_x")?.value||50),
+      y:+(meta("crop_y")?.value||50),
+      zoom:+(meta("zoom")?.value||1),
+      rotation:+(meta("rotation")?.value||0),
+      fit:meta("fit")?.value||"cover"
     };
   }
 
-  function paint(target = image) {
+  function paint(target=image) {
     if (!state || !target) return;
-    target.style.setProperty("--crop-x", `${state.x}%`);
-    target.style.setProperty("--crop-y", `${state.y}%`);
-    target.style.setProperty("--crop-zoom", state.zoom);
-    target.style.setProperty("--crop-rotation", `${state.rotation}deg`);
-    target.style.setProperty("--crop-fit", state.fit);
-
-    zoom.value = state.zoom;
-    rotation.value = state.rotation;
-    zoomValue.textContent = `${state.zoom.toFixed(2)}×`;
-    rotationValue.textContent = `${Math.round(state.rotation)}°`;
-
-    editor.querySelectorAll("[data-fit]").forEach(btn => {
-      btn.classList.toggle("active", btn.dataset.fit === state.fit);
-    });
+    target.style.setProperty("--crop-x",`${state.x}%`);
+    target.style.setProperty("--crop-y",`${state.y}%`);
+    target.style.setProperty("--crop-zoom",state.zoom);
+    target.style.setProperty("--crop-rotation",`${state.rotation}deg`);
+    target.style.setProperty("--crop-fit",state.fit);
+    zoom.value=state.zoom;
+    rotation.value=state.rotation;
+    zoomValue.textContent=`${state.zoom.toFixed(2)}×`;
+    rotationValue.textContent=`${Math.round(state.rotation)}°`;
+    editor.querySelectorAll("[data-fit]").forEach(b =>
+      b.classList.toggle("active",b.dataset.fit===state.fit)
+    );
   }
 
-  function openEditor(nextCard) {
-    card = nextCard;
-    state = readState();
+  function open(nextCard) {
+    card=nextCard;
+    state=read();
 
-    const previewBox = card.querySelector("[data-media-preview]");
-    const preview = card.querySelector("img[data-preview-element]");
-    if (!preview?.src || !previewBox) return;
+    const preview=card.querySelector("img[data-preview-element]");
+    const box=card.querySelector("[data-media-preview]");
+    if (!preview?.src || !box) return;
 
-    image.src = preview.src;
-    title.textContent =
-      card.querySelector(".media-card-head strong")?.textContent || "Imagine";
+    image.src=preview.src;
 
-    // Editorul folosește exact raportul cardului real.
-    const rect = previewBox.getBoundingClientRect();
-    if (rect.width > 0 && rect.height > 0) {
-      stage.style.setProperty("--editor-ratio", `${rect.width} / ${rect.height}`);
+    const rect=box.getBoundingClientRect();
+    if (rect.width && rect.height) {
+      stage.style.setProperty("--editor-ratio",`${rect.width}/${rect.height}`);
     }
 
-    const serviceGrid = card.closest(".service-media-grid");
-    const secondary =
-      serviceGrid && card !== serviceGrid.querySelector(".media-card");
-
-    editor.dataset.size = secondary ? "secondary" : "primary";
+    const grid=card.closest(".service-media-grid");
+    editor.dataset.size =
+      grid && card !== grid.querySelector(".media-card")
+        ? "secondary" : "primary";
 
     paint();
-    editor.hidden = false;
-    document.body.style.overflow = "hidden";
-  }
-
-  function closeEditor() {
-    editor.hidden = true;
-    editor.removeAttribute("data-size");
-    document.body.style.overflow = "";
-    drag = null;
+    editor.hidden=false;
+    document.body.style.overflow="hidden";
   }
 
   function apply() {
     if (!card || !state) return;
-
-    meta("crop_x").value = state.x.toFixed(2);
-    meta("crop_y").value = state.y.toFixed(2);
-    meta("zoom").value = state.zoom.toFixed(2);
-    meta("rotation").value = Math.round(state.rotation);
-    meta("fit").value = state.fit;
-
+    meta("crop_x").value=state.x.toFixed(2);
+    meta("crop_y").value=state.y.toFixed(2);
+    meta("zoom").value=state.zoom.toFixed(2);
+    meta("rotation").value=Math.round(state.rotation);
+    meta("fit").value=state.fit;
     paint(card.querySelector("img[data-preview-element]"));
   }
 
-  document.querySelectorAll("[data-media-card]").forEach(mediaCard => {
-    const input = mediaCard.querySelector("[data-media-input]");
-    const preview = mediaCard.querySelector("[data-preview-element]");
-    const fileName = mediaCard.querySelector("[data-file-name]");
+  function close() {
+    editor.hidden=true;
+    editor.removeAttribute("data-size");
+    document.body.style.overflow="";
+    drag=null;
+  }
 
-    input?.addEventListener("change", () => {
-      const file = input.files?.[0];
-      if (!file || !preview) return;
+  document.addEventListener("change", e => {
+    const input=e.target.closest("[data-media-input]");
+    if (!input) return;
 
-      const url = URL.createObjectURL(file);
-      preview.src = url;
-      if (fileName) fileName.textContent = file.name;
+    const file=input.files?.[0];
+    const mediaCard=input.closest("[data-media-card]");
+    const preview=mediaCard?.querySelector("[data-preview-element]");
+    if (!file || !preview) return;
 
-      if (preview.tagName === "VIDEO") {
-        preview.load();
-        preview.play().catch(() => {});
-      }
-    });
+    preview.src=URL.createObjectURL(file);
+    preview.style.visibility="visible";
 
-    mediaCard.querySelector("[data-adjust-media]")?.addEventListener(
-      "click",
-      () => openEditor(mediaCard)
-    );
+    const name=mediaCard.querySelector("[data-file-name]");
+    if (name) name.textContent=file.name;
   });
 
-  zoom.addEventListener("input", () => {
-    state.zoom = Number(zoom.value);
+  document.addEventListener("click", e => {
+    const adjust=e.target.closest("[data-adjust-media]");
+    if (adjust) open(adjust.closest("[data-media-card]"));
+  });
+
+  zoom?.addEventListener("input",()=>{state.zoom=+zoom.value;paint()});
+  rotation?.addEventListener("input",()=>{state.rotation=+rotation.value;paint()});
+
+  editor.querySelectorAll("[data-fit]").forEach(b =>
+    b.addEventListener("click",()=>{state.fit=b.dataset.fit;paint()})
+  );
+
+  stage.addEventListener("pointerdown",e=>{
+    stage.setPointerCapture(e.pointerId);
+    drag={id:e.pointerId,x:e.clientX,y:e.clientY,sx:state.x,sy:state.y};
+  });
+
+  stage.addEventListener("pointermove",e=>{
+    if (!drag || e.pointerId!==drag.id) return;
+    const r=stage.getBoundingClientRect();
+    state.x=clamp(drag.sx-(e.clientX-drag.x)/r.width*100,0,100);
+    state.y=clamp(drag.sy-(e.clientY-drag.y)/r.height*100,0,100);
     paint();
   });
 
-  rotation.addEventListener("input", () => {
-    state.rotation = Number(rotation.value);
+  ["pointerup","pointercancel"].forEach(type =>
+    stage.addEventListener(type,()=>drag=null)
+  );
+
+  editor.querySelector("[data-editor-reset]")?.addEventListener("click",()=>{
+    state={x:50,y:50,zoom:1,rotation:0,fit:"cover"};
     paint();
   });
 
-  editor.querySelectorAll("[data-fit]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      state.fit = btn.dataset.fit;
-      paint();
-    });
+  editor.querySelector("[data-editor-apply]")?.addEventListener("click",()=>{
+    apply(); close();
   });
 
-  stage.addEventListener("pointerdown", event => {
-    if (!state) return;
-    stage.setPointerCapture(event.pointerId);
-    stage.classList.add("dragging");
-    drag = {
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      x: state.x,
-      y: state.y
-    };
-  });
-
-  stage.addEventListener("pointermove", event => {
-    if (!drag || event.pointerId !== drag.pointerId) return;
-
-    const rect = stage.getBoundingClientRect();
-    const dx = (event.clientX - drag.startX) / rect.width * 100;
-    const dy = (event.clientY - drag.startY) / rect.height * 100;
-
-    // Inversarea face ca imaginea să urmeze natural direcția mouse-ului.
-    state.x = clamp(drag.x - dx, 0, 100);
-    state.y = clamp(drag.y - dy, 0, 100);
-    paint();
-  });
-
-  const endDrag = event => {
-    if (!drag || event.pointerId !== drag.pointerId) return;
-    drag = null;
-    stage.classList.remove("dragging");
-  };
-
-  stage.addEventListener("pointerup", endDrag);
-  stage.addEventListener("pointercancel", endDrag);
-
-  editor.querySelector("[data-editor-reset]")?.addEventListener("click", () => {
-    state = { x: 50, y: 50, zoom: 1, rotation: 0, fit: "cover" };
-    paint();
-  });
-
-  editor.querySelector("[data-editor-apply]")?.addEventListener("click", () => {
+  editor.querySelector("[data-editor-save]")?.addEventListener("click",()=>{
     apply();
-    closeEditor();
+    const form=card?.closest("form");
+    close();
+    form?.requestSubmit();
   });
 
-  editor.querySelector("[data-editor-save]")?.addEventListener("click", () => {
-    apply();
-    closeEditor();
-    form.requestSubmit();
-  });
-
-  editor.querySelector("[data-editor-close]")?.addEventListener("click", closeEditor);
-
-  editor.addEventListener("click", event => {
-    if (event.target === editor) closeEditor();
-  });
-
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape" && !editor.hidden) closeEditor();
-  });
+  editor.querySelector("[data-editor-close]")?.addEventListener("click",close);
+  editor.addEventListener("click",e=>{if(e.target===editor)close()});
 })();

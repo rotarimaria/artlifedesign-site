@@ -7,7 +7,7 @@ require_once __DIR__ . '/../includes/project_helpers.php';
 
 requireAdmin();
 
-$categories = projectCategories();
+$categories = projectCategories($pdo);
 $projectId = (int) ($_GET['id'] ?? $_POST['id'] ?? 0);
 
 if ($projectId <= 0) {

@@ -6,14 +6,23 @@ function e(string $value): string
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
 
-function projectCategories(): array
+function projectCategories(PDO $pdo): array
 {
+    require_once __DIR__ . '/services.php';
+
+    try {
+        $categories = serviceCategories($pdo);
+        if ($categories) return $categories;
+    } catch (Throwable $e) {
+        // Fallback pentru instalări înainte de migration-services.sql.
+    }
+
     return [
         'poligrafie' => 'Poligrafie',
-        'volum'      => 'Litere & Standuri',
-        'posm'       => 'P.O.S.M.',
-        'auto'       => 'Branding Auto',
-        'laser'      => 'Laser / Plotter',
+        'volum' => 'Litere & Standuri',
+        'posm' => 'P.O.S.M.',
+        'auto' => 'Branding Auto',
+        'laser' => 'Laser / Plotter',
     ];
 }
 

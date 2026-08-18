@@ -262,3 +262,5 @@
   .media-editor[data-size="secondary"] .editor-stage{width:100%;max-height:38vh}
   .editor-actions{flex-wrap:wrap}
 }
+
+.media-preview img:not([src]){visibility:hidden}

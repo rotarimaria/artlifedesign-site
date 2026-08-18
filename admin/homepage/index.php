@@ -199,6 +199,8 @@ function renderMediaCard(string $key, array $def, array $content): void
             <h1>Pagina principală</h1>
             <p>Editează textele și imaginile. Lucrările rămân administrate separat.</p>
         </div>
+
+        <a class="btn btn-primary" href="services.php">Administrează serviciile</a>
     </div>
 
     <?php if ($success !== ''): ?>

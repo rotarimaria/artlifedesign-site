@@ -8932,17 +8932,40 @@ body.gallery-open {
 }
 
 
-/* Portofoliu — încărcare progresivă */
+/* Lucrări — „Mai multe” simplu, centrat și subliniat */
 .portfolio-load-more{
+  width:100%;
   display:flex;
   justify-content:center;
-  padding-top:34px;
+  align-items:center;
+  padding:34px 0 12px;
+}
+
+#loadMoreWorks{
+  appearance:none;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:#f7f4eb !important;
+  padding:6px 4px !important;
+  font:inherit;
+  font-weight:600;
+  text-decoration:underline;
+  text-decoration-thickness:1px;
+  text-underline-offset:6px;
+  cursor:pointer;
+}
+
+#loadMoreWorks:hover{
+  color:#8cff18 !important;
 }
 
 #loadMoreWorks[hidden]{
   display:none !important;
 }
 
-#loadMoreWorks{
-  cursor:pointer;
+/* Crop servicii dinamice */
+.service-detail-gallery img{
+  object-position:50% 50%;
 }

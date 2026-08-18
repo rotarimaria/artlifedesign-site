@@ -1,30 +1,25 @@
 document.addEventListener("DOMContentLoaded", async () => {
   let works = [];
+  let services = [];
 
-  try {
-    const response = await fetch("api/projects.php", {
-      cache: "no-store"
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+  async function load(url, key) {
+    try {
+      const response = await fetch(url, { cache: "no-store" });
+      const payload = await response.json();
+      if (!response.ok || !payload.ok || !Array.isArray(payload[key])) {
+        throw new Error(payload.message || `HTTP ${response.status}`);
+      }
+      return payload[key];
+    } catch (error) {
+      console.error(`${url}:`, error);
+      return [];
     }
-
-    const payload = await response.json();
-
-    if (!payload.ok || !Array.isArray(payload.projects)) {
-      throw new Error(
-        payload.message || "Răspuns invalid de la API."
-      );
-    }
-
-    works = payload.projects;
-  } catch (error) {
-    console.error(
-      "Proiectele nu au putut fi încărcate din baza de date:",
-      error
-    );
   }
+
+  [works, services] = await Promise.all([
+    load("api/projects.php", "projects"),
+    load("api/services.php", "services")
+  ]);
 
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => document.querySelectorAll(selector);
@@ -582,6 +577,125 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   revealOnScroll();
+
+
+  function serviceMediaStyle(media = {}) {
+    return [
+      `--crop-x:${Number(media.cropX ?? 50)}%`,
+      `--crop-y:${Number(media.cropY ?? 50)}%`,
+      `--crop-zoom:${Number(media.zoom ?? 1)}`,
+      `--crop-fit:${media.fit === "contain" ? "contain" : "cover"}`,
+      `--crop-rotation:${Number(media.rotation ?? 0)}deg`
+    ].join(";");
+  }
+
+  function renderDynamicServices() {
+    if (!services.length) return;
+
+    const serviceTabs = $(".services-tabs");
+    const serviceList = $(".services-list");
+    const detailWrap = $("#serviceDetailsWrap");
+    const portfolioFilters = $(".portfolio-filters");
+    const contactSelect = $('select[name="serviciu"]');
+
+    if (serviceTabs) {
+      serviceTabs.innerHTML =
+        `<button class="service-filter active" type="button" data-service="all">Toate</button>` +
+        services.map(s =>
+          `<button class="service-filter" type="button" data-service="${escapeHTML(s.slug)}">${escapeHTML(s.name)}</button>`
+        ).join("");
+    }
+
+    if (serviceList) {
+      serviceList.innerHTML = services.map((s,i) => `
+        <article
+          class="service-card-row reveal"
+          data-service-card="${escapeHTML(s.slug)}"
+          data-open-service="${escapeHTML(s.slug)}"
+          data-search-service="${escapeHTML(`${s.name} ${s.cardTitle} ${s.cardText}`)}"
+          role="button"
+          tabindex="0"
+        >
+          <span class="service-index">${String(i+1).padStart(2,"0")}</span>
+
+          <a href="#serviceDetailsWrap" class="service-copy service-open-detail" data-open-service="${escapeHTML(s.slug)}">
+            <small>${escapeHTML(s.name)}</small>
+            <h3>${escapeHTML(s.cardTitle)}</h3>
+            <p>${escapeHTML(s.cardText)}</p>
+          </a>
+
+          <a href="lucrari.html?filter=${encodeURIComponent(s.slug)}" class="service-example">
+            Vezi lucrările <i class="bi bi-arrow-up-right"></i>
+          </a>
+        </article>
+      `).join("");
+    }
+
+    if (detailWrap) {
+      detailWrap.innerHTML = services.map(s => {
+        const examples = (s.examples || [])
+          .filter(Boolean)
+          .map(v => `<span class="service-detail-example">${escapeHTML(v)}</span>`)
+          .join("");
+
+        const images = (s.images || [])
+          .filter(m => m?.src)
+          .map(m => `
+            <figure>
+              <img
+                src="${escapeHTML(m.src)}"
+                alt="${escapeHTML(s.name)}"
+                loading="lazy"
+                style="${serviceMediaStyle(m)}"
+              >
+            </figure>
+          `).join("");
+
+        return `
+          <article class="service-detail-panel" data-service-detail="${escapeHTML(s.slug)}">
+            <div class="service-detail-copy">
+              <span class="section-label">${escapeHTML(s.name)}</span>
+              <h3>${escapeHTML(s.detailTitle)}</h3>
+              <p>${escapeHTML(s.detailText)}</p>
+
+              <div class="service-detail-examples">${examples}</div>
+
+              <div class="service-detail-actions">
+                <a href="lucrari.html?filter=${encodeURIComponent(s.slug)}" class="btn-ghost btn-arrow">
+                  ${escapeHTML(s.btnExamples)} <i class="bi bi-arrow-right"></i>
+                </a>
+
+                <a href="#contact" class="btn-main btn-arrow service-to-form" data-order-service="${escapeHTML(s.name)}">
+                  ${escapeHTML(s.btnQuote)} <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+
+            <div class="service-detail-gallery">${images}</div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    if (portfolioFilters) {
+      portfolioFilters.innerHTML =
+        `<button class="filter-btn active" type="button" data-filter="all">Toate</button>` +
+        services.map(s =>
+          `<button class="filter-btn" type="button" data-filter="${escapeHTML(s.slug)}">${escapeHTML(s.name)}</button>`
+        ).join("");
+    }
+
+    if (contactSelect) {
+      contactSelect.innerHTML =
+        `<option value="">Alege o opțiune</option>` +
+        `<option value="Consultare">Consultare</option>` +
+        services.map(s =>
+          `<option value="${escapeHTML(s.name)}">${escapeHTML(s.name)}</option>`
+        ).join("");
+    }
+  }
+
+  renderDynamicServices();
 
   function filterServices() {
     const search = $("#serviceSearch");
