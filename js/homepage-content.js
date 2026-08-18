@@ -241,7 +241,14 @@
     }
   }
 
-  document.readyState === "loading"
-    ? document.addEventListener("DOMContentLoaded", init, {once:true})
-    : init();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
+
+  // Aplicăm încă o dată după încărcarea completă a paginii.
+  // Astfel, conținutul din admin rămâne sursa finală chiar dacă
+  // scriptul principal finalizează inițializarea puțin mai târziu.
+  window.addEventListener("load", init, { once: true });
 })();
