@@ -84,44 +84,8 @@
     text(".services-heading h2", c.services_title);
     text(".services-heading > p", c.services_text);
 
-    ["poligrafie","volum","posm","auto","laser"].forEach(key => {
-      text(`[data-service-card="${key}"] .service-copy small`, c[`${key}_name`]);
-      text(`[data-service-card="${key}"] .service-copy h3`, c[`${key}_title`]);
-      text(`[data-service-card="${key}"] .service-copy p`, c[`${key}_short`]);
+    // Serviciile sunt încărcate din api/services.php de js/script.js.
 
-      const detail = $(`[data-service-detail="${key}"]`);
-      if (!detail) return;
-
-      text(`[data-service-detail="${key}"] .section-label`, c[`${key}_name`]);
-      text(`[data-service-detail="${key}"] .service-detail-copy h3`, c[`${key}_detail_title`]);
-      text(`[data-service-detail="${key}"] .service-detail-copy > p`, c[`${key}_detail_text`]);
-
-      const examples = detail.querySelector(".service-detail-examples");
-      if (examples) {
-        examples.replaceChildren(
-          ...String(c[`${key}_examples`] || "")
-            .split(/\r?\n/)
-            .map(v => v.trim())
-            .filter(Boolean)
-            .map(v => {
-              const span = document.createElement("span");
-              span.className = "service-detail-example";
-              span.textContent = v;
-              return span;
-            })
-        );
-      }
-
-      const actions = $$(".service-detail-actions a", detail);
-      setFirstText(actions[0], c[`${key}_btn_examples`]);
-      setFirstText(actions[1], c[`${key}_btn_quote`]);
-
-      $$(".service-detail-gallery img", detail).slice(0,3).forEach((img, i) => {
-        const mediaKey = `${key}_image_${i+1}`;
-        if (c[mediaKey]) img.src = c[mediaKey];
-        crop(img, c, mediaKey);
-      });
-    });
 
     // CTA
     text(".project-cta .section-label", c.cta_label);
@@ -247,5 +211,8 @@
     init();
   }
 
+  // Aplicăm încă o dată după încărcarea completă a paginii.
+  // Astfel, conținutul din admin rămâne sursa finală chiar dacă
+  // scriptul principal finalizează inițializarea puțin mai târziu.
   window.addEventListener("load", init, { once: true });
 })();
