@@ -1,5 +1,17 @@
-Options -Indexes
+# Se activează rescrierea adreselor.
+RewriteEngine On
 
-<FilesMatch "(^\.|composer\.(json|lock)|README\.md)$">
+# /lucrari afișează intern lucrari.html.
+RewriteRule ^lucrari/?$ lucrari.html [L,NC]
+
+# lucrari.html este redirecționat către adresa curată /lucrari.
+RewriteCond %{THE_REQUEST} \s/+(.*/)?lucrari\.html(?:[\s?]) [NC]
+RewriteRule ^lucrari\.html$ lucrari [R=301,L]
+
+# Se blochează accesul public la folderele sensibile.
+RewriteRule ^(?:config|database|scripts)(?:/|$) - [F,L,NC]
+
+# Se blochează fișierele SQL.
+<FilesMatch "\.sql$">
     Require all denied
 </FilesMatch>
