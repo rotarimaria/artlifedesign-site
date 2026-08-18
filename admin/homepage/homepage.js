@@ -50,12 +50,19 @@
     card = nextCard;
     state = readState();
 
+    const previewBox = card.querySelector("[data-media-preview]");
     const preview = card.querySelector("img[data-preview-element]");
-    if (!preview?.src) return;
+    if (!preview?.src || !previewBox) return;
 
     image.src = preview.src;
     title.textContent =
       card.querySelector(".media-card-head strong")?.textContent || "Imagine";
+
+    // Editorul folosește exact raportul cardului real.
+    const rect = previewBox.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      stage.style.setProperty("--editor-ratio", `${rect.width} / ${rect.height}`);
+    }
 
     paint();
     editor.hidden = false;

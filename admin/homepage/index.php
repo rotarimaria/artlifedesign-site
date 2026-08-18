@@ -250,6 +250,12 @@ function renderMediaCard(string $key, array $def, array $content): void
                     </div>
 
                     <?php if ($media): ?>
+                        <?php if (isServiceSection($sectionName)): ?>
+                            <p class="media-layout-note">
+                                Imaginea 1 este principală. Imaginile 2 și 3 apar mai mici dedesubt.
+                            </p>
+                        <?php endif; ?>
+
                         <div class="media-grid <?= isServiceSection($sectionName) ? 'service-media-grid' : '' ?>">
                             <?php foreach ($media as $key => $def): ?>
                                 <?php renderMediaCard($key, $def, $content); ?>
@@ -262,7 +268,6 @@ function renderMediaCard(string $key, array $def, array $content): void
         </div>
 
         <div class="save-bar">
-            <a class="btn" href="../../index.html" target="_blank" rel="noopener">Previzualizează</a>
             <button class="btn btn-primary" type="submit">Salvează pagina principală</button>
         </div>
     </form>

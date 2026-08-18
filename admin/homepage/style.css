@@ -53,7 +53,24 @@
   margin-top:18px;
 }
 .service-media-grid{
-  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+
+/* Galeria serviciului oglindește forma reală din homepage:
+   prima imagine mare, următoarele două mai mici. */
+.service-media-grid .media-card:first-child{
+  grid-column:1/-1;
+}
+
+.service-media-grid .media-card:first-child .media-preview{
+  height:auto;
+  aspect-ratio:16/9;
+}
+
+.service-media-grid .media-card:nth-child(2) .media-preview,
+.service-media-grid .media-card:nth-child(3) .media-preview{
+  height:auto;
+  aspect-ratio:4/3;
 }
 .media-card{
   min-width:0;
@@ -87,7 +104,6 @@
   background:#000;
   position:relative;
 }
-.service-media-grid .media-preview{height:190px}
 .media-preview img,
 .media-preview video{
   width:100%;
@@ -262,4 +278,23 @@
   .service-media-grid .media-preview{height:230px}
   .editor-stage{height:min(46vh,360px)}
   .editor-actions{flex-wrap:wrap}
+}
+
+
+.media-layout-note{
+  margin:18px 0 10px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.5;
+}
+
+.save-bar{
+  justify-content:flex-end;
+}
+
+/* Editorul își primește raportul real din JS. */
+.editor-stage{
+  height:auto;
+  aspect-ratio:var(--editor-ratio,16/9);
+  max-height:58vh;
 }
