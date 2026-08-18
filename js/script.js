@@ -217,8 +217,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const examplesHref =
       work.category === "laser"
-        ? "lucrari.html?search=plotter"
-        : `lucrari.html?filter=${encodeURIComponent(work.category)}`;
+        ? "lucrari?search=plotter"
+        : `lucrari?filter=${encodeURIComponent(work.category)}`;
 
     const encodedMedia = encodeURIComponent(
       JSON.stringify(work.media || [])
@@ -623,7 +623,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             <p>${escapeHTML(s.cardText)}</p>
           </a>
 
-          <a href="lucrari.html?filter=${encodeURIComponent(s.slug)}" class="service-example">
+          <a href="lucrari?filter=${encodeURIComponent(s.slug)}" class="service-example">
             Vezi lucrările <i class="bi bi-arrow-up-right"></i>
           </a>
         </article>
@@ -661,7 +661,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               <ul class="service-detail-examples">${examples}</ul>
 
               <div class="service-detail-actions">
-                <a href="lucrari.html?filter=${encodeURIComponent(s.slug)}" class="btn-ghost btn-arrow">
+                <a href="lucrari?filter=${encodeURIComponent(s.slug)}" class="btn-ghost btn-arrow">
                   ${escapeHTML(s.btnExamples)} <i class="bi bi-arrow-right"></i>
                 </a>
 
