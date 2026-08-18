@@ -18,7 +18,6 @@
     content="Portofoliu ArtLife Design SRL - poligrafie, litere în volum, standuri, P.O.S.M. și branding auto."
   >
 
-
   <!-- FONTURI -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
 
@@ -33,21 +32,16 @@
     rel="stylesheet"
   >
 
-
   <!-- ICONIȚE -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css"
     rel="stylesheet"
   >
 
-
   <!-- CSS PRINCIPAL -->
   <link rel="stylesheet" href="css/style.css">
 
-
-  <!-- =========================================================
-       FIXURI MOBILE / SCROLL
-       ========================================================= -->
+  <!-- FIXURI MOBILE / SCROLL -->
 
   <style>
 
@@ -69,7 +63,6 @@
       -webkit-overflow-scrolling: touch;
     }
 
-
     /* =========================================================
        FILTRE PORTOFOLIU
        ========================================================= */
@@ -88,7 +81,6 @@
       width: 100%;
       min-width: 0;
     }
-
 
     /* =========================================================
        MODAL GALERIE
@@ -109,7 +101,6 @@
       min-width: 0;
     }
 
-
     /* =========================================================
        TELEFON / TABLETĂ
        ========================================================= */
@@ -122,7 +113,6 @@
 
         -webkit-overflow-scrolling: touch;
       }
-
 
       /* ---------------------------------------------------------
          FILTRELE POT FI DERULATE ORIZONTAL
@@ -158,7 +148,6 @@
 
         scroll-snap-align: start;
       }
-
 
       /* ---------------------------------------------------------
          MODAL / CARTONAȘ DESCHIS
@@ -197,7 +186,6 @@
         padding-left: 12px !important;
       }
 
-
       .gallery-box {
         display: block !important;
 
@@ -213,7 +201,6 @@
         overflow: visible !important;
       }
 
-
       .gallery-image-wrap {
         width: 100% !important;
 
@@ -223,7 +210,6 @@
 
         overflow: hidden;
       }
-
 
       .gallery-image-wrap img {
         display: block;
@@ -238,7 +224,6 @@
         object-fit: contain;
       }
 
-
       .gallery-details {
         display: block;
 
@@ -252,7 +237,6 @@
 
         padding-bottom: 32px;
       }
-
 
       /*
         Butonul de închidere rămâne accesibil
@@ -272,7 +256,6 @@
         z-index: 10005;
       }
 
-
       /*
         Săgețile laterale nu trebuie să blocheze
         scroll-ul pe telefon.
@@ -284,7 +267,6 @@
       }
 
     }
-
 
     /* =========================================================
        ECRANE FOARTE MICI
@@ -308,12 +290,10 @@
         font-size: 16px;
       }
 
-
       .gallery-modal {
         padding-left: 8px !important;
         padding-right: 8px !important;
       }
-
 
       .gallery-image-wrap img {
         max-height: 50vh;
@@ -322,22 +302,14 @@
     }
 
   </style>
-<!-- =========================================================
-       BOTPRESS WEBCHAT — O SINGURĂ INTEGRARE
-       Logica este în js/script.js
-       ========================================================= -->
+<!-- Botpress -->
   <script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
 
 </head>
 
-
-
 <body>
 
-
-  <!-- =========================================================
-       NAVIGAȚIE
-       ========================================================= -->
+  <!-- Navigație -->
 
   <nav
     class="site-navbar nav-scrolled"
@@ -345,7 +317,6 @@
   >
 
     <div class="container nav-wrap">
-
 
       <a
         href="index.html#home"
@@ -361,7 +332,6 @@
 
       </a>
 
-
       <button
         class="nav-menu icon-btn"
         id="navMenu"
@@ -373,7 +343,6 @@
         <i class="bi bi-list"></i>
 
       </button>
-
 
       <div
         class="nav-links-wrap"
@@ -410,7 +379,6 @@
 
       </div>
 
-
       <a
         href="index.html#contact"
         class="nav-cta btn-arrow"
@@ -426,16 +394,11 @@
 
   </nav>
 
-
-
-  <!-- =========================================================
-       HEADER PORTOFOLIU
-       ========================================================= -->
+  <!-- Header portofoliu -->
 
   <header class="portfolio-header">
 
     <div class="container">
-
 
       <a
         href="index.html#works"
@@ -448,30 +411,22 @@
 
       </a>
 
-
       <span class="section-label">
         Portofoliu
       </span>
 
-
       <h1>
         Lucrări realizate
       </h1>
-
 
       <p>
         Explorează proiectele Art Life Design și filtrează
         după tipul de lucrare.
       </p>
 
-
-
-      <!-- =====================================================
-           CĂUTARE + FILTRE
-           ===================================================== -->
+      <!-- CĂUTARE + FILTRE -->
 
       <div class="portfolio-tools">
-
 
         <div class="portfolio-search">
 
@@ -487,15 +442,12 @@
 
         </div>
 
-
-
         <div
           class="portfolio-filters"
           role="group"
           aria-label="Filtre portofoliu"
           tabindex="0"
         >
-
 
           <button
             class="filter-btn active"
@@ -505,7 +457,6 @@
             Toate
           </button>
 
-
           <button
             class="filter-btn"
             type="button"
@@ -513,7 +464,6 @@
           >
             Poligrafie
           </button>
-
 
           <button
             class="filter-btn"
@@ -523,7 +473,6 @@
             Litere & Standuri
           </button>
 
-
           <button
             class="filter-btn"
             type="button"
@@ -531,7 +480,6 @@
           >
             P.O.S.M.
           </button>
-
 
           <button
             class="filter-btn"
@@ -549,45 +497,27 @@
             Laser / Plotter
           </button>
 
-
         </div>
 
       </div>
-
 
     </div>
 
   </header>
 
-
-
-  <!-- =========================================================
-       GRID PORTOFOLIU
-       ========================================================= -->
+  <!-- Proiecte -->
 
   <main class="portfolio-section">
 
     <div class="container">
-
 
       <div
         class="portfolio-grid"
         id="portfolioGrid"
       ></div>
 
-
-      <p
-        class="no-results"
-        id="noResults"
-      >
-
+      <p class="no-results" id="noResults">
         Nu am găsit lucrări după această căutare.
-
-id="noResults"
-      >
-
-        Nu am găsit lucrări după această căutare.
-
       </p>
 
       <div class="portfolio-load-more">
@@ -602,27 +532,19 @@ id="noResults"
         </button>
       </div>
 
-
     </div>
 
   </main>
 
-
-
-  <!-- =========================================================
-       CTA PORTOFOLIU
-       ========================================================= -->
+  <!-- CTA portofoliu -->
 
   <section class="portfolio-contact">
 
     <div class="container">
 
-
       <div class="portfolio-contact-inner reveal">
 
-
         <div>
-
 
           <span class="section-label">
 
@@ -630,16 +552,13 @@ id="noResults"
 
           </span>
 
-
           <h2>
 
             Trimite-ne un mesaj și discutăm detaliile.
 
           </h2>
 
-
         </div>
-
 
         <a
           href="index.html#contact"
@@ -652,19 +571,13 @@ id="noResults"
 
         </a>
 
-
       </div>
-
 
     </div>
 
   </section>
 
-
-
-  <!-- =========================================================
-       GALERIE PROIECT
-       ========================================================= -->
+  <!-- Galerie proiect -->
 
   <div
     class="gallery-modal"
@@ -769,19 +682,13 @@ id="noResults"
 
   </div>
 
-
-  <!-- =========================================================
-       FOOTER
-       ========================================================= -->
+  <!-- Footer -->
 
   <footer class="site-footer">
 
-
     <div class="container footer-inner">
 
-
       <div class="footer-brand">
-
 
         <a
           href="index.html#home"
@@ -796,7 +703,6 @@ id="noResults"
 
         </a>
 
-
         <p>
 
           Publicitate vizuală pentru branduri care vor
@@ -804,59 +710,43 @@ id="noResults"
 
         </p>
 
-
       </div>
 
-
-
       <div class="footer-nav-block">
-
 
         <h4>
           Navigare
         </h4>
 
-
         <div class="footer-links">
-
 
           <a href="index.html#about">
             Despre noi
           </a>
 
-
           <a href="index.html#services">
             Servicii
           </a>
-
 
           <a href="lucrari.html">
             Lucrări
           </a>
 
-
           <a href="index.html#contact">
             Contact
           </a>
 
-
         </div>
-
 
       </div>
 
-
-
       <div class="footer-social-block">
-
 
         <h4>
           Urmărește-ne
         </h4>
 
-
         <div class="footer-links">
-
 
           <a
             href="https://www.instagram.com/design.artlife/"
@@ -866,7 +756,6 @@ id="noResults"
             Instagram ↗
           </a>
 
-
           <a
             href="https://www.tiktok.com/@art.life.design"
             target="_blank"
@@ -874,7 +763,6 @@ id="noResults"
           >
             TikTok ↗
           </a>
-
 
           <a
             href="https://www.facebook.com/p/Art-Life-Design-100063504763244/"
@@ -884,19 +772,13 @@ id="noResults"
             Facebook ↗
           </a>
 
-
         </div>
-
 
       </div>
 
-
     </div>
 
-
-
     <div class="container footer-bottom">
-
 
       <p>
 
@@ -904,39 +786,27 @@ id="noResults"
 
       </p>
 
-
       <span>
 
         Chișinău, Moldova
 
       </span>
 
-
     </div>
-
 
   </footer>
 
-
-
-  <!-- =========================================================
-       TOAST
-       ========================================================= -->
+  <!-- Mesaje -->
 
   <div
     class="site-toast"
     id="siteToast"
   ></div>
 
-
-
-  <!-- =========================================================
-       JAVASCRIPT SITE
-       ========================================================= -->
+  <!-- JavaScript -->
 
   <script src="js/script.js?v=works16"></script>
   <script src="js/works-page-content.js?v=works16"></script>
-
 
 </body>
 

@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+// Script pentru crearea unui cont nou de administrator.
+
 if (PHP_SAPI !== 'cli') {
     http_response_code(403);
     exit('Acest script poate fi rulat doar din terminal.');
@@ -20,28 +22,30 @@ if (strlen($password) < 12) {
     exit("Parola trebuie să aibă minimum 12 caractere.\n");
 }
 
+if ($name === '') {
+    $name = 'Administrator';
+}
+
+// Se verifică dacă emailul este deja folosit.
 $stmt = $pdo->prepare(
-    'SELECT id FROM admin_users WHERE email = :email LIMIT 1'
+    'SELECT COUNT(*) FROM admin_users WHERE email = :email'
 );
 $stmt->execute(['email' => $email]);
 
-if ($stmt->fetch()) {
+if ((int) $stmt->fetchColumn() > 0) {
     exit("Există deja un administrator cu acest email.\n");
 }
 
-$passwordHash = password_hash($password, PASSWORD_DEFAULT);
-
-$insert = $pdo->prepare(
-    'INSERT INTO admin_users
-        (name, email, password_hash, is_active)
-     VALUES
-        (:name, :email, :password_hash, 1)'
+// Se salvează parola criptată și contul nou.
+$stmt = $pdo->prepare(
+    'INSERT INTO admin_users (name, email, password_hash, is_active)
+     VALUES (:name, :email, :password_hash, 1)'
 );
 
-$insert->execute([
-    'name' => $name !== '' ? $name : 'Administrator',
+$stmt->execute([
+    'name' => $name,
     'email' => $email,
-    'password_hash' => $passwordHash,
+    'password_hash' => password_hash($password, PASSWORD_DEFAULT),
 ]);
 
 echo "Administrator creat cu succes.\n";
