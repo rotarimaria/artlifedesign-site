@@ -1,15 +1,18 @@
 # Se activează rescrierea adreselor.
 RewriteEngine On
 
+# Se dezactivează alegerea automată a fișierelor cu extensie.
+Options -MultiViews
+
 # /lucrari afișează intern lucrari.html.
-RewriteRule ^lucrari/?$ lucrari.html [L,NC]
+RewriteRule ^lucrari/?$ lucrari.html [END,NC]
 
-# lucrari.html este redirecționat către adresa curată /lucrari.
+# Accesul direct la lucrari.html este redirecționat către /lucrari.
 RewriteCond %{THE_REQUEST} \s/+(.*/)?lucrari\.html(?:[\s?]) [NC]
-RewriteRule ^lucrari\.html$ lucrari [R=301,L]
+RewriteRule ^lucrari\.html$ ./lucrari [R=302,L]
 
-# Se blochează accesul public la folderele sensibile.
-RewriteRule ^(?:config|database|scripts)(?:/|$) - [F,L,NC]
+# Se blochează folderele sensibile.
+RewriteRule ^(?:config|database|scripts)(?:/|$) - [F,END,NC]
 
 # Se blochează fișierele SQL.
 <FilesMatch "\.sql$">
