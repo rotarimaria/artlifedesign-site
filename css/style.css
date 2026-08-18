@@ -8891,3 +8891,42 @@ body.gallery-open {
 #galleryModalVideo {
   pointer-events:auto;
 }
+
+
+/* =========================================================
+   SERVICII — RAPORT IDENTIC CU EDITORUL ADMIN
+   ========================================================= */
+
+/* Imaginea principală: 16:9 */
+.service-detail-gallery figure:first-child img{
+  width:100%;
+  height:auto;
+  aspect-ratio:16/9;
+  object-fit:cover;
+}
+
+/* Imaginile secundare: 4:3 */
+.service-detail-gallery figure:not(:first-child) img{
+  width:100%;
+  height:auto;
+  aspect-ratio:4/3;
+  object-fit:cover;
+}
+
+/* Nu rescriem transform-ul de crop la hover. */
+.service-detail-gallery figure:hover img{
+  filter:brightness(1.03);
+}
+
+/* Pe mobil păstrăm aceleași proporții ca în admin. */
+@media (max-width:768px){
+  .service-detail-gallery figure:first-child img{
+    height:auto;
+    aspect-ratio:16/9;
+  }
+
+  .service-detail-gallery figure:not(:first-child) img{
+    height:auto;
+    aspect-ratio:4/3;
+  }
+}
