@@ -8969,3 +8969,73 @@ body.gallery-open {
 .service-detail-gallery img{
   object-position:50% 50%;
 }
+
+
+/* =========================================================
+   CORECTARE FINALĂ — NAVBAR + DETALII SERVICII
+   ========================================================= */
+
+/* Meniul: fără subliniere. Activ/hover = doar text verde. */
+.nav-link::after{
+  display:none !important;
+}
+
+.nav-link:hover,
+.nav-link.active{
+  color:var(--green) !important;
+}
+
+/* Rămâne numai bara verde lungă de sub meniu. */
+.scroll-progress{
+  height:3px !important;
+}
+
+/* Detaliul serviciului pornește de sus */
+.service-detail-copy{
+  align-self:start !important;
+  padding-top:6px;
+}
+
+/* Exemplele: text simplu, 2 coloane, punct verde. */
+.service-detail-examples{
+  list-style:none;
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px 28px;
+  margin:24px 0 0 !important;
+  padding:0 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+
+.service-detail-examples li{
+  position:relative;
+  display:block !important;
+  margin:0 !important;
+  padding:4px 0 4px 18px !important;
+  color:rgba(247,244,235,.76) !important;
+  font-size:15px;
+  line-height:1.55;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+
+.service-detail-examples li::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:.83em;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 0 3px rgba(146,255,34,.08);
+  transform:translateY(-50%);
+}
+
+@media(max-width:768px){
+  .service-detail-examples{
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+}

@@ -632,7 +632,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       detailWrap.innerHTML = services.map(s => {
         const examples = (s.examples || [])
           .filter(Boolean)
-          .map(v => `<span class="service-detail-example">${escapeHTML(v)}</span>`)
+          .map(v => `<li>${escapeHTML(v)}</li>`)
           .join("");
 
         const images = (s.images || [])
@@ -655,7 +655,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               <h3>${escapeHTML(s.detailTitle)}</h3>
               <p>${escapeHTML(s.detailText)}</p>
 
-              <div class="service-detail-examples">${examples}</div>
+              <ul class="service-detail-examples">${examples}</ul>
 
               <div class="service-detail-actions">
                 <a href="lucrari.html?filter=${encodeURIComponent(s.slug)}" class="btn-ghost btn-arrow">
