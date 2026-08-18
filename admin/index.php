@@ -52,11 +52,11 @@ $publishedCount = (int) $pdo->query(
     </section>
 
     <section class="sections">
-        <a class="admin-card soon" href="#">
+        <a class="admin-card" href="homepage/">
             <small>Homepage</small>
             <h2>Pagina principală</h2>
             <p>Texte, imagini, servicii și secțiuni.</p>
-            <strong>Urmează →</strong>
+            <strong>Editează pagina →</strong>
         </a>
 
         <a class="admin-card soon" href="#">
