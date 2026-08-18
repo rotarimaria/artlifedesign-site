@@ -576,9 +576,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     items.forEach((item) => observer.observe(item));
   }
 
-  revealOnScroll();
-
-
   function serviceMediaStyle(media = {}) {
     return [
       `--crop-x:${Number(media.cropX ?? 50)}%`,
@@ -696,6 +693,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   renderDynamicServices();
+  revealOnScroll();
 
   function filterServices() {
     const search = $("#serviceSearch");
