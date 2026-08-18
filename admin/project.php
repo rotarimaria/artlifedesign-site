@@ -7,7 +7,7 @@ require_once __DIR__ . '/../includes/project_helpers.php';
 
 requireAdmin();
 
-$categories = projectCategories();
+$categories = projectCategories($pdo);
 $q = trim((string) ($_GET['q'] ?? ''));
 $category = trim((string) ($_GET['category'] ?? ''));
 
