@@ -1,13 +1,10 @@
 <?php
 declare(strict_types=1);
 
-/**
- * Homepage config.
- * Lucrările NU sunt incluse aici: sunt administrate separat.
- */
+// Câmpurile editabile pentru homepage. Lucrările sunt administrate separat.
 function homepageFields(): array
 {
-    $sections = [
+    return [
         'Navigație' => [
             'nav_about' => ['Meniu — Despre noi', 'text', 'Despre noi'],
             'nav_services' => ['Meniu — Servicii', 'text', 'Servicii'],
@@ -93,10 +90,9 @@ function homepageFields(): array
             'footer_social_title' => ['Titlu Social', 'text', 'Urmărește-ne'],
         ],
     ];
-
-    return $sections;
 }
 
+// Se găsesc câmpurile care folosesc imagini sau video.
 function homepageMediaKeys(): array
 {
     $keys = [];
@@ -110,6 +106,7 @@ function homepageMediaKeys(): array
     return $keys;
 }
 
+// Se pregătesc valorile implicite și ajustările imaginilor.
 function homepageDefaults(): array
 {
     $defaults = [];
@@ -131,6 +128,7 @@ function homepageDefaults(): array
     return $defaults;
 }
 
+// Se ia conținutul salvat din BD peste valorile implicite.
 function getHomepageContent(PDO $pdo): array
 {
     $content = homepageDefaults();
@@ -146,6 +144,7 @@ function getHomepageContent(PDO $pdo): array
     return $content;
 }
 
+// Se salvează o valoare editată din admin.
 function saveHomepageValue(PDO $pdo, string $key, string $value): void
 {
     if (!array_key_exists($key, homepageDefaults())) {
@@ -167,6 +166,7 @@ function homepageUploadDir(): string
     return dirname(__DIR__) . '/uploads/homepage';
 }
 
+// Se verifică și se salvează imaginea sau videoul de pe homepage.
 function saveHomepageUpload(array $file, string $expectedType): string
 {
     if (($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {

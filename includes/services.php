@@ -1,51 +1,62 @@
 <?php
 declare(strict_types=1);
 
+// Funcții pentru servicii: denumiri, categorii și imagini.
+
 function serviceSlug(string $value): string
 {
     $value = trim(mb_strtolower($value));
-    $map = ['ă'=>'a','â'=>'a','î'=>'i','ș'=>'s','ş'=>'s','ț'=>'t','ţ'=>'t'];
-    $value = strtr($value, $map);
-    $value = preg_replace('/[^a-z0-9]+/u', '-', $value) ?: '';
-    return trim($value, '-');
+    $value = strtr($value, [
+        'ă' => 'a', 'â' => 'a', 'î' => 'i',
+        'ș' => 's', 'ş' => 's', 'ț' => 't', 'ţ' => 't',
+    ]);
+
+    return trim(preg_replace('/[^a-z0-9]+/u', '-', $value) ?: '', '-');
 }
 
+// Se iau serviciile din BD în ordinea setată în admin.
 function getServices(PDO $pdo, bool $activeOnly = false): array
 {
-    $sql = 'SELECT * FROM services';
-    if ($activeOnly) $sql .= ' WHERE is_active = 1';
-    $sql .= ' ORDER BY sort_order ASC, id ASC';
+    $sql = 'SELECT * FROM services'
+         . ($activeOnly ? ' WHERE is_active = 1' : '')
+         . ' ORDER BY sort_order ASC, id ASC';
 
     return $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 }
 
+// Se pregătesc serviciile pentru listele de categorii.
 function serviceCategories(PDO $pdo): array
 {
-    $out = [];
+    $categories = [];
+
     foreach (getServices($pdo, true) as $service) {
-        $out[(string)$service['slug']] = (string)$service['name'];
+        $categories[(string) $service['slug']] = (string) $service['name'];
     }
-    return $out;
+
+    return $categories;
 }
 
+// Se verifică și se salvează imaginea unui serviciu.
 function saveServiceUpload(array $file): string
 {
-    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+    $error = (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE);
+
+    if ($error === UPLOAD_ERR_NO_FILE) {
         throw new RuntimeException('Nu a fost selectată imaginea.');
     }
-    if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
+    if ($error !== UPLOAD_ERR_OK) {
         throw new RuntimeException('Imaginea nu s-a încărcat corect.');
     }
 
-    $tmp = (string)($file['tmp_name'] ?? '');
-    $size = (int)($file['size'] ?? 0);
-    $mime = (string)(new finfo(FILEINFO_MIME_TYPE))->file($tmp);
+    $tmp = (string) ($file['tmp_name'] ?? '');
+    $size = (int) ($file['size'] ?? 0);
+    $mime = (string) (new finfo(FILEINFO_MIME_TYPE))->file($tmp);
 
     $allowed = [
-        'image/jpeg'=>'jpg',
-        'image/png'=>'png',
-        'image/webp'=>'webp',
-        'image/gif'=>'gif',
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+        'image/gif' => 'gif',
     ];
 
     if (!isset($allowed[$mime])) {
@@ -56,11 +67,13 @@ function saveServiceUpload(array $file): string
     }
 
     $dir = dirname(__DIR__) . '/uploads/homepage';
+
     if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
         throw new RuntimeException('Nu s-a putut crea uploads/homepage.');
     }
 
-    $name = 'service-' . date('Ymd-His') . '-' . bin2hex(random_bytes(4)) . '.' . $allowed[$mime];
+    $name = 'service-' . date('Ymd-His') . '-' . bin2hex(random_bytes(4))
+          . '.' . $allowed[$mime];
 
     if (!move_uploaded_file($tmp, $dir . '/' . $name)) {
         throw new RuntimeException('Imaginea nu a putut fi salvată.');

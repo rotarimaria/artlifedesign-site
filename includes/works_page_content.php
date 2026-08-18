@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+// Textele editabile pentru pagina Lucrări.
+
 function worksPageFields(): array
 {
     return [
@@ -18,38 +20,43 @@ function worksPageFields(): array
     ];
 }
 
+// Se iau valorile salvate din BD peste textele implicite.
 function getWorksPageContent(PDO $pdo): array
 {
     $content = worksPageFields();
 
-    $stmt = $pdo->query(
+    $rows = $pdo->query(
         "SELECT content_key, content_value
          FROM site_content
          WHERE content_key LIKE 'works_%'"
-    );
+    )->fetchAll(PDO::FETCH_ASSOC);
 
-    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
-        $key = preg_replace('/^works_/', '', (string)$row['content_key']);
+    foreach ($rows as $row) {
+        $key = substr((string) $row['content_key'], 6);
+
         if (array_key_exists($key, $content)) {
-            $content[$key] = (string)$row['content_value'];
+            $content[$key] = (string) $row['content_value'];
         }
     }
 
     return $content;
 }
 
+// Se salvează toate textele paginii Lucrări.
 function saveWorksPageContent(PDO $pdo, array $values): void
 {
     $stmt = $pdo->prepare(
         'INSERT INTO site_content (content_key, content_value)
-         VALUES (:k,:v)
-         ON DUPLICATE KEY UPDATE content_value=VALUES(content_value), updated_at=CURRENT_TIMESTAMP'
+         VALUES (:key, :value)
+         ON DUPLICATE KEY UPDATE
+            content_value = VALUES(content_value),
+            updated_at = CURRENT_TIMESTAMP'
     );
 
-    foreach (worksPageFields() as $key=>$default) {
+    foreach (worksPageFields() as $key => $default) {
         $stmt->execute([
-            'k'=>'works_'.$key,
-            'v'=>(string)($values[$key] ?? $default),
+            'key' => 'works_' . $key,
+            'value' => (string) ($values[$key] ?? $default),
         ]);
     }
 }

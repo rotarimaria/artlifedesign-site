@@ -1,47 +1,34 @@
 <?php
 declare(strict_types=1);
 
+// Se pregătesc proiectele publicate pentru API și site.
+
 require_once __DIR__ . '/../config/database.php';
 
-/**
- * Returnează proiectele publicate într-un singur query.
- * Fără N+1 queries și fără duplicarea proiectelor în JavaScript.
- */
+// Se încarcă proiectele și toate imaginile/video într-un singur query.
 function getPublicProjects(PDO $pdo): array
 {
-    $sql = '
-        SELECT
-            p.id,
-            p.title,
-            p.service,
-            p.category,
-            p.description,
-            p.tags,
-            p.created_at,
-            p.published_at,
-            pi.id AS media_id,
-            pi.image_path,
-            pi.is_primary,
-            pi.sort_order AS media_order,
+    $rows = $pdo->query(
+        'SELECT
+            p.id, p.title, p.service, p.category, p.description, p.tags,
+            pi.id AS media_id, pi.image_path,
             COALESCE(pi.media_type, "image") AS media_type,
             COALESCE(pi.crop_x, 50) AS crop_x,
             COALESCE(pi.crop_y, 50) AS crop_y,
             COALESCE(pi.crop_zoom, 1) AS crop_zoom,
             COALESCE(pi.fit_mode, "cover") AS fit_mode,
             COALESCE(pi.rotation, 0) AS rotation
-        FROM projects p
-        LEFT JOIN project_images pi
-            ON pi.project_id = p.id
-        WHERE p.is_published = 1
-        ORDER BY
+         FROM projects p
+         LEFT JOIN project_images pi ON pi.project_id = p.id
+         WHERE p.is_published = 1
+         ORDER BY
             COALESCE(p.published_at, p.created_at) DESC,
             p.id DESC,
             pi.is_primary DESC,
             pi.sort_order ASC,
-            pi.id ASC
-    ';
+            pi.id ASC'
+    )->fetchAll(PDO::FETCH_ASSOC);
 
-    $rows = $pdo->query($sql)->fetchAll();
     $projects = [];
 
     foreach ($rows as $row) {
@@ -63,13 +50,7 @@ function getPublicProjects(PDO $pdo): array
                 'tags' => $tags,
                 'date' => '',
                 'search' => mb_strtolower(
-                    implode(' ', [
-                        $title,
-                        $service,
-                        $category,
-                        $tags,
-                        $description,
-                    ]),
+                    implode(' ', [$title, $service, $category, $tags, $description]),
                     'UTF-8'
                 ),
                 'media' => [],
@@ -91,6 +72,7 @@ function getPublicProjects(PDO $pdo): array
 
     $result = array_values($projects);
 
+    // Se păstrează și câmpurile vechi folosite încă în JavaScript.
     foreach ($result as &$project) {
         $primary = $project['media'][0] ?? null;
 
@@ -99,11 +81,7 @@ function getPublicProjects(PDO $pdo): array
             ? $primary['cropX'] . '% ' . $primary['cropY'] . '%'
             : '50% 50%';
 
-        // Compatibilitate cu codul vechi; media rămâne sursa principală.
-        $project['images'] = array_map(
-            static fn (array $media): string => $media['src'],
-            $project['media']
-        );
+        $project['images'] = array_column($project['media'], 'src');
     }
     unset($project);
 
