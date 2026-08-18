@@ -273,6 +273,78 @@ function updateExistingProjectMediaDisplays(
     }
 }
 
+
+// Se înlocuiește fișierul, dar se păstrează același slot și aceleași ajustări.
+function replaceProjectMedia(
+    int $mediaId,
+    int $projectId,
+    array $file,
+    PDO $pdo
+): void {
+    $error = (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE);
+
+    if ($error === UPLOAD_ERR_NO_FILE) {
+        return;
+    }
+    if ($error !== UPLOAD_ERR_OK) {
+        throw new RuntimeException('Fișierul nou nu s-a încărcat corect.');
+    }
+
+    $stmt = $pdo->prepare(
+        'SELECT image_path
+         FROM project_images
+         WHERE id = :id AND project_id = :project_id
+         LIMIT 1'
+    );
+    $stmt->execute(['id' => $mediaId, 'project_id' => $projectId]);
+    $oldPath = $stmt->fetchColumn();
+
+    if (!$oldPath) {
+        throw new RuntimeException('Fișierul de înlocuit nu a fost găsit.');
+    }
+
+    $tmp = (string) ($file['tmp_name'] ?? '');
+    $size = (int) ($file['size'] ?? 0);
+    $media = detectUploadedMedia($tmp);
+
+    if ($size <= 0 || $size > $media['max']) {
+        $limit = $media['type'] === 'video' ? '80 MB' : '8 MB';
+        throw new RuntimeException("Fișierul depășește limita de {$limit}.");
+    }
+
+    ensureProjectUploadDir();
+
+    $filename = sprintf(
+        'project-%d-%s.%s',
+        $projectId,
+        bin2hex(random_bytes(8)),
+        $media['ext']
+    );
+    $target = projectUploadDir() . '/' . $filename;
+
+    if (!move_uploaded_file($tmp, $target)) {
+        throw new RuntimeException('Fișierul nou nu a putut fi salvat.');
+    }
+
+    try {
+        $pdo->prepare(
+            'UPDATE project_images
+             SET image_path = :path, media_type = :type
+             WHERE id = :id AND project_id = :project_id'
+        )->execute([
+            'path' => 'uploads/projects/' . $filename,
+            'type' => $media['type'],
+            'id' => $mediaId,
+            'project_id' => $projectId,
+        ]);
+    } catch (Throwable $e) {
+        @unlink($target);
+        throw $e;
+    }
+
+    deleteProjectImageFile((string) $oldPath);
+}
+
 function deleteProjectImageFile(string $mediaPath): void
 {
     $file = projectUploadDir() . '/' . basename($mediaPath);

@@ -14,9 +14,9 @@ if ($projectId <= 0) {
     exit('ID proiect invalid.');
 }
 
-$stmt = $pdo->prepare('SELECT id, title FROM projects WHERE id = :id LIMIT 1');
+$stmt = $pdo->prepare('SELECT title FROM projects WHERE id = :id LIMIT 1');
 $stmt->execute(['id' => $projectId]);
-$project = $stmt->fetch();
+$project = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$project) {
     http_response_code(404);
@@ -25,34 +25,29 @@ if (!$project) {
 
 $error = '';
 
+// Se șterg proiectul și fișierele lui după confirmare.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCsrf($_POST['csrf_token'] ?? null)) {
         $error = 'Sesiunea a expirat. Reîncarcă pagina.';
     } else {
         try {
-            $pdo->beginTransaction();
-
             $mediaItems = getProjectImages($projectId, $pdo);
+
+            $pdo->beginTransaction();
+            $pdo->prepare('DELETE FROM projects WHERE id = :id')
+                ->execute(['id' => $projectId]);
+            $pdo->commit();
 
             foreach ($mediaItems as $media) {
                 deleteProjectImageFile((string) $media['image_path']);
             }
 
-            $delete = $pdo->prepare('DELETE FROM projects WHERE id = :id');
-            $delete->execute(['id' => $projectId]);
-
-            $pdo->commit();
-
-            header(
-                'Location: project.php?success=' .
-                rawurlencode('Proiectul a fost șters.')
-            );
+            header('Location: project.php?success=' . rawurlencode('Proiectul a fost șters.'));
             exit;
         } catch (Throwable $e) {
             if ($pdo->inTransaction()) {
                 $pdo->rollBack();
             }
-
             $error = 'Proiectul nu a putut fi șters: ' . $e->getMessage();
         }
     }
@@ -61,11 +56,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!doctype html>
 <html lang="ro">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="noindex,nofollow">
-    <title>Ștergere proiect | ArtLife Admin</title>
-    <?php require __DIR__ . '/_admin_styles.php'; ?>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Ștergere proiect | ArtLife Admin</title>
+<?php require __DIR__ . '/_admin_styles.php'; ?>
 </head>
 <body>
 <header class="topbar">
@@ -90,14 +85,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <section class="card form-card">
-        <p style="margin-top:0;line-height:1.7;font-weight:400;">
-            Proiectul și toate imaginile/video asociate vor fi eliminate definitiv.
-        </p>
-
+        <p style="margin-top:0">Proiectul și toate fișierele lui vor fi eliminate definitiv.</p>
         <form method="post">
             <input type="hidden" name="id" value="<?= $projectId ?>">
             <input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>">
-
             <div class="form-actions">
                 <button class="btn btn-danger" type="submit">Da, șterge definitiv</button>
                 <a class="btn" href="project.php">Nu, înapoi</a>

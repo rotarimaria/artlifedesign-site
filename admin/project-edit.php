@@ -27,6 +27,7 @@ if (!$project) {
 $error = '';
 $success = '';
 
+// Se validează și se salvează modificările proiectului.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCsrf($_POST['csrf_token'] ?? null)) {
         $error = 'Sesiunea a expirat. Reîncarcă pagina.';
@@ -97,15 +98,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $existingDisplay
                 );
 
-                $deleteIds = $_POST['delete_image'] ?? [];
+                // Se înlocuiește fișierul în același slot, fără să se schimbe ordinea.
+                if (isset($_FILES['replace_media']['name']) && is_array($_FILES['replace_media']['name'])) {
+                    foreach ($_FILES['replace_media']['name'] as $mediaId => $name) {
+                        $file = [
+                            'name' => $name,
+                            'type' => $_FILES['replace_media']['type'][$mediaId] ?? '',
+                            'tmp_name' => $_FILES['replace_media']['tmp_name'][$mediaId] ?? '',
+                            'error' => $_FILES['replace_media']['error'][$mediaId] ?? UPLOAD_ERR_NO_FILE,
+                            'size' => $_FILES['replace_media']['size'][$mediaId] ?? 0,
+                        ];
 
-                if (is_array($deleteIds)) {
-                    foreach ($deleteIds as $deleteId) {
-                        deleteProjectImageById(
-                            (int) $deleteId,
-                            $projectId,
-                            $pdo
-                        );
+                        replaceProjectMedia((int) $mediaId, $projectId, $file, $pdo);
                     }
                 }
 
@@ -206,7 +210,6 @@ if (isset($_GET['success'])) {
         <div>
             <span class="eyebrow">Editare proiect</span>
             <h1><?= e((string) $project['title']) ?></h1>
-            <p class="muted">Categoria este și serviciul proiectului.</p>
         </div>
     </div>
 
@@ -292,11 +295,6 @@ if (isset($_GET['success'])) {
 
                         <div class="tag-count" id="tagCount">0/14</div>
                     </div>
-
-                    <p class="help">
-                        Scrii expresia completă și apeși Enter sau „Adaugă”.
-                        Spațiile din expresie nu o separă.
-                    </p>
                 </div>
 
                 <div class="field field-full">
@@ -315,10 +313,6 @@ if (isset($_GET['success'])) {
                     <div class="media-title">
                         <div>
                             <label>Imagini / video</label>
-                            <p>
-                                Alege fișierul principal și ajustează fiecare fișier prin drag,
-                                zoom și rotație.
-                            </p>
                         </div>
 
                         <span class="muted">
@@ -372,13 +366,14 @@ if (isset($_GET['success'])) {
                                     Principal
                                 </label>
 
-                                <label class="delete-wrap">
+                                <label class="replace-wrap">
+                                    Schimbă imaginea
                                     <input
-                                        type="checkbox"
-                                        name="delete_image[]"
-                                        value="<?= (int) $media['id'] ?>"
+                                        type="file"
+                                        name="replace_media[<?= (int) $media['id'] ?>]"
+                                        accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
+                                        class="js-replace-media"
                                     >
-                                    Șterge
                                 </label>
 
                                 <input
@@ -487,7 +482,6 @@ if (isset($_GET['success'])) {
         <aside class="preview-panel">
             <section class="preview-box">
                 <h3>Previzualizare card</h3>
-                <p>Varianta compactă din listă.</p>
 
                 <article class="preview-small">
                     <div class="preview-media" id="smallMedia"></div>
@@ -572,11 +566,6 @@ if (isset($_GET['success'])) {
             id="cropStage"
         ></div>
 
-        <p class="crop-tip">
-            Trage direct imaginea/video-ul în cadru.
-            Reglează apoi zoom-ul și rotația.
-        </p>
-
         <div class="crop-controls">
             <div class="fit-switch">
                 <button
@@ -631,9 +620,6 @@ if (isset($_GET['success'])) {
         </div>
 
         <div class="crop-foot">
-            <p class="crop-save-note">
-                „Aplică” actualizează previzualizarea. „Aplică și salvează” scrie modificarea în baza de date.
-            </p>
 
             <div class="crop-foot-actions">
                 <button class="btn" type="button" id="cropReset">Reset</button>
@@ -644,6 +630,6 @@ if (isset($_GET['success'])) {
     </div>
 </div>
 
-<script src="project-form.js?v=5"></script>
+<script src="project-form.js?v=6"></script>
 </body>
 </html>

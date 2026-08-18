@@ -18,6 +18,7 @@ $data = [
     'is_published' => 1,
 ];
 
+// Se validează formularul și se salvează proiectul.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data['title'] = trim((string) ($_POST['title'] ?? ''));
     $data['category'] = trim((string) ($_POST['category'] ?? ''));
@@ -131,7 +132,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div>
             <span class="eyebrow">Proiect nou</span>
             <h1>Adaugă o lucrare</h1>
-            <p class="muted">Cel mai nou proiect publicat apare automat primul.</p>
         </div>
     </div>
 
@@ -191,11 +191,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         <div class="tag-count" id="tagCount">0/14</div>
                     </div>
-
-                    <p class="help">
-                        Expresiile cu spații rămân întregi. De exemplu:
-                        „carte de vizită” devine un singur tag.
-                    </p>
                 </div>
 
                 <div class="field field-full">
@@ -209,7 +204,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="media-title">
                         <div>
                             <label>Imagini / video</label>
-                            <p>Maximum 4 fișiere. După încărcare, apasă „Ajustează”.</p>
                         </div>
                         <span class="muted">4 sloturi</span>
                     </div>
@@ -264,7 +258,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <aside class="preview-panel">
             <section class="preview-box">
                 <h3>Previzualizare card</h3>
-                <p>Varianta compactă din listă.</p>
 
                 <article class="preview-small">
                     <div class="preview-media" id="smallMedia">
@@ -280,7 +273,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <section class="preview-box">
                 <h3>Previzualizare modal real</h3>
-                <p>Aproape identic cu modul de afișare de pe website.</p>
 
                 <article class="site-modal-preview">
                     <div class="site-modal-left">
@@ -317,10 +309,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="crop-stage" id="cropStage"></div>
 
-        <p class="crop-tip">
-            Trage direct imaginea/video-ul în cadru. Poți regla apoi zoom-ul și rotația.
-        </p>
-
         <div class="crop-controls">
             <div class="fit-switch">
                 <button type="button" data-fit="cover" class="active">Umple cadrul</button>
@@ -341,9 +329,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div class="crop-foot">
-            <p class="crop-save-note">
-                „Aplică” actualizează previzualizarea. „Aplică și salvează” scrie modificarea în baza de date.
-            </p>
 
             <div class="crop-foot-actions">
                 <button class="btn" type="button" id="cropReset">Reset</button>
@@ -354,6 +339,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<script src="project-form.js?v=5"></script>
+<script src="project-form.js?v=6"></script>
 </body>
 </html>

@@ -7,7 +7,7 @@
   const siteTitle=$('#siteTitle'), siteCategory=$('#siteCategory'), siteDescription=$('#siteDescription');
   const siteMain=$('#siteMain'), siteThumbs=$('#siteThumbs'), siteTags=$('#siteTags');
 
-  /* TAGURI */
+  // Taguri
   const tagsHidden=$('#tags'), tagInput=$('#tagInput'), tagAdd=$('#tagAdd'), tagList=$('#tagList'), tagCount=$('#tagCount');
   const MAX_TAGS=14;
   let tags=(tagsHidden?.value||'').split(',').map(v=>v.trim()).filter(Boolean);
@@ -72,7 +72,7 @@
     }
   });
 
-  /* TEXTE PREVIEW */
+  // Previzualizarea textelor
   const categoryLabel=()=>category?.selectedOptions?.[0]?.textContent?.trim()||'Categorie';
 
   function updateText(){
@@ -91,7 +91,7 @@
   category?.addEventListener('change',updateText);
   description?.addEventListener('input',updateText);
 
-  /* MEDIA */
+  // Imagini și video
   function crop(slot){
     return {
       x:slot.querySelector('[data-crop-x]')?.value||'50',
@@ -103,21 +103,13 @@
   }
 
   function usableSlots(){
-    return $$('.media-slot').filter(slot=>
-      slot.querySelector('[data-media-preview]') &&
-      !slot.querySelector('input[name="delete_image[]"]:checked')
-    );
+    return $$('.media-slot').filter(slot=>slot.querySelector('[data-media-preview]'));
   }
 
   function primarySlot(){
     const existing=$('.media-slot input[name="primary_image_id"]:checked')?.closest('.media-slot');
 
-    if(
-      existing &&
-      !existing.querySelector('input[name="delete_image[]"]:checked')
-    ){
-      return existing;
-    }
+    if(existing)return existing;
 
     const fresh=$('.media-slot .js-new-primary:checked')?.closest('.media-slot');
 
@@ -355,7 +347,7 @@
     });
   });
 
-  $$('.media-slot input[type=file]').forEach(input=>{
+  $$('input[type=file][name^="media["]').forEach(input=>{
     input.addEventListener('change',()=>{
       const slot=input.closest('.media-slot');
       const file=input.files?.[0];
@@ -410,12 +402,44 @@
     });
   });
 
-  $$(
-    'input[name="primary_image_id"],' +
-    'input[name="delete_image[]"]'
-  ).forEach(el=>el.addEventListener('change',updateAll));
+  $$('input[name="primary_image_id"]').forEach(el=>
+    el.addEventListener('change',updateAll)
+  );
 
-  /* EDITOR NATURAL: TRAGI CU MOUSE-UL / DEGETUL */
+  
+  // Se afișează imediat fișierul ales la „Schimbă imaginea”.
+  $$('.js-replace-media').forEach(input=>{
+    input.addEventListener('change',()=>{
+      const slot=input.closest('.media-slot');
+      const file=input.files?.[0];
+      if(!slot||!file)return;
+
+      const old=slot.querySelector('[data-media-preview]');
+      const media=document.createElement(file.type.startsWith('video/')?'video':'img');
+
+      if(media.tagName==='VIDEO'){
+        media.muted=true;
+        media.loop=true;
+        media.autoplay=true;
+        media.playsInline=true;
+      }else{
+        media.alt='';
+      }
+
+      media.dataset.mediaPreview='1';
+      media.src=URL.createObjectURL(file);
+
+      if(old){
+        old.replaceWith(media);
+      }
+
+      media.addEventListener('loadeddata',updateAll,{once:true});
+      media.addEventListener('load',updateAll,{once:true});
+      updateAll();
+    });
+  });
+
+// Ajustarea imaginilor: drag, zoom și rotire
   const modal=$('#cropModal');
   const stage=$('#cropStage');
   const zoom=$('#cropZoom');
