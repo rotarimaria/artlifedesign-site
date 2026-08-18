@@ -1,65 +1,39 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/homepage_content.php';
+
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 
-function homepageJsonResponse(array $data, int $status = 200): never
+// Se trimite răspunsul API în format JSON.
+function homepageResponse(array $data, int $status = 200): never
 {
     http_response_code($status);
 
-    $json = json_encode(
+    echo json_encode(
         $data,
         JSON_UNESCAPED_UNICODE
         | JSON_UNESCAPED_SLASHES
         | JSON_INVALID_UTF8_SUBSTITUTE
-    );
+    ) ?: '{"ok":false,"content":{},"message":"Eroare la generarea JSON."}';
 
-    if ($json === false) {
-        http_response_code(500);
-        echo '{"ok":false,"content":{},"message":"Eroare la generarea JSON."}';
-        exit;
-    }
-
-    echo $json;
     exit;
 }
 
 try {
-    require_once __DIR__ . '/../config/database.php';
-    require_once __DIR__ . '/../includes/homepage_content.php';
-
-    if (!isset($pdo) || !($pdo instanceof PDO)) {
-        throw new RuntimeException(
-            'Conexiunea PDO nu este disponibilă în config/database.php.'
-        );
-    }
-
-    if (!function_exists('getHomepageContent')) {
-        throw new RuntimeException(
-            'Funcția getHomepageContent() nu există în includes/homepage_content.php.'
-        );
-    }
-
-    $content = getHomepageContent($pdo);
-
-    homepageJsonResponse([
+    // Se ia conținutul homepage-ului din BD.
+    homepageResponse([
         'ok' => true,
-        'content' => $content,
+        'content' => getHomepageContent($pdo),
     ]);
 } catch (Throwable $e) {
-    error_log(
-        'Homepage API error: ' .
-        $e->getMessage() .
-        ' in ' .
-        $e->getFile() .
-        ':' .
-        $e->getLine()
-    );
+    error_log('Homepage API: ' . $e->getMessage());
 
-    homepageJsonResponse([
+    homepageResponse([
         'ok' => false,
         'content' => new stdClass(),
-        'message' => $e->getMessage(),
+        'message' => 'Conținutul homepage-ului nu a putut fi încărcat.',
     ], 500);
 }

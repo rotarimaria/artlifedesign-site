@@ -1,121 +1,25 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/public_projects.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 
 try {
-    $sql = '
-        SELECT
-            p.id,
-            p.title,
-            p.service,
-            p.category,
-            p.description,
-            p.tags,
-            p.created_at,
-            p.published_at,
-
-            pi.id AS media_id,
-            pi.image_path,
-            pi.is_primary,
-            pi.sort_order AS media_order,
-
-            COALESCE(pi.media_type, "image") AS media_type,
-            COALESCE(pi.crop_x, 50) AS crop_x,
-            COALESCE(pi.crop_y, 50) AS crop_y,
-            COALESCE(pi.crop_zoom, 1) AS crop_zoom,
-            COALESCE(pi.fit_mode, "cover") AS fit_mode,
-            COALESCE(pi.rotation, 0) AS rotation
-
-        FROM projects p
-
-        LEFT JOIN project_images pi
-            ON pi.project_id = p.id
-
-        WHERE p.is_published = 1
-
-        ORDER BY
-            COALESCE(p.published_at, p.created_at) DESC,
-            p.id DESC,
-            pi.is_primary DESC,
-            pi.sort_order ASC,
-            pi.id ASC
-    ';
-
-    $rows = $pdo->query($sql)->fetchAll();
-    $projects = [];
-
-    foreach ($rows as $row) {
-        $id = (int) $row['id'];
-
-        if (!isset($projects[$id])) {
-            $title = trim((string) $row['title']);
-            $service = trim((string) $row['service']);
-            $category = trim((string) $row['category']);
-            $description = trim((string) $row['description']);
-            $tags = trim((string) ($row['tags'] ?? ''));
-
-            $projects[$id] = [
-                'id' => $id,
-                'title' => $title,
-                'service' => $service,
-                'category' => $category,
-                'desc' => $description,
-                'tags' => $tags,
-                'search' => mb_strtolower(
-                    trim(
-                        $title . ' ' .
-                        $service . ' ' .
-                        $category . ' ' .
-                        $tags . ' ' .
-                        $description
-                    ),
-                    'UTF-8'
-                ),
-                'media' => [],
-            ];
-        }
-
-        if (!empty($row['media_id']) && !empty($row['image_path'])) {
-            $projects[$id]['media'][] = [
-                'src' => (string) $row['image_path'],
-                'type' => (string) $row['media_type'],
-                'cropX' => (float) $row['crop_x'],
-                'cropY' => (float) $row['crop_y'],
-                'zoom' => (float) $row['crop_zoom'],
-                'fit' => (string) $row['fit_mode'],
-                'rotation' => (int) $row['rotation'],
-            ];
-        }
-    }
-
-    $result = array_values($projects);
-
-    foreach ($result as &$project) {
-        $primary = $project['media'][0] ?? null;
-
-        $project['image'] = $primary['src'] ?? '';
-        $project['images'] = array_map(
-            static fn (array $media): string => $media['src'],
-            $project['media']
-        );
-    }
-    unset($project);
-
+    // Se încarcă proiectele publicate din funcția comună.
     echo json_encode(
         [
             'ok' => true,
-            'projects' => $result,
+            'projects' => getPublicProjects($pdo),
         ],
-        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+        JSON_UNESCAPED_UNICODE
+        | JSON_UNESCAPED_SLASHES
+        | JSON_INVALID_UTF8_SUBSTITUTE
     );
 } catch (Throwable $e) {
     http_response_code(500);
-
-    error_log('ArtLife API projects: ' . $e->getMessage());
+    error_log('Projects API: ' . $e->getMessage());
 
     echo json_encode(
         [
