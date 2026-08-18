@@ -8930,3 +8930,19 @@ body.gallery-open {
     aspect-ratio:4/3;
   }
 }
+
+
+/* Portofoliu — încărcare progresivă */
+.portfolio-load-more{
+  display:flex;
+  justify-content:center;
+  padding-top:34px;
+}
+
+#loadMoreWorks[hidden]{
+  display:none !important;
+}
+
+#loadMoreWorks{
+  cursor:pointer;
+}
