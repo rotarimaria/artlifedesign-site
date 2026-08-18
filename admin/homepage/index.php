@@ -7,10 +7,34 @@ require_once __DIR__ . '/../../includes/homepage_content.php';
 
 requireAdmin();
 
-$fieldsBySection = homepageFields();
+$sections = homepageFields();
 $content = getHomepageContent($pdo);
 $error = '';
-$success = '';
+$success = trim((string) ($_GET['success'] ?? ''));
+
+function h(string $value): string
+{
+    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+}
+
+function uploadFromGroup(string $key): ?array
+{
+    if (!isset($_FILES['media']['error'][$key])) {
+        return null;
+    }
+
+    if ((int) $_FILES['media']['error'][$key] === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+
+    return [
+        'name' => $_FILES['media']['name'][$key] ?? '',
+        'type' => $_FILES['media']['type'][$key] ?? '',
+        'tmp_name' => $_FILES['media']['tmp_name'][$key] ?? '',
+        'error' => $_FILES['media']['error'][$key] ?? UPLOAD_ERR_NO_FILE,
+        'size' => $_FILES['media']['size'][$key] ?? 0,
+    ];
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCsrf($_POST['csrf_token'] ?? null)) {
@@ -19,382 +43,272 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
 
-            foreach ($fieldsBySection as $fields) {
-                foreach ($fields as $key => $definition) {
-                    $type = (string) $definition['type'];
+            foreach ($sections as $fields) {
+                foreach ($fields as $key => $def) {
+                    [$label, $type] = $def;
 
                     if (in_array($type, ['image', 'video'], true)) {
-                        if (
-                            isset($_FILES['media']['error'][$key]) &&
-                            (int) $_FILES['media']['error'][$key] !== UPLOAD_ERR_NO_FILE
-                        ) {
-                            $file = [
-                                'name' => $_FILES['media']['name'][$key] ?? '',
-                                'type' => $_FILES['media']['type'][$key] ?? '',
-                                'tmp_name' => $_FILES['media']['tmp_name'][$key] ?? '',
-                                'error' => $_FILES['media']['error'][$key] ?? UPLOAD_ERR_NO_FILE,
-                                'size' => $_FILES['media']['size'][$key] ?? 0,
-                            ];
-
-                            $path = saveHomepageUpload($file, $type);
-                            saveHomepageValue($pdo, $key, $path);
+                        $file = uploadFromGroup($key);
+                        if ($file) {
+                            saveHomepageValue($pdo, $key, saveHomepageUpload($file, $type));
                         }
 
+                        if ($type === 'image') {
+                            foreach (['crop_x','crop_y','zoom','rotation','fit'] as $setting) {
+                                $metaKey = $key . '_' . $setting;
+                                if (isset($_POST['media_meta'][$metaKey])) {
+                                    saveHomepageValue(
+                                        $pdo,
+                                        $metaKey,
+                                        trim((string) $_POST['media_meta'][$metaKey])
+                                    );
+                                }
+                            }
+                        }
                         continue;
                     }
 
-                    $value = trim((string) ($_POST['content'][$key] ?? ''));
-                    saveHomepageValue($pdo, $key, $value);
+                    saveHomepageValue(
+                        $pdo,
+                        $key,
+                        trim((string) ($_POST['content'][$key] ?? ''))
+                    );
                 }
             }
 
             $pdo->commit();
-
-            header(
-                'Location: index.php?success=' .
-                rawurlencode('Pagina principală a fost actualizată.')
-            );
+            header('Location: index.php?success=' . rawurlencode('Pagina principală a fost actualizată.'));
             exit;
         } catch (Throwable $e) {
             if ($pdo->inTransaction()) {
                 $pdo->rollBack();
             }
-
             $error = 'Nu s-au putut salva modificările: ' . $e->getMessage();
         }
     }
+
+    $content = getHomepageContent($pdo);
 }
 
-$content = getHomepageContent($pdo);
-
-if (isset($_GET['success'])) {
-    $success = trim((string) $_GET['success']);
-}
-
-function adminE(string $value): string
+function isServiceSection(string $name): bool
 {
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+    return str_starts_with($name, 'Serviciu — ');
+}
+
+function renderMediaCard(string $key, array $def, array $content): void
+{
+    [$label, $type] = $def;
+    $value = (string) ($content[$key] ?? '');
+    $isImage = $type === 'image';
+    $previewSrc = $value !== '' ? '../../' . ltrim($value, '/') : '';
+
+    $cropX = (string) ($content[$key . '_crop_x'] ?? '50');
+    $cropY = (string) ($content[$key . '_crop_y'] ?? '50');
+    $zoom = (string) ($content[$key . '_zoom'] ?? '1');
+    $rotation = (string) ($content[$key . '_rotation'] ?? '0');
+    $fit = (string) ($content[$key . '_fit'] ?? 'cover');
+    ?>
+    <article
+        class="media-card"
+        data-media-card
+        data-media-key="<?= h($key) ?>"
+        data-media-type="<?= h($type) ?>"
+    >
+        <div class="media-card-head">
+            <strong><?= h($label) ?></strong>
+            <?php if ($isImage): ?>
+                <button class="mini-btn" type="button" data-adjust-media>Ajustează</button>
+            <?php endif; ?>
+        </div>
+
+        <div class="media-preview" data-media-preview>
+            <?php if ($type === 'video'): ?>
+                <video
+                    src="<?= h($previewSrc) ?>"
+                    muted loop autoplay playsinline controls
+                    data-preview-element
+                ></video>
+            <?php else: ?>
+                <img
+                    src="<?= h($previewSrc) ?>"
+                    alt=""
+                    data-preview-element
+                    style="
+                        --crop-x:<?= h($cropX) ?>%;
+                        --crop-y:<?= h($cropY) ?>%;
+                        --crop-zoom:<?= h($zoom) ?>;
+                        --crop-rotation:<?= h($rotation) ?>deg;
+                        --crop-fit:<?= h($fit) ?>;
+                    "
+                >
+            <?php endif; ?>
+        </div>
+
+        <div class="media-card-foot">
+            <label class="upload-btn">
+                <span>Schimbă <?= $type === 'video' ? 'video' : 'imaginea' ?></span>
+                <input
+                    type="file"
+                    name="media[<?= h($key) ?>]"
+                    <?= $type === 'video'
+                        ? 'accept="video/mp4,video/webm,video/quicktime"'
+                        : 'accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"' ?>
+                    data-media-input
+                >
+            </label>
+            <small data-file-name><?= h(basename($value)) ?></small>
+        </div>
+
+        <?php if ($isImage): ?>
+            <input type="hidden" name="media_meta[<?= h($key) ?>_crop_x]" value="<?= h($cropX) ?>" data-meta="crop_x">
+            <input type="hidden" name="media_meta[<?= h($key) ?>_crop_y]" value="<?= h($cropY) ?>" data-meta="crop_y">
+            <input type="hidden" name="media_meta[<?= h($key) ?>_zoom]" value="<?= h($zoom) ?>" data-meta="zoom">
+            <input type="hidden" name="media_meta[<?= h($key) ?>_rotation]" value="<?= h($rotation) ?>" data-meta="rotation">
+            <input type="hidden" name="media_meta[<?= h($key) ?>_fit]" value="<?= h($fit) ?>" data-meta="fit">
+        <?php endif; ?>
+    </article>
+    <?php
 }
 ?>
 <!doctype html>
 <html lang="ro">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="robots" content="noindex,nofollow">
     <title>Pagina principală | ArtLife Admin</title>
 
     <?php require __DIR__ . '/../_admin_styles.php'; ?>
-
-    <style>
-        .home-admin-layout{
-            width:min(1240px,calc(100% - 32px));
-            margin:0 auto;
-            padding:34px 0 80px;
-        }
-        .home-admin-head{
-            display:flex;
-            justify-content:space-between;
-            align-items:flex-end;
-            gap:20px;
-            margin-bottom:26px;
-        }
-        .home-admin-head h1{
-            margin:7px 0 8px;
-        }
-        .home-admin-head p{
-            margin:0;
-            color:var(--muted);
-            max-width:700px;
-        }
-        .home-sections{
-            display:grid;
-            gap:16px;
-        }
-        .home-section{
-            border:1px solid var(--border);
-            border-radius:18px;
-            background:var(--panel);
-            overflow:hidden;
-        }
-        .home-section summary{
-            cursor:pointer;
-            list-style:none;
-            padding:18px 20px;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            gap:12px;
-            font-weight:500;
-        }
-        .home-section summary::-webkit-details-marker{
-            display:none;
-        }
-        .home-section summary::after{
-            content:"+";
-            color:var(--green);
-            font-size:20px;
-            font-weight:400;
-        }
-        .home-section[open] summary::after{
-            content:"−";
-        }
-        .home-section-body{
-            border-top:1px solid var(--border);
-            padding:20px;
-        }
-        .home-fields{
-            display:grid;
-            grid-template-columns:repeat(2,minmax(0,1fr));
-            gap:16px;
-        }
-        .home-field{
-            display:grid;
-            gap:7px;
-        }
-        .home-field.full{
-            grid-column:1/-1;
-        }
-        .home-field label{
-            font-size:12px;
-            font-weight:500;
-        }
-        .home-field textarea{
-            min-height:110px;
-        }
-        .media-current{
-            min-height:120px;
-            border:1px solid var(--border);
-            border-radius:12px;
-            overflow:hidden;
-            background:#050705;
-            display:grid;
-            place-items:center;
-        }
-        .media-current img,
-        .media-current video{
-            width:100%;
-            height:180px;
-            object-fit:contain;
-            background:#000;
-            display:block;
-        }
-        .media-path{
-            padding:8px 10px;
-            color:var(--muted);
-            font-size:10px;
-            overflow-wrap:anywhere;
-        }
-        .media-upload{
-            position:relative;
-            min-height:44px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            padding:0 12px;
-            border:1px dashed rgba(245,242,233,.25);
-            border-radius:10px;
-            color:var(--muted);
-            font-size:12px;
-        }
-        .media-upload input{
-            position:absolute;
-            inset:0;
-            opacity:0;
-            cursor:pointer;
-        }
-        .save-bar{
-            position:sticky;
-            bottom:14px;
-            z-index:30;
-            margin-top:20px;
-            display:flex;
-            justify-content:flex-end;
-            gap:10px;
-            padding:12px;
-            border:1px solid var(--border);
-            border-radius:14px;
-            background:rgba(8,11,9,.94);
-            backdrop-filter:blur(14px);
-        }
-        .works-note{
-            padding:14px 16px;
-            border:1px solid rgba(146,255,34,.18);
-            border-radius:12px;
-            background:rgba(146,255,34,.045);
-            color:#cfff9e;
-            font-size:12px;
-            line-height:1.55;
-            margin-bottom:18px;
-        }
-        @media(max-width:760px){
-            .home-admin-head{
-                align-items:stretch;
-                flex-direction:column;
-            }
-            .home-fields{
-                grid-template-columns:1fr;
-            }
-            .home-field.full{
-                grid-column:auto;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 
 <header class="topbar">
     <a class="brand" href="../index.php">ArtLife <span>Admin</span></a>
-
     <div class="top-actions">
-        <a class="btn btn-ghost" href="../../index.html" target="_blank" rel="noopener">
-            Vezi site-ul
-        </a>
+        <a class="btn btn-ghost" href="../../index.html" target="_blank" rel="noopener">Vezi site-ul</a>
         <a class="btn btn-ghost" href="../index.php">Dashboard</a>
         <a class="btn btn-ghost" href="../logout.php">Ieșire</a>
     </div>
 </header>
 
-<main class="home-admin-layout">
-
-    <div class="home-admin-head">
+<main class="homepage-admin">
+    <div class="page-head">
         <div>
-            <span class="eyebrow">Homepage</span>
+            <span class="eyebrow">HOMEPAGE</span>
             <h1>Pagina principală</h1>
-            <p>
-                Modifică textele, imaginile, video-ul și datele de contact.
-                Secțiunea Lucrări este administrată separat din Lucrări / Carduri.
-            </p>
+            <p>Editează textele și imaginile. Lucrările rămân administrate separat.</p>
         </div>
-    </div>
-
-    <div class="works-note">
-        Secțiunea <strong>Lucrări</strong> nu este editată aici.
-        Proiectele publicate sunt încărcate automat din baza de date.
     </div>
 
     <?php if ($success !== ''): ?>
-        <div class="notice"><?= adminE($success) ?></div>
+        <div class="notice"><?= h($success) ?></div>
     <?php endif; ?>
 
     <?php if ($error !== ''): ?>
-        <div class="error-box"><?= adminE($error) ?></div>
+        <div class="error-box"><?= h($error) ?></div>
     <?php endif; ?>
 
-    <form
-        method="post"
-        enctype="multipart/form-data"
-    >
-        <input
-            type="hidden"
-            name="csrf_token"
-            value="<?= adminE(csrfToken()) ?>"
-        >
+    <form method="post" enctype="multipart/form-data" id="homepageForm">
+        <input type="hidden" name="csrf_token" value="<?= h(csrfToken()) ?>">
 
-        <div class="home-sections">
-            <?php foreach ($fieldsBySection as $sectionName => $fields): ?>
-                <details class="home-section">
-                    <summary><?= adminE($sectionName) ?></summary>
+        <div class="section-list">
+        <?php foreach ($sections as $sectionName => $fields): ?>
+            <details class="edit-section">
+                <summary>
+                    <span><?= h($sectionName) ?></span>
+                    <b>+</b>
+                </summary>
 
-                    <div class="home-section-body">
-                        <div class="home-fields">
+                <div class="section-body">
+                    <div class="field-grid">
+                        <?php
+                        $media = [];
+                        foreach ($fields as $key => $def):
+                            [$label, $type] = $def;
 
-                            <?php foreach ($fields as $key => $definition): ?>
-                                <?php
-                                    $type = (string) $definition['type'];
-                                    $value = (string) ($content[$key] ?? '');
-                                    $isLong = $type === 'textarea';
-                                    $isMedia = in_array($type, ['image', 'video'], true);
-                                ?>
+                            if (in_array($type, ['image', 'video'], true)) {
+                                $media[$key] = $def;
+                                continue;
+                            }
 
-                                <div class="home-field <?= ($isLong || $isMedia) ? 'full' : '' ?>">
-                                    <label>
-                                        <?= adminE((string) $definition['label']) ?>
-                                    </label>
-
-                                    <?php if ($type === 'textarea'): ?>
-                                        <textarea
-                                            name="content[<?= adminE($key) ?>]"
-                                        ><?= adminE($value) ?></textarea>
-
-                                    <?php elseif ($type === 'image'): ?>
-                                        <div class="media-current">
-                                            <?php if ($value !== ''): ?>
-                                                <img
-                                                    src="../<?= adminE($value) ?>"
-                                                    alt=""
-                                                >
-                                            <?php endif; ?>
-                                        </div>
-
-                                        <div class="media-path">
-                                            Curent: <?= adminE($value) ?>
-                                        </div>
-
-                                        <div class="media-upload">
-                                            Încarcă o imagine nouă
-                                            <input
-                                                type="file"
-                                                name="media[<?= adminE($key) ?>]"
-                                                accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"
-                                            >
-                                        </div>
-
-                                    <?php elseif ($type === 'video'): ?>
-                                        <div class="media-current">
-                                            <?php if ($value !== ''): ?>
-                                                <video
-                                                    src="../<?= adminE($value) ?>"
-                                                    muted
-                                                    loop
-                                                    autoplay
-                                                    playsinline
-                                                    controls
-                                                ></video>
-                                            <?php endif; ?>
-                                        </div>
-
-                                        <div class="media-path">
-                                            Curent: <?= adminE($value) ?>
-                                        </div>
-
-                                        <div class="media-upload">
-                                            Încarcă un video nou
-                                            <input
-                                                type="file"
-                                                name="media[<?= adminE($key) ?>]"
-                                                accept="video/mp4,video/webm,video/quicktime"
-                                            >
-                                        </div>
-
-                                    <?php else: ?>
-                                        <input
-                                            type="<?= $type === 'url' ? 'url' : 'text' ?>"
-                                            name="content[<?= adminE($key) ?>]"
-                                            value="<?= adminE($value) ?>"
-                                        >
-                                    <?php endif; ?>
-                                </div>
-                            <?php endforeach; ?>
-
-                        </div>
+                            $full = $type === 'textarea';
+                        ?>
+                            <label class="field <?= $full ? 'full' : '' ?>">
+                                <span><?= h($label) ?></span>
+                                <?php if ($type === 'textarea'): ?>
+                                    <textarea name="content[<?= h($key) ?>]"><?= h((string) ($content[$key] ?? '')) ?></textarea>
+                                <?php else: ?>
+                                    <input
+                                        type="<?= $type === 'url' ? 'url' : 'text' ?>"
+                                        name="content[<?= h($key) ?>]"
+                                        value="<?= h((string) ($content[$key] ?? '')) ?>"
+                                    >
+                                <?php endif; ?>
+                            </label>
+                        <?php endforeach; ?>
                     </div>
-                </details>
-            <?php endforeach; ?>
+
+                    <?php if ($media): ?>
+                        <div class="media-grid <?= isServiceSection($sectionName) ? 'service-media-grid' : '' ?>">
+                            <?php foreach ($media as $key => $def): ?>
+                                <?php renderMediaCard($key, $def, $content); ?>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </details>
+        <?php endforeach; ?>
         </div>
 
         <div class="save-bar">
-            <a class="btn" href="../../index.html" target="_blank" rel="noopener">
-                Previzualizează
-            </a>
-
-            <button class="btn btn-primary" type="submit">
-                Salvează pagina principală
-            </button>
+            <a class="btn" href="../../index.html" target="_blank" rel="noopener">Previzualizează</a>
+            <button class="btn btn-primary" type="submit">Salvează pagina principală</button>
         </div>
     </form>
-
 </main>
 
+<div class="media-editor" id="mediaEditor" hidden>
+    <div class="editor-box">
+        <div class="editor-head">
+            <div>
+                <small>AJUSTARE IMAGINE</small>
+                <h2 id="editorTitle">Imagine</h2>
+            </div>
+            <button type="button" class="btn" data-editor-close>Închide</button>
+        </div>
+
+        <div class="editor-stage" id="editorStage">
+            <img id="editorImage" alt="">
+        </div>
+
+        <p class="editor-help">Trage direct imaginea în orice direcție. Reglajele se aplică pe card.</p>
+
+        <div class="fit-switch">
+            <button type="button" data-fit="cover">Umple cadrul</button>
+            <button type="button" data-fit="contain">Fișier întreg</button>
+        </div>
+
+        <label class="range-row">
+            <span>Zoom</span>
+            <input id="editorZoom" type="range" min="1" max="3" step="0.01">
+            <output id="editorZoomValue"></output>
+        </label>
+
+        <label class="range-row">
+            <span>Rotire</span>
+            <input id="editorRotation" type="range" min="-180" max="180" step="1">
+            <output id="editorRotationValue"></output>
+        </label>
+
+        <div class="editor-actions">
+            <button type="button" class="btn" data-editor-reset>Reset</button>
+            <button type="button" class="btn btn-primary" data-editor-apply>Aplică</button>
+            <button type="button" class="btn btn-primary" data-editor-save>Aplică și salvează</button>
+        </div>
+    </div>
+</div>
+
+<script src="homepage.js?v=2"></script>
 </body>
 </html>
