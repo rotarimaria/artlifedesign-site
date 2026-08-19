@@ -477,12 +477,8 @@
         : 'Ajustează modalul mare';
     }
 
-    const reference = activeMode === 'card' ? smallMedia : siteMain;
-    const rect = reference?.getBoundingClientRect();
-
-    if (rect?.width && rect?.height) {
-      stage.style.aspectRatio = `${rect.width} / ${rect.height}`;
-    }
+    // Se folosește același raport ca pe site.
+    stage.style.aspectRatio = '4 / 3';
 
     stage.innerHTML = '';
 

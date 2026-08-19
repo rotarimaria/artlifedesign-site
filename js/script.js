@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       .replaceAll("'", "&#039;");
   }
 
-  // Se pregătesc ajustările pentru card sau modal.
+  // Se pregătesc separat ajustările pentru card și modal.
   function projectMediaStyle(media = {}, mode = "detail") {
     const card = mode === "card";
 

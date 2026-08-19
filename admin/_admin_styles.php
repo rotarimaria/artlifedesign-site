@@ -21,7 +21,7 @@ input:focus,textarea:focus,select:focus{border-color:rgba(146,255,34,.55);box-sh
 .media-title{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:12px}.media-title p{margin:3px 0 0;color:var(--muted);font-size:11px;line-height:1.45}.upload-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 .media-slot{min-width:0;border:1px solid var(--border);border-radius:16px;overflow:hidden;background:#080b09;display:grid;grid-template-columns:1fr 1fr}.media-slot:not(.has-media){position:relative;min-height:250px;border-style:dashed;display:block}.media-slot:not(.has-media) input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:5}
 .slot-empty{min-height:250px;display:grid;place-items:center;text-align:center;padding:20px;color:var(--muted);font-size:13px;line-height:1.5}.slot-empty strong{display:block;margin-bottom:6px;color:var(--white);font-size:15px;font-weight:500}
-.slot-preview{grid-column:1/-1;aspect-ratio:16/10;overflow:hidden;background:#020302;position:relative}.slot-preview img,.slot-preview video,.preview-media img,.preview-media video,.crop-stage img,.crop-stage video{width:100%;height:100%;display:block;object-fit:var(--fit,contain);object-position:var(--crop-x,50%) var(--crop-y,50%);transform:rotate(var(--rotation,0deg)) scale(var(--zoom,1));transform-origin:center}
+.slot-preview{grid-column:1/-1;aspect-ratio:16/10;overflow:hidden;background:#020302;position:relative}.slot-preview img,.slot-preview video,.preview-media img,.preview-media video,.crop-stage img,.crop-stage video{width:100%;height:100%;display:block;object-fit:var(--fit,contain);object-position:center;transform:translate(calc(50% - var(--crop-x,50%)),calc(50% - var(--crop-y,50%))) rotate(var(--rotation,0deg)) scale(var(--zoom,1));transform-origin:center}
 .primary-wrap,.delete-wrap{display:flex;align-items:center;gap:7px;min-height:44px;padding:0 12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}.delete-wrap{justify-content:flex-end}.primary-wrap input,.delete-wrap input{width:16px;height:16px;min-height:auto;margin:0}.primary-wrap:has(input:checked){color:var(--green)}
 .slot-actions{grid-column:1/-1;display:flex;padding:10px;border-top:1px solid var(--border);background:#0b100c}.slot-actions button{width:100%;min-height:40px;border:1px solid rgba(245,242,233,.14);border-radius:10px;background:#080b09;color:var(--white);font:inherit;font-size:12px;font-weight:500;cursor:pointer}.slot-actions button:hover{border-color:rgba(146,255,34,.35);color:var(--green)}
 
@@ -31,7 +31,7 @@ input:focus,textarea:focus,select:focus{border-color:rgba(146,255,34,.55);box-sh
 
 /* Previzualizare modal */
 .site-modal-preview{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,.7fr);min-height:520px;overflow:hidden;border:1px solid rgba(245,242,233,.12);border-radius:16px;background:#020402}
-.site-modal-left{display:grid;grid-template-rows:minmax(0,1fr) auto;min-width:0;background:#000}.site-modal-main{position:relative;min-height:410px;overflow:hidden;display:grid;place-items:center}.site-modal-main img,.site-modal-main video{width:100%;height:100%;object-fit:var(--fit,contain);object-position:var(--crop-x,50%) var(--crop-y,50%);transform:rotate(var(--rotation,0deg)) scale(var(--zoom,1));transform-origin:center;background:#000}.site-modal-thumbs{min-height:86px;display:flex;gap:9px;align-items:center;padding:10px 12px 12px;background:#020302;overflow-x:auto}
+.site-modal-left{display:grid;grid-template-rows:minmax(0,1fr) auto;min-width:0;background:#000}.site-modal-main{position:relative;min-height:410px;overflow:hidden;display:grid;place-items:center}.site-modal-main img,.site-modal-main video{width:100%;height:100%;object-fit:var(--fit,contain);object-position:center;transform:translate(calc(50% - var(--crop-x,50%)),calc(50% - var(--crop-y,50%))) rotate(var(--rotation,0deg)) scale(var(--zoom,1));transform-origin:center;background:#000}.site-modal-thumbs{min-height:86px;display:flex;gap:9px;align-items:center;padding:10px 12px 12px;background:#020302;overflow-x:auto}
 .site-thumb{flex:0 0 78px;height:60px;border:1px solid rgba(255,255,255,.12);border-radius:8px;overflow:hidden;background:#090b09;cursor:pointer;padding:0}.site-thumb.active{border-color:var(--green)}.site-thumb img,.site-thumb video{width:100%;height:100%;object-fit:cover;display:block}
 .site-modal-side{padding:28px 25px 22px;display:flex;flex-direction:column;min-width:0;background:#050805}.site-modal-category{color:var(--green);font-size:13px;font-weight:600;margin-bottom:20px}.site-modal-title{margin:0 0 20px;font-size:clamp(30px,3vw,42px);line-height:1.04;font-weight:600}.site-modal-description{margin:0 0 20px;color:rgba(245,242,233,.78);line-height:1.6;font-size:15px}.site-modal-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px}.site-modal-tag{padding:5px 9px;border:1px solid rgba(146,255,34,.22);border-radius:999px;color:rgba(245,242,233,.72);background:rgba(146,255,34,.035);font-size:11px}.site-modal-cta{margin-top:auto;padding-top:20px;border-top:1px solid rgba(245,242,233,.12);color:var(--green);font-size:14px;font-weight:600;line-height:1.35}
 
@@ -71,13 +71,25 @@ input:focus,textarea:focus,select:focus{border-color:rgba(146,255,34,.55);box-sh
 .new-primary-wrap,.new-delete-wrap{border-top:1px solid var(--border)}
 
 
-/* Ajustarea imaginilor se face prin object-position, zoom și rotire. */
+/* Ajustarea imaginilor: poziție, zoom și rotire. */
 .slot-preview img,.slot-preview video,
 .preview-media img,.preview-media video,
-.crop-stage img,.crop-stage video{
-  object-position:var(--crop-x,50%) var(--crop-y,50%)!important;
-  transform:rotate(var(--rotation,0deg)) scale(var(--zoom,1))!important;
+.crop-stage img,.crop-stage video,
+.site-modal-main img,.site-modal-main video{
+  object-position:center!important;
+  transform:
+    translate(
+      calc(50% - var(--crop-x,50%)),
+      calc(50% - var(--crop-y,50%))
+    )
+    rotate(var(--rotation,0deg))
+    scale(var(--zoom,1))!important;
+  transform-origin:center!important;
 }
+
+/* Modalul din admin are același raport ca modalul public. */
+.site-modal-main{aspect-ratio:4/3;min-height:0}
+.site-modal-main img,.site-modal-main video{object-fit:var(--fit,contain)!important}
 
 /* Lista proiectelor */
 .toolbar{
