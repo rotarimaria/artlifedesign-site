@@ -2109,3 +2109,305 @@ body.gallery-open{overflow:hidden;}
   height:100%;
   object-fit:var(--crop-fit,contain)!important;
 }
+
+/* Pagina Lucrări: comportament pe mobil */
+html {
+      width: 100%;
+      max-width: 100%;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      width: 100%;
+      max-width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+
+      overflow-x: hidden;
+      overflow-y: auto;
+
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* =========================================================
+       FILTRE PORTOFOLIU
+       ========================================================= */
+
+    .portfolio-tools {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .portfolio-search {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .portfolio-search input {
+      width: 100%;
+      min-width: 0;
+    }
+
+    /* =========================================================
+       MODAL GALERIE
+       ========================================================= */
+
+    .gallery-modal {
+      overflow-y: auto;
+      overflow-x: hidden;
+
+      overscroll-behavior: contain;
+
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .gallery-box,
+    .gallery-image-wrap,
+    .gallery-details {
+      min-width: 0;
+    }
+
+    /* =========================================================
+       TELEFON / TABLETĂ
+       ========================================================= */
+
+    @media (max-width: 768px) {
+
+      body {
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* ---------------------------------------------------------
+         FILTRELE POT FI DERULATE ORIZONTAL
+         --------------------------------------------------------- */
+
+      .portfolio-filters {
+        display: flex;
+        flex-wrap: nowrap;
+
+        gap: 8px;
+
+        width: 100%;
+        max-width: 100%;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        padding: 4px 2px 10px;
+
+        -webkit-overflow-scrolling: touch;
+
+        overscroll-behavior-x: contain;
+
+        scrollbar-width: thin;
+
+        scroll-snap-type: x proximity;
+      }
+
+      .portfolio-filters .filter-btn {
+        flex: 0 0 auto;
+
+        white-space: nowrap;
+
+        scroll-snap-align: start;
+      }
+
+      /* ---------------------------------------------------------
+         MODAL / CARTONAȘ DESCHIS
+         --------------------------------------------------------- */
+
+      .gallery-modal {
+        position: fixed;
+
+        inset: 0;
+
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+
+        align-items: flex-start !important;
+
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+
+        -webkit-overflow-scrolling: touch;
+
+        overscroll-behavior-y: contain;
+
+        padding-top: max(
+          64px,
+          env(safe-area-inset-top)
+        ) !important;
+
+        padding-right: 12px !important;
+
+        padding-bottom: max(
+          24px,
+          env(safe-area-inset-bottom)
+        ) !important;
+
+        padding-left: 12px !important;
+      }
+
+      .gallery-box {
+        display: block !important;
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+
+        margin: 0 auto 30px !important;
+
+        overflow: visible !important;
+      }
+
+      .gallery-image-wrap {
+        width: 100% !important;
+
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+
+        overflow: hidden;
+      }
+
+      .gallery-image-wrap img {
+        display: block;
+
+        width: 100% !important;
+
+        height: auto !important;
+
+        max-width: 100%;
+        max-height: 55vh;
+
+        object-fit: contain;
+      }
+
+      .gallery-details {
+        display: block;
+
+        width: 100%;
+
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+
+        overflow: visible !important;
+
+        padding-bottom: 32px;
+      }
+
+      /*
+        Butonul de închidere rămâne accesibil
+        când utilizatorul derulează conținutul.
+      */
+
+      .gallery-close {
+        position: fixed !important;
+
+        top: max(
+          12px,
+          env(safe-area-inset-top)
+        );
+
+        right: 12px;
+
+        z-index: 10005;
+      }
+
+      /*
+        Săgețile laterale nu trebuie să blocheze
+        scroll-ul pe telefon.
+      */
+
+      .gallery-prev,
+      .gallery-next {
+        z-index: 10004;
+      }
+
+    }
+
+    /* =========================================================
+       ECRANE FOARTE MICI
+       ========================================================= */
+
+    @media (max-width: 480px) {
+
+      .portfolio-header {
+        overflow: hidden;
+      }
+
+      .portfolio-tools {
+        width: 100%;
+      }
+
+      .portfolio-search {
+        width: 100%;
+      }
+
+      .portfolio-search input {
+        font-size: 16px;
+      }
+
+      .gallery-modal {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+      }
+
+      .gallery-image-wrap img {
+        max-height: 50vh;
+      }
+
+    }
+
+
+/* Modal proiect: imaginea activă */
+.gallery-image-stage{
+  position:relative!important;
+  width:100%!important;
+  aspect-ratio:4/3!important;
+  min-height:0!important;
+  height:auto!important;
+  overflow:hidden!important;
+  display:grid!important;
+  place-items:center!important;
+  background:#000!important;
+}
+
+.gallery-image-stage>.gallery-active-media{
+  grid-area:1/1!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  object-position:center!important;
+  transform-origin:center!important;
+  background:#000!important;
+}
+
+/* Miniaturile folosesc ajustarea fiecărui fișier. */
+.gallery-thumb>.gallery-thumb-media{
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  object-position:center!important;
+  transform-origin:center!important;
+}
+
+@media(max-width:768px){
+  .gallery-image-stage{
+    width:100%!important;
+    height:auto!important;
+    aspect-ratio:4/3!important;
+  }
+}

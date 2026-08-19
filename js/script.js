@@ -181,7 +181,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     ].join(";");
   }
 
-  // Se aplică ajustarea direct pe element, peste regulile vechi din CSS.
+  // Se aplică ajustarea direct pe imagine sau video.
   function applyProjectMediaStyle(element, media, mode = "detail") {
     if (!element) return;
 
@@ -982,8 +982,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   let projectMediaIndex = 0;
 
   const modal = $("#galleryModal");
-  const modalImg = $("#galleryModalImage");
-  const modalVideo = $("#galleryModalVideo");
+  const modalStage = $("#galleryMediaStage");
+  let modalVideo = null;
   const modalTitle = $("#galleryModalTitle");
   const modalService = $("#galleryModalService");
   const modalDesc = $("#galleryModalDesc");
@@ -1029,48 +1029,48 @@ document.addEventListener("DOMContentLoaded", async () => {
     return [];
   }
 
+  // Se oprește video-ul activ din modal.
   function stopModalVideo() {
     if (!modalVideo) return;
-
     modalVideo.pause();
     modalVideo.removeAttribute("src");
     modalVideo.load();
+    modalVideo = null;
   }
 
+  // Se afișează fișierul cu ajustarea salvată în admin.
   function renderProjectMedia() {
     const media = projectMedia[projectMediaIndex];
-    if (!media) return;
+    if (!media || !modalStage) return;
 
-    if (modalImg) {
-      modalImg.hidden = true;
-      modalImg.removeAttribute("src");
-      modalImg.removeAttribute("style");
+    stopModalVideo();
+    modalStage.innerHTML = "";
+
+    const element = document.createElement(
+      media.type === "video" ? "video" : "img"
+    );
+
+    element.className = "gallery-active-media";
+    element.src = media.src;
+
+    if (element.tagName === "VIDEO") {
+      element.controls = true;
+      element.autoplay = true;
+      element.loop = true;
+      element.muted = true;
+      element.playsInline = true;
+      element.preload = "metadata";
+      modalVideo = element;
+    } else {
+      element.alt =
+        `${modalTitle?.textContent || "Proiect ArtLife Design"} — imaginea ${projectMediaIndex + 1}`;
     }
+
+    applyProjectMediaStyle(element, media, "detail");
+    modalStage.appendChild(element);
 
     if (modalVideo) {
-      modalVideo.pause();
-      modalVideo.hidden = true;
-      modalVideo.removeAttribute("src");
-      modalVideo.removeAttribute("style");
-      modalVideo.load();
-    }
-
-    if (media.type === "video" && modalVideo) {
-      modalVideo.src = media.src;
-      modalVideo.hidden = false;
-      modalVideo.muted = true;
-      modalVideo.autoplay = true;
-      modalVideo.loop = true;
-      modalVideo.controls = true;
-      modalVideo.playsInline = true;
-      applyProjectMediaStyle(modalVideo, media, "detail");
-      modalVideo.load();
       modalVideo.play()?.catch(() => {});
-    } else if (modalImg) {
-      modalImg.src = media.src;
-      modalImg.alt = `${modalTitle?.textContent || "Proiect ArtLife Design"} — imaginea ${projectMediaIndex + 1}`;
-      modalImg.hidden = false;
-      applyProjectMediaStyle(modalImg, media, "detail");
     }
 
     renderThumbnails();
@@ -1120,6 +1120,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         preview.loading = "lazy";
       }
 
+      preview.classList.add("gallery-thumb-media");
       applyProjectMediaStyle(preview, media, "detail");
       button.appendChild(preview);
 
@@ -1242,12 +1243,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     modal.classList.remove("active");
     document.body.classList.remove("gallery-open");
-
-    if (modalImg) {
-      modalImg.removeAttribute("src");
-    }
-
     stopModalVideo();
+
+    if (modalStage) modalStage.innerHTML = "";
   }
 
   function nextProject() {
