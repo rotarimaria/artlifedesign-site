@@ -18,13 +18,27 @@ $data = [
     'is_published' => 1,
 ];
 
+// Se iau ajustările trimise de formular.
+function postedDisplay(string $prefix): array
+{
+    return [
+        'x' => $_POST["{$prefix}_crop_x"] ?? [],
+        'y' => $_POST["{$prefix}_crop_y"] ?? [],
+        'zoom' => $_POST["{$prefix}_crop_zoom"] ?? [],
+        'fit' => $_POST["{$prefix}_fit_mode"] ?? [],
+        'rotation' => $_POST["{$prefix}_rotation"] ?? [],
+    ];
+}
+
 // Se validează formularul și se salvează proiectul.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data['title'] = trim((string) ($_POST['title'] ?? ''));
-    $data['category'] = trim((string) ($_POST['category'] ?? ''));
-    $data['description'] = trim((string) ($_POST['description'] ?? ''));
-    $data['tags'] = normalizeTags((string) ($_POST['tags'] ?? ''));
-    $data['is_published'] = isset($_POST['is_published']) ? 1 : 0;
+    $data = [
+        'title' => trim((string) ($_POST['title'] ?? '')),
+        'category' => trim((string) ($_POST['category'] ?? '')),
+        'description' => trim((string) ($_POST['description'] ?? '')),
+        'tags' => normalizeTags((string) ($_POST['tags'] ?? '')),
+        'is_published' => isset($_POST['is_published']) ? 1 : 0,
+    ];
 
     if (!verifyCsrf($_POST['csrf_token'] ?? null)) {
         $error = 'Sesiunea a expirat. Reîncarcă pagina.';
@@ -38,18 +52,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
 
-            $service = $categories[$data['category']];
-
             $stmt = $pdo->prepare(
                 'INSERT INTO projects
-                    (title, service, category, description, focus_x, focus_y, tags, sort_order, is_published, published_at)
+                    (title, service, category, description, focus_x, focus_y,
+                     tags, sort_order, is_published, published_at)
                  VALUES
-                    (:title, :service, :category, :description, 50, 50, :tags, 0, :is_published, :published_at)'
+                    (:title, :service, :category, :description, 50, 50,
+                     :tags, 0, :is_published, :published_at)'
             );
 
             $stmt->execute([
                 'title' => $data['title'],
-                'service' => $service,
+                'service' => $categories[$data['category']],
                 'category' => $data['category'],
                 'description' => $data['description'],
                 'tags' => $data['tags'],
@@ -58,15 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
 
             $projectId = (int) $pdo->lastInsertId();
-
-            $display = [
-                'x' => $_POST['new_crop_x'] ?? [],
-                'y' => $_POST['new_crop_y'] ?? [],
-                'zoom' => $_POST['new_crop_zoom'] ?? [],
-                'fit' => $_POST['new_fit_mode'] ?? [],
-                'rotation' => $_POST['new_rotation'] ?? [],
-            ];
-
             $savedMedia = [];
 
             if (isset($_FILES['media'])) {
@@ -74,30 +79,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_FILES['media'],
                     $projectId,
                     $pdo,
-                    $display,
-                    4
+                    postedDisplay('new'),
+                    4,
+                    postedDisplay('new_card')
                 );
             }
 
-            $newPrimaryIndex = $_POST['new_primary_index'] ?? '';
+            // Se setează fișierul principal ales.
+            $primaryIndex = $_POST['new_primary_index'] ?? '';
 
-            if (
-                $newPrimaryIndex !== '' &&
-                isset($savedMedia[(int) $newPrimaryIndex]['id'])
-            ) {
+            if ($primaryIndex !== '' && isset($savedMedia[(int) $primaryIndex]['id'])) {
                 setPrimaryProjectImage(
-                    (int) $savedMedia[(int) $newPrimaryIndex]['id'],
+                    (int) $savedMedia[(int) $primaryIndex]['id'],
                     $projectId,
                     $pdo
                 );
             }
 
             $pdo->commit();
-
-            header(
-                'Location: project.php?success=' .
-                rawurlencode('Proiectul a fost adăugat cu succes.')
-            );
+            header('Location: project.php?success=' . rawurlencode('Proiectul a fost adăugat cu succes.'));
             exit;
         } catch (Throwable $e) {
             if ($pdo->inTransaction()) {
@@ -113,12 +113,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="ro">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="robots" content="noindex,nofollow">
     <title>Proiect nou | ArtLife Admin</title>
     <?php require __DIR__ . '/_admin_styles.php'; ?>
 </head>
 <body>
+
 <header class="topbar">
     <a class="brand" href="index.php">ArtLife <span>Admin</span></a>
     <div class="top-actions">
@@ -168,24 +169,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="field field-full">
                     <label>Cuvinte cheie</label>
-
-                    <input
-                        type="hidden"
-                        id="tags"
-                        name="tags"
-                        value="<?= e($data['tags']) ?>"
-                    >
+                    <input type="hidden" id="tags" name="tags" value="<?= e($data['tags']) ?>">
 
                     <div class="tag-editor">
                         <div class="tag-list" id="tagList"></div>
 
                         <div class="tag-add-row">
-                            <input
-                                id="tagInput"
-                                type="text"
-                                placeholder="Ex: carte de vizită"
-                                autocomplete="off"
-                            >
+                            <input id="tagInput" type="text" placeholder="Ex: carte de vizită" autocomplete="off">
                             <button class="btn" type="button" id="tagAdd">Adaugă</button>
                         </div>
 
@@ -202,9 +192,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="field field-full">
                     <div class="media-title">
-                        <div>
-                            <label>Imagini / video</label>
-                        </div>
+                        <label>Imagini / video</label>
                         <span class="muted">4 sloturi</span>
                     </div>
 
@@ -224,24 +212,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
                                 >
 
-                                <input type="hidden" name="new_crop_x[<?= $i ?>]" value="50" data-crop-x>
-                                <input type="hidden" name="new_crop_y[<?= $i ?>]" value="50" data-crop-y>
-                                <input type="hidden" name="new_crop_zoom[<?= $i ?>]" value="1" data-crop-zoom>
-                                <input type="hidden" name="new_fit_mode[<?= $i ?>]" value="cover" data-crop-fit>
-                                <input type="hidden" name="new_rotation[<?= $i ?>]" value="0" data-rotation>
+                                <!-- Ajustarea pentru modalul mare -->
+                                <input type="hidden" name="new_crop_x[<?= $i ?>]" value="50" data-detail-x>
+                                <input type="hidden" name="new_crop_y[<?= $i ?>]" value="50" data-detail-y>
+                                <input type="hidden" name="new_crop_zoom[<?= $i ?>]" value="1" data-detail-zoom>
+                                <input type="hidden" name="new_fit_mode[<?= $i ?>]" value="contain" data-detail-fit>
+                                <input type="hidden" name="new_rotation[<?= $i ?>]" value="0" data-detail-rotation>
 
-                                
-                                <label class="primary-wrap new-primary-wrap" style="display:none">
+                                <!-- Ajustarea pentru cardul mic -->
+                                <input type="hidden" name="new_card_crop_x[<?= $i ?>]" value="50" data-card-x>
+                                <input type="hidden" name="new_card_crop_y[<?= $i ?>]" value="50" data-card-y>
+                                <input type="hidden" name="new_card_crop_zoom[<?= $i ?>]" value="1" data-card-zoom>
+                                <input type="hidden" name="new_card_fit_mode[<?= $i ?>]" value="contain" data-card-fit>
+                                <input type="hidden" name="new_card_rotation[<?= $i ?>]" value="0" data-card-rotation>
+
+                                <label class="primary-wrap new-primary-wrap new-media-control" style="display:none">
                                     <input type="radio" class="js-new-primary" value="<?= $i ?>">
                                     Principal
                                 </label>
 
-                                <div class="delete-wrap new-delete-wrap" style="display:none">
+                                <div class="delete-wrap new-delete-wrap new-media-control" style="display:none">
                                     <button type="button" class="js-remove-new">Șterge</button>
                                 </div>
 
                                 <div class="slot-actions">
-                                    <button type="button" class="js-adjust" style="display:none">Ajustează</button>
+                                    <button type="button" class="js-adjust new-media-control" data-adjust-mode="card" style="display:none">
+                                        Card mic
+                                    </button>
+                                    <button type="button" class="js-adjust new-media-control" data-adjust-mode="detail" style="display:none">
+                                        Modal mare
+                                    </button>
                                 </div>
                             </div>
                         <?php endfor; ?>
@@ -289,10 +289,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             Descrierea proiectului va apărea aici.
                         </p>
                         <div class="site-modal-tags" id="siteTags"></div>
-
-                        <div class="site-modal-cta">
-                            Cere ofertă pentru un proiect similar ↗
-                        </div>
+                        <div class="site-modal-cta">Cere ofertă pentru un proiect similar ↗</div>
                     </aside>
                 </article>
             </section>
@@ -303,7 +300,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="crop-modal" id="cropModal">
     <div class="crop-box">
         <div class="crop-head">
-            <h3>Ajustează media</h3>
+            <h3 id="cropTitle">Ajustează media</h3>
             <button class="btn btn-ghost" type="button" id="cropCancel">Închide</button>
         </div>
 
@@ -311,8 +308,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="crop-controls">
             <div class="fit-switch">
-                <button type="button" data-fit="cover" class="active">Umple cadrul</button>
-                <button type="button" data-fit="contain">Fișier întreg</button>
+                <button type="button" data-fit="cover">Umple cadrul</button>
+                <button type="button" data-fit="contain" class="active">Fișier întreg</button>
             </div>
 
             <div class="slider-row">
@@ -329,7 +326,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div class="crop-foot">
-
             <div class="crop-foot-actions">
                 <button class="btn" type="button" id="cropReset">Reset</button>
                 <button class="btn" type="button" id="cropApply">Aplică</button>
@@ -339,6 +335,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<script src="project-form.js?v=6"></script>
+<script src="project-form.js?v=7"></script>
 </body>
 </html>

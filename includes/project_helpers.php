@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-// Funcții comune pentru proiecte: categorii, taguri, upload și ajustarea imaginilor.
+// Funcții comune pentru proiecte: categorii, taguri, upload și afișarea media.
 
 function e(string $value): string
 {
@@ -19,7 +19,7 @@ function projectCategories(PDO $pdo): array
             return $categories;
         }
     } catch (Throwable) {
-        // Se păstrează lista de rezervă dacă tabela services nu este disponibilă.
+        // Se folosește lista de rezervă dacă serviciile nu pot fi citite.
     }
 
     return [
@@ -45,15 +45,16 @@ function ensureProjectUploadDir(): void
     }
 }
 
-// Se curăță tagurile și se păstrează maximum 20.
+// Se curăță tagurile și se păstrează maximum 14.
 function normalizeTags(string $tags): string
 {
     $items = preg_split('/[,;\n]+/u', $tags) ?: [];
-    $items = array_map('trim', $items);
-    $items = array_filter($items, static fn(string $tag): bool => $tag !== '');
-    $items = array_values(array_unique($items));
+    $items = array_values(array_unique(array_filter(
+        array_map('trim', $items),
+        static fn(string $tag): bool => $tag !== ''
+    )));
 
-    return implode(', ', array_slice($items, 0, 20));
+    return implode(', ', array_slice($items, 0, 14));
 }
 
 function clampFloat(float $value, float $min, float $max): float
@@ -74,17 +75,16 @@ function normalizeRotation(int $value): int
     return $value;
 }
 
-// Se normalizează poziția, zoomul, modul de afișare și rotirea.
+// Se normalizează poziția, zoomul, modul și rotirea.
 function normalizeMediaDisplay(array $settings, int|string $key): array
 {
-    $fit = (string) ($settings['fit'][$key] ?? 'cover');
-    $fit = in_array($fit, ['cover', 'contain'], true) ? $fit : 'cover';
+    $fit = (string) ($settings['fit'][$key] ?? 'contain');
 
     return [
         'crop_x' => clampFloat((float) ($settings['x'][$key] ?? 50), 0, 100),
         'crop_y' => clampFloat((float) ($settings['y'][$key] ?? 50), 0, 100),
         'crop_zoom' => clampFloat((float) ($settings['zoom'][$key] ?? 1), 1, 3),
-        'fit_mode' => $fit,
+        'fit_mode' => in_array($fit, ['cover', 'contain'], true) ? $fit : 'contain',
         'rotation' => normalizeRotation((int) ($settings['rotation'][$key] ?? 0)),
     ];
 }
@@ -92,8 +92,7 @@ function normalizeMediaDisplay(array $settings, int|string $key): array
 function getProjectImages(int $projectId, PDO $pdo): array
 {
     $stmt = $pdo->prepare(
-        'SELECT *
-         FROM project_images
+        'SELECT * FROM project_images
          WHERE project_id = :project_id
          ORDER BY is_primary DESC, sort_order ASC, id ASC'
     );
@@ -131,8 +130,9 @@ function saveUploadedProjectMedia(
     array $files,
     int $projectId,
     PDO $pdo,
-    array $displaySettings = [],
-    int $maxFiles = 4
+    array $detailSettings = [],
+    int $maxFiles = 4,
+    array $cardSettings = []
 ): array {
     ensureProjectUploadDir();
 
@@ -141,10 +141,9 @@ function saveUploadedProjectMedia(
     }
 
     $stmt = $pdo->prepare(
-        'SELECT
-            COUNT(*) AS total,
-            COALESCE(MAX(sort_order), -1) + 1 AS next_order,
-            MAX(is_primary) AS has_primary
+        'SELECT COUNT(*) AS total,
+                COALESCE(MAX(sort_order), -1) + 1 AS next_order,
+                MAX(is_primary) AS has_primary
          FROM project_images
          WHERE project_id = :project_id'
     );
@@ -162,10 +161,12 @@ function saveUploadedProjectMedia(
     $insert = $pdo->prepare(
         'INSERT INTO project_images
             (project_id, image_path, alt_text, sort_order, is_primary,
-             crop_x, crop_y, crop_zoom, fit_mode, media_type, rotation)
+             crop_x, crop_y, crop_zoom, fit_mode, media_type, rotation,
+             card_crop_x, card_crop_y, card_crop_zoom, card_fit_mode, card_rotation)
          VALUES
             (:project_id, :image_path, NULL, :sort_order, :is_primary,
-             :crop_x, :crop_y, :crop_zoom, :fit_mode, :media_type, :rotation)'
+             :crop_x, :crop_y, :crop_zoom, :fit_mode, :media_type, :rotation,
+             :card_crop_x, :card_crop_y, :card_crop_zoom, :card_fit_mode, :card_rotation)'
     );
 
     $saved = [];
@@ -180,9 +181,10 @@ function saveUploadedProjectMedia(
         if ($error === UPLOAD_ERR_NO_FILE || trim((string) $originalName) === '') {
             continue;
         }
+
         if ($error !== UPLOAD_ERR_OK) {
             throw new RuntimeException(
-                'Un fișier nu s-a încărcat corect. Verifică și limita PHP pentru upload.'
+                'Un fișier nu s-a încărcat corect. Verifică limita PHP pentru upload.'
             );
         }
 
@@ -206,7 +208,8 @@ function saveUploadedProjectMedia(
             throw new RuntimeException('Fișierul nu a putut fi salvat.');
         }
 
-        $display = normalizeMediaDisplay($displaySettings, $i);
+        $detail = normalizeMediaDisplay($detailSettings, $i);
+        $card = normalizeMediaDisplay($cardSettings, $i);
         $isPrimary = $hasPrimary ? 0 : 1;
 
         $insert->execute([
@@ -214,12 +217,17 @@ function saveUploadedProjectMedia(
             'image_path' => 'uploads/projects/' . $filename,
             'sort_order' => $sortOrder++,
             'is_primary' => $isPrimary,
-            'crop_x' => $display['crop_x'],
-            'crop_y' => $display['crop_y'],
-            'crop_zoom' => $display['crop_zoom'],
-            'fit_mode' => $display['fit_mode'],
+            'crop_x' => $detail['crop_x'],
+            'crop_y' => $detail['crop_y'],
+            'crop_zoom' => $detail['crop_zoom'],
+            'fit_mode' => $detail['fit_mode'],
             'media_type' => $media['type'],
-            'rotation' => $display['rotation'],
+            'rotation' => $detail['rotation'],
+            'card_crop_x' => $card['crop_x'],
+            'card_crop_y' => $card['crop_y'],
+            'card_crop_zoom' => $card['crop_zoom'],
+            'card_fit_mode' => $card['fit_mode'],
+            'card_rotation' => $card['rotation'],
         ]);
 
         $hasPrimary = true;
@@ -232,13 +240,14 @@ function saveUploadedProjectMedia(
     return $saved;
 }
 
-// Se salvează ajustările imaginilor/video deja încărcate.
+// Se salvează separat ajustarea pentru modal și cardul mic.
 function updateExistingProjectMediaDisplays(
     int $projectId,
     PDO $pdo,
-    array $displaySettings
+    array $detailSettings,
+    array $cardSettings = []
 ): void {
-    if (!isset($displaySettings['x']) || !is_array($displaySettings['x'])) {
+    if (!isset($detailSettings['x']) || !is_array($detailSettings['x'])) {
         return;
     }
 
@@ -248,33 +257,43 @@ function updateExistingProjectMediaDisplays(
              crop_y = :crop_y,
              crop_zoom = :crop_zoom,
              fit_mode = :fit_mode,
-             rotation = :rotation
+             rotation = :rotation,
+             card_crop_x = :card_crop_x,
+             card_crop_y = :card_crop_y,
+             card_crop_zoom = :card_crop_zoom,
+             card_fit_mode = :card_fit_mode,
+             card_rotation = :card_rotation
          WHERE id = :id AND project_id = :project_id'
     );
 
-    foreach ($displaySettings['x'] as $mediaId => $_) {
+    foreach ($detailSettings['x'] as $mediaId => $_) {
         $mediaId = (int) $mediaId;
 
         if ($mediaId <= 0) {
             continue;
         }
 
-        $display = normalizeMediaDisplay($displaySettings, $mediaId);
+        $detail = normalizeMediaDisplay($detailSettings, $mediaId);
+        $card = normalizeMediaDisplay($cardSettings, $mediaId);
 
         $update->execute([
-            'crop_x' => $display['crop_x'],
-            'crop_y' => $display['crop_y'],
-            'crop_zoom' => $display['crop_zoom'],
-            'fit_mode' => $display['fit_mode'],
-            'rotation' => $display['rotation'],
+            'crop_x' => $detail['crop_x'],
+            'crop_y' => $detail['crop_y'],
+            'crop_zoom' => $detail['crop_zoom'],
+            'fit_mode' => $detail['fit_mode'],
+            'rotation' => $detail['rotation'],
+            'card_crop_x' => $card['crop_x'],
+            'card_crop_y' => $card['crop_y'],
+            'card_crop_zoom' => $card['crop_zoom'],
+            'card_fit_mode' => $card['fit_mode'],
+            'card_rotation' => $card['rotation'],
             'id' => $mediaId,
             'project_id' => $projectId,
         ]);
     }
 }
 
-
-// Se înlocuiește fișierul, dar se păstrează același slot și aceleași ajustări.
+// Se înlocuiește fișierul și se păstrează slotul și ajustările.
 function replaceProjectMedia(
     int $mediaId,
     int $projectId,
@@ -286,15 +305,14 @@ function replaceProjectMedia(
     if ($error === UPLOAD_ERR_NO_FILE) {
         return;
     }
+
     if ($error !== UPLOAD_ERR_OK) {
         throw new RuntimeException('Fișierul nou nu s-a încărcat corect.');
     }
 
     $stmt = $pdo->prepare(
-        'SELECT image_path
-         FROM project_images
-         WHERE id = :id AND project_id = :project_id
-         LIMIT 1'
+        'SELECT image_path FROM project_images
+         WHERE id = :id AND project_id = :project_id LIMIT 1'
     );
     $stmt->execute(['id' => $mediaId, 'project_id' => $projectId]);
     $oldPath = $stmt->fetchColumn();
@@ -320,6 +338,7 @@ function replaceProjectMedia(
         bin2hex(random_bytes(8)),
         $media['ext']
     );
+
     $target = projectUploadDir() . '/' . $filename;
 
     if (!move_uploaded_file($tmp, $target)) {
@@ -354,14 +373,12 @@ function deleteProjectImageFile(string $mediaPath): void
     }
 }
 
-// Se șterge media din BD și fișierul din uploads.
+// Se șterge media și se alege automat altă media principală.
 function deleteProjectImageById(int $mediaId, int $projectId, PDO $pdo): void
 {
     $stmt = $pdo->prepare(
-        'SELECT image_path, is_primary
-         FROM project_images
-         WHERE id = :id AND project_id = :project_id
-         LIMIT 1'
+        'SELECT image_path, is_primary FROM project_images
+         WHERE id = :id AND project_id = :project_id LIMIT 1'
     );
     $stmt->execute(['id' => $mediaId, 'project_id' => $projectId]);
     $media = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -370,23 +387,21 @@ function deleteProjectImageById(int $mediaId, int $projectId, PDO $pdo): void
         return;
     }
 
-    deleteProjectImageFile((string) $media['image_path']);
-
     $pdo->prepare(
         'DELETE FROM project_images
          WHERE id = :id AND project_id = :project_id'
     )->execute(['id' => $mediaId, 'project_id' => $projectId]);
+
+    deleteProjectImageFile((string) $media['image_path']);
 
     if ((int) $media['is_primary'] !== 1) {
         return;
     }
 
     $next = $pdo->prepare(
-        'SELECT id
-         FROM project_images
+        'SELECT id FROM project_images
          WHERE project_id = :project_id
-         ORDER BY sort_order ASC, id ASC
-         LIMIT 1'
+         ORDER BY sort_order ASC, id ASC LIMIT 1'
     );
     $next->execute(['project_id' => $projectId]);
     $nextId = $next->fetchColumn();
@@ -398,14 +413,12 @@ function deleteProjectImageById(int $mediaId, int $projectId, PDO $pdo): void
     }
 }
 
-// Se setează imaginea principală a proiectului.
+// Se setează media principală a proiectului.
 function setPrimaryProjectImage(int $mediaId, int $projectId, PDO $pdo): void
 {
     $check = $pdo->prepare(
-        'SELECT 1
-         FROM project_images
-         WHERE id = :id AND project_id = :project_id
-         LIMIT 1'
+        'SELECT 1 FROM project_images
+         WHERE id = :id AND project_id = :project_id LIMIT 1'
     );
     $check->execute(['id' => $mediaId, 'project_id' => $projectId]);
 

@@ -1,689 +1,597 @@
 (() => {
-  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
-  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
-  const title=$('#title'), category=$('#category'), description=$('#description');
-  const smallTitle=$('#smallTitle'), smallCategory=$('#smallCategory'), smallMedia=$('#smallMedia');
-  const siteTitle=$('#siteTitle'), siteCategory=$('#siteCategory'), siteDescription=$('#siteDescription');
-  const siteMain=$('#siteMain'), siteThumbs=$('#siteThumbs'), siteTags=$('#siteTags');
+  const title = $('#title');
+  const category = $('#category');
+  const description = $('#description');
+  const smallMedia = $('#smallMedia');
+  const smallTitle = $('#smallTitle');
+  const smallCategory = $('#smallCategory');
+  const siteMain = $('#siteMain');
+  const siteThumbs = $('#siteThumbs');
+  const siteTitle = $('#siteTitle');
+  const siteCategory = $('#siteCategory');
+  const siteDescription = $('#siteDescription');
+  const siteTags = $('#siteTags');
 
-  // Taguri
-  const tagsHidden=$('#tags'), tagInput=$('#tagInput'), tagAdd=$('#tagAdd'), tagList=$('#tagList'), tagCount=$('#tagCount');
-  const MAX_TAGS=14;
-  let tags=(tagsHidden?.value||'').split(',').map(v=>v.trim()).filter(Boolean);
+  // Se gestionează tagurile.
+  const tagsHidden = $('#tags');
+  const tagInput = $('#tagInput');
+  const tagList = $('#tagList');
+  const tagCount = $('#tagCount');
+  const MAX_TAGS = 14;
 
-  function renderSiteTags(){
-    if(!siteTags)return;
-    siteTags.innerHTML='';
-    tags.forEach(tag=>{
-      const span=document.createElement('span');
-      span.className='site-modal-tag';
-      span.textContent=tag;
-      siteTags.appendChild(span);
-    });
-  }
+  let tags = (tagsHidden?.value || '')
+    .split(',')
+    .map(v => v.trim())
+    .filter(Boolean);
 
-  function syncTags(){
-    tags=[...new Set(tags)].slice(0,MAX_TAGS);
-    if(tagsHidden)tagsHidden.value=tags.join(', ');
-    if(tagCount)tagCount.textContent=`${tags.length}/${MAX_TAGS}`;
+  function syncTags() {
+    tags = [...new Map(tags.map(tag => [tag.toLowerCase(), tag])).values()].slice(0, MAX_TAGS);
 
-    if(tagList){
-      tagList.innerHTML='';
-      tags.forEach((tag,i)=>{
-        const chip=document.createElement('span');
-        chip.className='tag-chip';
+    if (tagsHidden) tagsHidden.value = tags.join(', ');
+    if (tagCount) tagCount.textContent = `${tags.length}/${MAX_TAGS}`;
+
+    if (tagList) {
+      tagList.innerHTML = '';
+
+      tags.forEach((tag, index) => {
+        const chip = document.createElement('span');
+        chip.className = 'tag-chip';
         chip.append(document.createTextNode(tag));
 
-        const remove=document.createElement('button');
-        remove.type='button';
-        remove.textContent='×';
-        remove.title='Șterge';
-        remove.addEventListener('click',()=>{
-          tags.splice(i,1);
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.textContent = '×';
+        remove.title = 'Șterge';
+        remove.onclick = () => {
+          tags.splice(index, 1);
           syncTags();
-        });
+        };
 
         chip.appendChild(remove);
         tagList.appendChild(chip);
       });
     }
 
-    renderSiteTags();
+    if (siteTags) {
+      siteTags.innerHTML = '';
+
+      tags.forEach(tag => {
+        const span = document.createElement('span');
+        span.className = 'site-modal-tag';
+        span.textContent = tag;
+        siteTags.appendChild(span);
+      });
+    }
   }
 
-  function addTag(){
-    const value=tagInput?.value.trim();
-    if(!value||tags.length>=MAX_TAGS)return;
+  function addTag() {
+    const value = tagInput?.value.trim();
 
-    if(!tags.some(t=>t.toLowerCase()===value.toLowerCase())){
+    if (!value || tags.length >= MAX_TAGS) return;
+
+    if (!tags.some(tag => tag.toLowerCase() === value.toLowerCase())) {
       tags.push(value);
     }
 
-    if(tagInput)tagInput.value='';
+    if (tagInput) tagInput.value = '';
     syncTags();
   }
 
-  tagAdd?.addEventListener('click',addTag);
-  tagInput?.addEventListener('keydown',e=>{
-    if(e.key==='Enter'){
-      e.preventDefault();
+  $('#tagAdd')?.addEventListener('click', addTag);
+
+  tagInput?.addEventListener('keydown', event => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
       addTag();
     }
   });
 
-  // Previzualizarea textelor
-  const categoryLabel=()=>category?.selectedOptions?.[0]?.textContent?.trim()||'Categorie';
+  // Se actualizează textele din previzualizare.
+  function updateText() {
+    const projectTitle = title?.value.trim() || 'Titlul proiectului';
+    const projectCategory = category?.selectedOptions?.[0]?.textContent?.trim() || 'Categorie';
+    const projectDescription = description?.value.trim() || 'Descrierea proiectului va apărea aici.';
 
-  function updateText(){
-    const t=title?.value.trim()||'Titlul proiectului';
-    const c=categoryLabel();
-    const d=description?.value.trim()||'Descrierea proiectului va apărea aici.';
-
-    if(smallTitle)smallTitle.textContent=t;
-    if(smallCategory)smallCategory.textContent=c;
-    if(siteTitle)siteTitle.textContent=t;
-    if(siteCategory)siteCategory.textContent=c;
-    if(siteDescription)siteDescription.textContent=d;
+    if (smallTitle) smallTitle.textContent = projectTitle;
+    if (smallCategory) smallCategory.textContent = projectCategory;
+    if (siteTitle) siteTitle.textContent = projectTitle;
+    if (siteCategory) siteCategory.textContent = projectCategory;
+    if (siteDescription) siteDescription.textContent = projectDescription;
   }
 
-  title?.addEventListener('input',updateText);
-  category?.addEventListener('change',updateText);
-  description?.addEventListener('input',updateText);
+  title?.addEventListener('input', updateText);
+  category?.addEventListener('change', updateText);
+  description?.addEventListener('input', updateText);
 
-  // Imagini și video
-  function crop(slot){
+  // Se citesc ajustările pentru card sau modal.
+  function display(slot, mode = 'detail') {
+    const prefix = mode === 'card' ? 'card' : 'detail';
+
     return {
-      x:slot.querySelector('[data-crop-x]')?.value||'50',
-      y:slot.querySelector('[data-crop-y]')?.value||'50',
-      zoom:slot.querySelector('[data-crop-zoom]')?.value||'1',
-      fit:slot.querySelector('[data-crop-fit]')?.value||'cover',
-      rotation:slot.querySelector('[data-rotation]')?.value||'0'
+      x: slot.querySelector(`[data-${prefix}-x]`)?.value || '50',
+      y: slot.querySelector(`[data-${prefix}-y]`)?.value || '50',
+      zoom: slot.querySelector(`[data-${prefix}-zoom]`)?.value || '1',
+      fit: slot.querySelector(`[data-${prefix}-fit]`)?.value || 'contain',
+      rotation: slot.querySelector(`[data-${prefix}-rotation]`)?.value || '0'
     };
   }
 
-  function usableSlots(){
-    return $$('.media-slot').filter(slot=>slot.querySelector('[data-media-preview]'));
+  function writeDisplay(slot, mode, values) {
+    const prefix = mode === 'card' ? 'card' : 'detail';
+    const map = {
+      x: `[data-${prefix}-x]`,
+      y: `[data-${prefix}-y]`,
+      zoom: `[data-${prefix}-zoom]`,
+      fit: `[data-${prefix}-fit]`,
+      rotation: `[data-${prefix}-rotation]`
+    };
+
+    Object.entries(map).forEach(([key, selector]) => {
+      const input = slot.querySelector(selector);
+      if (input) input.value = values[key];
+    });
   }
 
-  function primarySlot(){
-    const existing=$('.media-slot input[name="primary_image_id"]:checked')?.closest('.media-slot');
+  function applyDisplay(media, values) {
+    if (!media) return;
 
-    if(existing)return existing;
-
-    const fresh=$('.media-slot .js-new-primary:checked')?.closest('.media-slot');
-
-    if(fresh){
-      return fresh;
-    }
-
-    return usableSlots()[0]||null;
+    media.style.setProperty('--crop-x', `${values.x}%`);
+    media.style.setProperty('--crop-y', `${values.y}%`);
+    media.style.setProperty('--zoom', values.zoom);
+    media.style.setProperty('--fit', values.fit);
+    media.style.setProperty('--rotation', `${values.rotation}deg`);
   }
 
-  function cloneMedia(slot,forModal=false){
-    const src=slot?.querySelector('[data-media-preview]');
-    if(!src)return null;
-
-    let el;
-
-    if(src.tagName==='VIDEO'){
-      el=document.createElement('video');
-      el.src=src.currentSrc||src.src;
-      el.muted=true;
-      el.playsInline=true;
-
-      if(forModal){
-        el.controls=true;
-      }else{
-        el.loop=true;
-        el.autoplay=true;
-      }
-    }else{
-      el=document.createElement('img');
-      el.src=src.src;
-      el.alt='';
-    }
-
-    if(!forModal){
-      const c=crop(slot);
-      el.style.setProperty('--crop-x',c.x+'%');
-      el.style.setProperty('--crop-y',c.y+'%');
-      el.style.setProperty('--zoom',c.zoom);
-      el.style.setProperty('--fit',c.fit);
-      el.style.setProperty('--rotation',c.rotation+'deg');
-    }
-
-    return el;
+  function usableSlots() {
+    return $$('.media-slot').filter(slot =>
+      slot.dataset.deleted !== '1' && slot.querySelector('[data-media-preview]')
+    );
   }
 
-  function updateSmall(){
-    if(!smallMedia)return;
+  function primarySlot() {
+    const existing = $('.media-slot input[name="primary_image_id"]:checked')?.closest('.media-slot');
+    if (existing?.dataset.deleted !== '1') return existing;
 
-    smallMedia.innerHTML='';
+    const fresh = $('.media-slot .js-new-primary:checked')?.closest('.media-slot');
+    if (fresh?.dataset.deleted !== '1') return fresh;
 
-    const media=cloneMedia(primarySlot());
+    return usableSlots()[0] || null;
+  }
 
-    if(media){
+  // Se clonează media cu ajustarea potrivită.
+  function cloneMedia(slot, mode = 'detail', controls = false) {
+    const source = slot?.querySelector('[data-media-preview]');
+    if (!source) return null;
+
+    const media = document.createElement(source.tagName === 'VIDEO' ? 'video' : 'img');
+    media.src = source.currentSrc || source.src;
+
+    if (media.tagName === 'VIDEO') {
+      media.muted = true;
+      media.playsInline = true;
+      media.controls = controls;
+      media.loop = !controls;
+      media.autoplay = !controls;
+    } else {
+      media.alt = '';
+    }
+
+    applyDisplay(media, display(slot, mode));
+    return media;
+  }
+
+  // Se actualizează cardul mic.
+  function updateSmall() {
+    if (!smallMedia) return;
+
+    smallMedia.innerHTML = '';
+    const media = cloneMedia(primarySlot(), 'card');
+
+    if (media) {
       smallMedia.appendChild(media);
-    }else{
-      const p=document.createElement('div');
-      p.className='preview-placeholder';
-      p.textContent='Media principală va apărea aici';
-      smallMedia.appendChild(p);
+    } else {
+      smallMedia.innerHTML = '<div class="preview-placeholder">Media principală va apărea aici</div>';
     }
   }
 
-  function updateSiteModal(){
-    if(!siteMain||!siteThumbs)return;
+  // Se actualizează modalul mare și miniaturile.
+  function updateModal() {
+    if (!siteMain || !siteThumbs) return;
 
-    const slots=usableSlots();
-    const primary=primarySlot()||slots[0]||null;
+    const slots = usableSlots();
+    const primary = primarySlot() || slots[0] || null;
 
-    siteMain.innerHTML='';
-    const main=cloneMedia(primary,true);
+    siteMain.innerHTML = '';
+    const main = cloneMedia(primary, 'detail', true);
 
-    if(main){
+    if (main) {
       siteMain.appendChild(main);
-    }else{
-      const p=document.createElement('div');
-      p.className='preview-placeholder';
-      p.textContent='Media principală va apărea aici';
-      siteMain.appendChild(p);
+    } else {
+      siteMain.innerHTML = '<div class="preview-placeholder">Media principală va apărea aici</div>';
     }
 
-    siteThumbs.innerHTML='';
+    siteThumbs.innerHTML = '';
 
-    if(!slots.length){
-      const t=document.createElement('span');
-      t.style.cssText='color:rgba(245,242,233,.36);font-size:11px';
-      t.textContent='Miniaturile vor apărea aici';
-      siteThumbs.appendChild(t);
+    if (!slots.length) {
+      siteThumbs.innerHTML = '<span style="color:rgba(245,242,233,.36);font-size:11px">Miniaturile vor apărea aici</span>';
       return;
     }
 
-    slots.forEach(slot=>{
-      const btn=document.createElement('button');
-      btn.type='button';
-      btn.className='site-thumb'+(slot===primary?' active':'');
+    slots.forEach(slot => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `site-thumb${slot === primary ? ' active' : ''}`;
 
-      const media=cloneMedia(slot,true);
+      const thumb = cloneMedia(slot, 'detail');
+      if (thumb) button.appendChild(thumb);
 
-      if(media){
-        if(media.tagName==='VIDEO'){
-          media.controls=false;
-        }
-        btn.appendChild(media);
-      }
+      button.onclick = () => {
+        siteMain.innerHTML = '';
+        const chosen = cloneMedia(slot, 'detail', true);
+        if (chosen) siteMain.appendChild(chosen);
 
-      btn.addEventListener('click',()=>{
-        siteMain.innerHTML='';
+        $$('.site-thumb', siteThumbs).forEach(item => item.classList.remove('active'));
+        button.classList.add('active');
+      };
 
-        const chosen=cloneMedia(slot,true);
-
-        if(chosen){
-          siteMain.appendChild(chosen);
-        }
-
-        $$('.site-thumb',siteThumbs).forEach(x=>x.classList.remove('active'));
-        btn.classList.add('active');
-      });
-
-      siteThumbs.appendChild(btn);
+      siteThumbs.appendChild(button);
     });
   }
 
-  function updateAll(){
+  function updateAll() {
     updateText();
     updateSmall();
-    updateSiteModal();
-    renderSiteTags();
+    updateModal();
+    syncTags();
   }
 
-  const newPrimaryIndex=$('#newPrimaryIndex');
+  // Se afișează un fișier nou sau înlocuit.
+  function buildPreview(file) {
+    const media = document.createElement(file.type.startsWith('video/') ? 'video' : 'img');
+    media.src = URL.createObjectURL(file);
+    media.dataset.mediaPreview = '1';
 
-  function showNewMediaControls(slot){
-    const primaryWrap=slot.querySelector('.new-primary-wrap');
-    const deleteWrap=slot.querySelector('.new-delete-wrap');
-    const adjust=slot.querySelector('.js-adjust');
-
-    if(primaryWrap)primaryWrap.style.display='flex';
-    if(deleteWrap)deleteWrap.style.display='flex';
-    if(adjust)adjust.style.display='';
-  }
-
-  function clearNewSlot(slot){
-    const fileInput=slot.querySelector('input[type=file]');
-    const primary=slot.querySelector('.js-new-primary');
-
-    if(
-      primary?.checked &&
-      newPrimaryIndex
-    ){
-      newPrimaryIndex.value='';
+    if (media.tagName === 'VIDEO') {
+      media.muted = true;
+      media.loop = true;
+      media.autoplay = true;
+      media.playsInline = true;
+    } else {
+      media.alt = '';
     }
 
-    if(fileInput)fileInput.value='';
-    if(primary)primary.checked=false;
-
-    slot.querySelector('.slot-preview')?.remove();
-    slot.classList.remove('has-media');
-
-    const empty=slot.querySelector('.slot-empty');
-    if(empty)empty.style.display='grid';
-
-    const primaryWrap=slot.querySelector('.new-primary-wrap');
-    const deleteWrap=slot.querySelector('.new-delete-wrap');
-    const adjust=slot.querySelector('.js-adjust');
-
-    if(primaryWrap)primaryWrap.style.display='none';
-    if(deleteWrap)deleteWrap.style.display='none';
-    if(adjust)adjust.style.display='none';
-
-    const resetMap=[
-      ['[data-crop-x]','50'],
-      ['[data-crop-y]','50'],
-      ['[data-crop-zoom]','1'],
-      ['[data-crop-fit]','cover'],
-      ['[data-rotation]','0']
-    ];
-
-    resetMap.forEach(([selector,value])=>{
-      const el=slot.querySelector(selector);
-      if(el)el.value=value;
-    });
-
-    updateAll();
+    return media;
   }
 
-  $$('.js-new-primary').forEach(radio=>{
-    radio.addEventListener('change',()=>{
-      if(!radio.checked)return;
-
-      const slot=radio.closest('.media-slot');
-      const fileInput=slot?.querySelector('input[type=file]');
-      const match=fileInput?.name.match(/media\[(\d+)\]/);
-      const index=match?.[1];
-
-      if(index!==undefined && newPrimaryIndex){
-        newPrimaryIndex.value=index;
-      }
-
-      $$('input[name="primary_image_id"]').forEach(oldRadio=>{
-        oldRadio.checked=false;
+  function resetDisplay(slot) {
+    ['detail', 'card'].forEach(mode => {
+      writeDisplay(slot, mode, {
+        x: '50',
+        y: '50',
+        zoom: '1',
+        fit: 'contain',
+        rotation: '0'
       });
+    });
+  }
 
-      $$('.js-new-primary').forEach(other=>{
-        if(other!==radio)other.checked=false;
+  function showNewControls(slot, show) {
+    slot.querySelectorAll('.new-media-control').forEach(el => {
+      el.style.display = show ? '' : 'none';
+    });
+  }
+
+  const newPrimaryIndex = $('#newPrimaryIndex');
+
+  $$('.js-new-primary').forEach(radio => {
+    radio.addEventListener('change', () => {
+      if (!radio.checked) return;
+
+      const slot = radio.closest('.media-slot');
+      const input = slot?.querySelector('input[type=file][name^="media["]');
+      const index = input?.name.match(/media\[(\d+)\]/)?.[1];
+
+      if (newPrimaryIndex && index !== undefined) newPrimaryIndex.value = index;
+
+      $$('input[name="primary_image_id"]').forEach(item => item.checked = false);
+      $$('.js-new-primary').forEach(item => {
+        if (item !== radio) item.checked = false;
       });
 
       updateAll();
     });
   });
 
-  $$('input[name="primary_image_id"]').forEach(radio=>{
-    radio.addEventListener('change',()=>{
-      if(!radio.checked)return;
+  $$('input[name="primary_image_id"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      if (!radio.checked) return;
 
-      if(newPrimaryIndex)newPrimaryIndex.value='';
-
-      $$('.js-new-primary').forEach(newRadio=>{
-        newRadio.checked=false;
-      });
-
+      if (newPrimaryIndex) newPrimaryIndex.value = '';
+      $$('.js-new-primary').forEach(item => item.checked = false);
       updateAll();
     });
   });
 
-  $$('.js-remove-new').forEach(button=>{
-    button.addEventListener('click',event=>{
-      event.preventDefault();
-      event.stopPropagation();
-
-      const slot=button.closest('.media-slot');
-
-      if(slot){
-        clearNewSlot(slot);
-      }
-    });
-  });
-
-  $$('input[type=file][name^="media["]').forEach(input=>{
-    input.addEventListener('change',()=>{
-      const slot=input.closest('.media-slot');
-      const file=input.files?.[0];
-
-      if(!slot||!file)return;
+  $$('input[type=file][name^="media["]').forEach(input => {
+    input.addEventListener('change', () => {
+      const slot = input.closest('.media-slot');
+      const file = input.files?.[0];
+      if (!slot || !file) return;
 
       slot.querySelector('.slot-preview')?.remove();
 
-      const wrap=document.createElement('div');
-      wrap.className='slot-preview';
+      const wrap = document.createElement('div');
+      wrap.className = 'slot-preview';
 
-      const media=document.createElement(
-        file.type.startsWith('video/')?'video':'img'
-      );
-
-      if(media.tagName==='VIDEO'){
-        media.muted=true;
-        media.loop=true;
-        media.autoplay=true;
-        media.playsInline=true;
-      }else{
-        media.alt='';
-      }
-
-      media.dataset.mediaPreview='1';
-      media.src=URL.createObjectURL(file);
-
+      const media = buildPreview(file);
+      applyDisplay(media, display(slot, 'detail'));
       wrap.appendChild(media);
       slot.prepend(wrap);
+
       slot.classList.add('has-media');
+      slot.querySelector('.slot-empty')?.style.setProperty('display', 'none');
+      showNewControls(slot, true);
 
-      const empty=slot.querySelector('.slot-empty');
-      if(empty)empty.style.display='none';
+      const primary = slot.querySelector('.js-new-primary');
 
-      showNewMediaControls(slot);
-
-      const freshPrimary=slot.querySelector('.js-new-primary');
-
-      if(
-        freshPrimary &&
+      if (
+        primary &&
         !$('.media-slot input[name="primary_image_id"]:checked') &&
         !$('.media-slot .js-new-primary:checked')
-      ){
-        freshPrimary.checked=true;
-        freshPrimary.dispatchEvent(new Event('change',{bubbles:true}));
+      ) {
+        primary.checked = true;
+        primary.dispatchEvent(new Event('change', { bubbles: true }));
       }
 
-      media.addEventListener('loadeddata',updateAll,{once:true});
-      media.addEventListener('load',updateAll,{once:true});
+      media.addEventListener('load', updateAll, { once: true });
+      media.addEventListener('loadeddata', updateAll, { once: true });
+      updateAll();
+    });
+  });
+
+  $$('.js-replace-media').forEach(input => {
+    input.addEventListener('change', () => {
+      const slot = input.closest('.media-slot');
+      const file = input.files?.[0];
+      if (!slot || !file) return;
+
+      const media = buildPreview(file);
+      applyDisplay(media, display(slot, 'detail'));
+      slot.querySelector('[data-media-preview]')?.replaceWith(media);
+
+      media.addEventListener('load', updateAll, { once: true });
+      media.addEventListener('loadeddata', updateAll, { once: true });
+      updateAll();
+    });
+  });
+
+  $$('.js-remove-new').forEach(button => {
+    button.addEventListener('click', () => {
+      const slot = button.closest('.media-slot');
+      if (!slot) return;
+
+      const input = slot.querySelector('input[type=file][name^="media["]');
+      const primary = slot.querySelector('.js-new-primary');
+
+      if (primary?.checked && newPrimaryIndex) newPrimaryIndex.value = '';
+      if (input) input.value = '';
+      if (primary) primary.checked = false;
+
+      slot.querySelector('.slot-preview')?.remove();
+      slot.classList.remove('has-media');
+      slot.querySelector('.slot-empty')?.style.setProperty('display', 'grid');
+
+      resetDisplay(slot);
+      showNewControls(slot, false);
+      updateAll();
+    });
+  });
+
+  // Se marchează media existentă pentru ștergere la salvare.
+  $$('.js-delete-existing').forEach(button => {
+    button.addEventListener('click', () => {
+      if (!confirm('Sigur vrei să ștergi acest fișier?')) return;
+
+      const slot = button.closest('.media-slot');
+      const deleteInput = slot?.querySelector('[data-delete-existing]');
+      if (!slot || !deleteInput) return;
+
+      deleteInput.value = deleteInput.dataset.mediaId || '';
+      slot.dataset.deleted = '1';
+      slot.style.display = 'none';
+
+      slot.querySelectorAll('input, button').forEach(el => {
+        if (el !== deleteInput) el.disabled = true;
+      });
 
       updateAll();
     });
   });
 
-  $$('input[name="primary_image_id"]').forEach(el=>
-    el.addEventListener('change',updateAll)
-  );
+  // Se deschide editorul pentru cardul mic sau modalul mare.
+  const modal = $('#cropModal');
+  const stage = $('#cropStage');
+  const cropTitle = $('#cropTitle');
+  const zoom = $('#cropZoom');
+  const zoomValue = $('#cropZoomValue');
+  const rotation = $('#cropRotation');
+  const rotationValue = $('#cropRotationValue');
+  const fitButtons = $$('.fit-switch button');
 
-  
-  // Se afișează imediat fișierul ales la „Schimbă imaginea”.
-  $$('.js-replace-media').forEach(input=>{
-    input.addEventListener('change',()=>{
-      const slot=input.closest('.media-slot');
-      const file=input.files?.[0];
-      if(!slot||!file)return;
+  let activeSlot = null;
+  let activeMode = 'detail';
+  let state = { x: 50, y: 50, zoom: 1, fit: 'contain', rotation: 0 };
+  let drag = null;
 
-      const old=slot.querySelector('[data-media-preview]');
-      const media=document.createElement(file.type.startsWith('video/')?'video':'img');
+  function renderEditor() {
+    const media = $('#cropStageMedia');
+    if (!media) return;
 
-      if(media.tagName==='VIDEO'){
-        media.muted=true;
-        media.loop=true;
-        media.autoplay=true;
-        media.playsInline=true;
-      }else{
-        media.alt='';
-      }
+    applyDisplay(media, state);
 
-      media.dataset.mediaPreview='1';
-      media.src=URL.createObjectURL(file);
+    if (zoom) zoom.value = state.zoom;
+    if (zoomValue) zoomValue.textContent = `${Number(state.zoom).toFixed(2)}×`;
+    if (rotation) rotation.value = state.rotation;
+    if (rotationValue) rotationValue.textContent = `${Math.round(state.rotation)}°`;
 
-      if(old){
-        old.replaceWith(media);
-      }
-
-      media.addEventListener('loadeddata',updateAll,{once:true});
-      media.addEventListener('load',updateAll,{once:true});
-      updateAll();
-    });
-  });
-
-// Ajustarea imaginilor: drag, zoom și rotire
-  const modal=$('#cropModal');
-  const stage=$('#cropStage');
-  const zoom=$('#cropZoom');
-  const zoomValue=$('#cropZoomValue');
-  const rotation=$('#cropRotation');
-  const rotationValue=$('#cropRotationValue');
-  const fitButtons=$$('.fit-switch button');
-
-  let active=null;
-  let state={
-    x:50,
-    y:50,
-    zoom:1,
-    fit:'cover',
-    rotation:0
-  };
-
-  let drag=null;
-
-  function stageMedia(){
-    return $('#cropStageMedia');
-  }
-
-  function renderEditor(){
-    const media=stageMedia();
-
-    if(!media)return;
-
-    media.style.setProperty('--crop-x',state.x+'%');
-    media.style.setProperty('--crop-y',state.y+'%');
-    media.style.setProperty('--zoom',state.zoom);
-    media.style.setProperty('--fit',state.fit);
-    media.style.setProperty('--rotation',state.rotation+'deg');
-
-    if(zoom)zoom.value=state.zoom;
-    if(zoomValue)zoomValue.textContent=Number(state.zoom).toFixed(2)+'×';
-
-    if(rotation)rotation.value=state.rotation;
-    if(rotationValue)rotationValue.textContent=Math.round(state.rotation)+'°';
-
-    fitButtons.forEach(button=>{
-      button.classList.toggle(
-        'active',
-        button.dataset.fit===state.fit
-      );
+    fitButtons.forEach(button => {
+      button.classList.toggle('active', button.dataset.fit === state.fit);
     });
   }
 
-  function openEditor(slot){
-    const src=slot.querySelector('[data-media-preview]');
+  function openEditor(slot, mode) {
+    const source = slot.querySelector('[data-media-preview]');
+    if (!source || !modal || !stage) return;
 
-    if(!src||!modal||!stage)return;
+    activeSlot = slot;
+    activeMode = mode === 'card' ? 'card' : 'detail';
+    state = { ...display(slot, activeMode) };
+    state.x = +state.x;
+    state.y = +state.y;
+    state.zoom = +state.zoom;
+    state.rotation = +state.rotation;
 
-    active=slot;
+    if (cropTitle) {
+      cropTitle.textContent = activeMode === 'card'
+        ? 'Ajustează cardul mic'
+        : 'Ajustează modalul mare';
+    }
 
-    const c=crop(slot);
+    const reference = activeMode === 'card' ? smallMedia : siteMain;
+    const rect = reference?.getBoundingClientRect();
 
-    state={
-      x:+c.x,
-      y:+c.y,
-      zoom:+c.zoom,
-      fit:c.fit,
-      rotation:+c.rotation
-    };
+    if (rect?.width && rect?.height) {
+      stage.style.aspectRatio = `${rect.width} / ${rect.height}`;
+    }
 
-    stage.innerHTML='';
+    stage.innerHTML = '';
 
-    const media=document.createElement(
-      src.tagName==='VIDEO'?'video':'img'
-    );
+    const media = document.createElement(source.tagName === 'VIDEO' ? 'video' : 'img');
+    media.id = 'cropStageMedia';
+    media.src = source.currentSrc || source.src;
 
-    media.id='cropStageMedia';
-    media.src=src.currentSrc||src.src;
-
-    if(media.tagName==='VIDEO'){
-      media.muted=true;
-      media.loop=true;
-      media.autoplay=true;
-      media.playsInline=true;
-    }else{
-      media.alt='';
+    if (media.tagName === 'VIDEO') {
+      media.muted = true;
+      media.loop = true;
+      media.autoplay = true;
+      media.playsInline = true;
+    } else {
+      media.alt = '';
     }
 
     stage.appendChild(media);
     renderEditor();
-
     modal.classList.add('open');
   }
 
-  function closeEditor(){
+  function closeEditor() {
     modal?.classList.remove('open');
-    active=null;
-    drag=null;
+    activeSlot = null;
+    drag = null;
   }
 
-  function applyEditor(saveAfter=false){
-    if(!active)return;
+  function applyEditor(save = false) {
+    if (!activeSlot) return;
 
-    const form=active.closest('form');
+    writeDisplay(activeSlot, activeMode, {
+      x: state.x.toFixed(2),
+      y: state.y.toFixed(2),
+      zoom: state.zoom.toFixed(2),
+      fit: state.fit,
+      rotation: Math.round(state.rotation)
+    });
 
-    const set=(selector,value)=>{
-      const el=active.querySelector(selector);
-      if(el)el.value=value;
-    };
-
-    set('[data-crop-x]',state.x.toFixed(2));
-    set('[data-crop-y]',state.y.toFixed(2));
-    set('[data-crop-zoom]',state.zoom.toFixed(2));
-    set('[data-crop-fit]',state.fit);
-    set('[data-rotation]',Math.round(state.rotation));
-
-    const media=active.querySelector('[data-media-preview]');
-
-    if(media){
-      media.style.setProperty('--crop-x',state.x+'%');
-      media.style.setProperty('--crop-y',state.y+'%');
-      media.style.setProperty('--zoom',state.zoom);
-      media.style.setProperty('--fit',state.fit);
-      media.style.setProperty('--rotation',state.rotation+'deg');
+    if (activeMode === 'detail') {
+      applyDisplay(activeSlot.querySelector('[data-media-preview]'), state);
     }
 
+    const form = activeSlot.closest('form');
     updateAll();
-
-    if(saveAfter && form){
-      closeEditor();
-
-      if(typeof form.requestSubmit==='function'){
-        form.requestSubmit();
-      }else{
-        form.submit();
-      }
-
-      return;
-    }
-
     closeEditor();
+
+    if (save && form) form.requestSubmit();
   }
 
-  $$('.js-adjust').forEach(button=>{
-    button.addEventListener('click',event=>{
-      event.preventDefault();
-
-      const slot=button.closest('.media-slot');
-
-      if(slot){
-        openEditor(slot);
-      }
+  $$('.js-adjust').forEach(button => {
+    button.addEventListener('click', () => {
+      const slot = button.closest('.media-slot');
+      if (slot) openEditor(slot, button.dataset.adjustMode);
     });
   });
 
-  zoom?.addEventListener('input',()=>{
-    state.zoom=+zoom.value;
+  zoom?.addEventListener('input', () => {
+    state.zoom = +zoom.value;
     renderEditor();
   });
 
-  rotation?.addEventListener('input',()=>{
-    state.rotation=+rotation.value;
+  rotation?.addEventListener('input', () => {
+    state.rotation = +rotation.value;
     renderEditor();
   });
 
-  fitButtons.forEach(button=>{
-    button.addEventListener('click',()=>{
-      state.fit=button.dataset.fit||'cover';
+  fitButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      state.fit = button.dataset.fit || 'contain';
       renderEditor();
     });
   });
 
-  $('#cropReset')?.addEventListener('click',()=>{
-    state={
-      x:50,
-      y:50,
-      zoom:1,
-      fit:'cover',
-      rotation:0
-    };
-
+  $('#cropReset')?.addEventListener('click', () => {
+    state = { x: 50, y: 50, zoom: 1, fit: 'contain', rotation: 0 };
     renderEditor();
   });
 
-  $('#cropApply')?.addEventListener('click',()=>applyEditor(false));
-  $('#cropSave')?.addEventListener('click',()=>applyEditor(true));
-  $('#cropCancel')?.addEventListener('click',closeEditor);
+  $('#cropApply')?.addEventListener('click', () => applyEditor(false));
+  $('#cropSave')?.addEventListener('click', () => applyEditor(true));
+  $('#cropCancel')?.addEventListener('click', closeEditor);
 
-  modal?.addEventListener('click',event=>{
-    if(event.target===modal){
-      closeEditor();
-    }
+  modal?.addEventListener('click', event => {
+    if (event.target === modal) closeEditor();
   });
 
-  /*
-   * Drag intuitiv:
-   * - tragi imaginea la dreapta -> imaginea se mută la dreapta
-   * - tragi la stânga -> se mută la stânga
-   * - sus/jos la fel
-   *
-   * Folosim pointer events, deci funcționează și cu mouse,
-   * touchpad, stylus și deget pe telefon/tabletă.
-   */
-  stage?.addEventListener('pointerdown',event=>{
-    if(event.button!==undefined && event.button!==0)return;
+  // Se mută imaginea prin tragere.
+  stage?.addEventListener('pointerdown', event => {
+    if (event.button !== undefined && event.button !== 0) return;
 
     stage.setPointerCapture(event.pointerId);
     stage.classList.add('dragging');
 
-    drag={
-      startX:event.clientX,
-      startY:event.clientY,
-      cropX:state.x,
-      cropY:state.y
+    drag = {
+      startX: event.clientX,
+      startY: event.clientY,
+      cropX: state.x,
+      cropY: state.y
     };
 
     event.preventDefault();
   });
 
-  stage?.addEventListener('pointermove',event=>{
-    if(!drag)return;
+  stage?.addEventListener('pointermove', event => {
+    if (!drag) return;
 
-    const rect=stage.getBoundingClientRect();
+    const rect = stage.getBoundingClientRect();
+    const dx = ((event.clientX - drag.startX) / rect.width) * 100;
+    const dy = ((event.clientY - drag.startY) / rect.height) * 100;
 
-    const dx=
-      ((event.clientX-drag.startX)/rect.width)*100;
-
-    const dy=
-      ((event.clientY-drag.startY)/rect.height)*100;
-
-    /*
-     * object-position funcționează invers față de gestul vizual,
-     * de aceea scădem deplasarea ca imaginea să urmeze mâna.
-     */
-    state.x=clamp(drag.cropX-dx,0,100);
-    state.y=clamp(drag.cropY-dy,0,100);
+    state.x = clamp(drag.cropX - dx, 0, 100);
+    state.y = clamp(drag.cropY - dy, 0, 100);
 
     renderEditor();
     event.preventDefault();
   });
 
-  function endDrag(){
-    drag=null;
+  function endDrag() {
+    drag = null;
     stage?.classList.remove('dragging');
   }
 
-  stage?.addEventListener('pointerup',endDrag);
-  stage?.addEventListener('pointercancel',endDrag);
-  stage?.addEventListener('lostpointercapture',endDrag);
+  stage?.addEventListener('pointerup', endDrag);
+  stage?.addEventListener('pointercancel', endDrag);
+  stage?.addEventListener('lostpointercapture', endDrag);
 
   syncTags();
   updateAll();
