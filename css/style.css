@@ -2109,3 +2109,94 @@ body.gallery-open{overflow:hidden;}
   height:100%;
   object-fit:var(--crop-fit,contain)!important;
 }
+
+/* Galeria proiectului: miniaturile stau separat sub imaginea mare. */
+.gallery-media-column{
+  display:grid!important;
+  grid-template-rows:minmax(0,1fr) auto!important;
+  gap:12px!important;
+  padding:18px!important;
+  overflow:hidden!important;
+  background:#000!important;
+}
+
+.gallery-image-stage{
+  position:relative!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  aspect-ratio:auto!important;
+  overflow:hidden!important;
+  border-radius:14px!important;
+  background:#000!important;
+}
+
+/* Chenarul miniaturilor. */
+.gallery-thumbs{
+  position:static!important;
+  inset:auto!important;
+  z-index:auto!important;
+  transform:none!important;
+  width:100%!important;
+  height:90px!important;
+  min-height:90px!important;
+  max-height:90px!important;
+  margin:0!important;
+  padding:8px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  border:1px solid var(--border)!important;
+  border-radius:12px!important;
+  background:#070907!important;
+  scrollbar-width:none;
+}
+
+.gallery-thumbs[hidden]{
+  display:none!important;
+}
+
+.gallery-thumbs::-webkit-scrollbar{
+  display:none;
+}
+
+.gallery-thumb{
+  flex:0 0 104px!important;
+  width:104px!important;
+  height:72px!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  border-radius:9px!important;
+}
+
+@media(max-width:768px){
+  .gallery-media-column{
+    display:grid!important;
+    grid-template-rows:auto auto!important;
+    gap:8px!important;
+    padding:8px!important;
+  }
+
+  .gallery-image-stage{
+    width:100%!important;
+    height:auto!important;
+    aspect-ratio:4/3!important;
+  }
+
+  .gallery-thumbs{
+    height:70px!important;
+    min-height:70px!important;
+    max-height:70px!important;
+    padding:6px!important;
+  }
+
+  .gallery-thumb{
+    flex-basis:82px!important;
+    width:82px!important;
+    height:56px!important;
+  }
+}
