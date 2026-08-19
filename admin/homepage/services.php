@@ -33,6 +33,34 @@ function uploadedImage(int $slot): ?array
     ];
 }
 
+// Se șterge doar un fișier încărcat pentru servicii.
+function deleteServiceUpload(string $path): void
+{
+    if ($path === '' || !str_starts_with($path, 'uploads/homepage/')) {
+        return;
+    }
+
+    $file = dirname(__DIR__, 2) . '/' . $path;
+
+    if (is_file($file)) {
+        @unlink($file);
+    }
+}
+
+// Se normalizează valorile editorului de imagine.
+function mediaValues(string $prefix): array
+{
+    $fit = (string) ($_POST["{$prefix}_fit"] ?? 'cover');
+
+    return [
+        'crop_x' => max(0, min(100, (float) ($_POST["{$prefix}_crop_x"] ?? 50))),
+        'crop_y' => max(0, min(100, (float) ($_POST["{$prefix}_crop_y"] ?? 50))),
+        'zoom' => max(1, min(3, (float) ($_POST["{$prefix}_zoom"] ?? 1))),
+        'rotation' => max(-180, min(180, (int) ($_POST["{$prefix}_rotation"] ?? 0))),
+        'fit' => in_array($fit, ['cover', 'contain'], true) ? $fit : 'cover',
+    ];
+}
+
 // Se salvează sau se actualizează serviciul în BD.
 function saveService(PDO $pdo, int $id): void
 {
@@ -71,19 +99,73 @@ function saveService(PDO $pdo, int $id): void
         'is_active' => isset($_POST['is_active']) ? 1 : 0,
     ];
 
-    for ($i = 1; $i <= 3; $i++) {
-        $fields["image{$i}"] = (string) ($existing["image{$i}"] ?? '');
+    $filesToDelete = [];
+    $firstImageUploaded = false;
 
-        if ($file = uploadedImage($i)) {
-            $fields["image{$i}"] = saveServiceUpload($file);
+    for ($i = 1; $i <= 3; $i++) {
+        $oldPath = (string) ($existing["image{$i}"] ?? '');
+        $fields["image{$i}"] = $oldPath;
+
+        $file = uploadedImage($i);
+        $delete = (string) ($_POST['delete_image'][$i] ?? '') === '1';
+
+        if ($file) {
+            $newPath = saveServiceUpload($file);
+            $fields["image{$i}"] = $newPath;
+
+            if ($oldPath !== '' && $oldPath !== $newPath) {
+                $filesToDelete[] = $oldPath;
+            }
+
+            if ($i === 1) {
+                $firstImageUploaded = true;
+            }
+        } elseif ($delete) {
+            $fields["image{$i}"] = '';
+
+            if ($oldPath !== '') {
+                $filesToDelete[] = $oldPath;
+            }
         }
 
-        $fields["image{$i}_crop_x"] = trim((string) ($_POST["image{$i}_crop_x"] ?? '50'));
-        $fields["image{$i}_crop_y"] = trim((string) ($_POST["image{$i}_crop_y"] ?? '50'));
-        $fields["image{$i}_zoom"] = trim((string) ($_POST["image{$i}_zoom"] ?? '1'));
-        $fields["image{$i}_rotation"] = trim((string) ($_POST["image{$i}_rotation"] ?? '0'));
-        $fields["image{$i}_fit"] = trim((string) ($_POST["image{$i}_fit"] ?? 'cover'));
+        $detail = mediaValues("image{$i}");
+
+        if ($delete && !$file) {
+            $detail = [
+                'crop_x' => 50,
+                'crop_y' => 50,
+                'zoom' => 1,
+                'rotation' => 0,
+                'fit' => 'cover',
+            ];
+        }
+
+        $fields["image{$i}_crop_x"] = $detail['crop_x'];
+        $fields["image{$i}_crop_y"] = $detail['crop_y'];
+        $fields["image{$i}_zoom"] = $detail['zoom'];
+        $fields["image{$i}_rotation"] = $detail['rotation'];
+        $fields["image{$i}_fit"] = $detail['fit'];
     }
+
+    // Prima imagine are o ajustare separată pentru cardul mic.
+    $card = mediaValues('image1_card');
+    $deleteFirst = (string) ($_POST['delete_image'][1] ?? '') === '1';
+
+    if ($deleteFirst && !$firstImageUploaded) {
+        $card = [
+            'crop_x' => 50,
+            'crop_y' => 50,
+            'zoom' => 1,
+            'rotation' => 0,
+            'fit' => 'cover',
+        ];
+    }
+
+    $fields['image1_card_crop_x'] = $card['crop_x'];
+    $fields['image1_card_crop_y'] = $card['crop_y'];
+    $fields['image1_card_zoom'] = $card['zoom'];
+    $fields['image1_card_rotation'] = $card['rotation'];
+    $fields['image1_card_fit'] = $card['fit'];
 
     if ($id > 0) {
         $set = implode(', ', array_map(
@@ -93,41 +175,48 @@ function saveService(PDO $pdo, int $id): void
 
         $fields['id'] = $id;
         $pdo->prepare("UPDATE services SET {$set} WHERE id = :id")->execute($fields);
-        return;
+    } else {
+        $columns = implode(', ', array_keys($fields));
+        $values = implode(', ', array_map(
+            static fn (string $key): string => ":{$key}",
+            array_keys($fields)
+        ));
+
+        $pdo->prepare("INSERT INTO services ({$columns}) VALUES ({$values})")
+            ->execute($fields);
     }
 
-    $columns = implode(', ', array_keys($fields));
-    $values = implode(', ', array_map(
-        static fn (string $key): string => ":{$key}",
-        array_keys($fields)
-    ));
-
-    $pdo->prepare("INSERT INTO services ({$columns}) VALUES ({$values})")
-        ->execute($fields);
+    // Fișierele vechi se șterg doar după salvarea reușită în BD.
+    foreach (array_unique($filesToDelete) as $path) {
+        deleteServiceUpload($path);
+    }
 }
 
 // Se elimină serviciul doar dacă nu are proiecte asociate.
 function deleteService(PDO $pdo, int $id): void
 {
-    $stmt = $pdo->prepare('SELECT slug FROM services WHERE id = ?');
+    $stmt = $pdo->prepare('SELECT * FROM services WHERE id = ?');
     $stmt->execute([$id]);
-    $slug = $stmt->fetchColumn();
+    $service = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$slug) {
+    if (!$service) {
         throw new RuntimeException('Serviciul nu există.');
     }
 
     $stmt = $pdo->prepare('SELECT COUNT(*) FROM projects WHERE category = ?');
-    $stmt->execute([$slug]);
-    $used = (int) $stmt->fetchColumn();
+    $stmt->execute([(string) $service['slug']]);
 
-    if ($used > 0) {
+    if ((int) $stmt->fetchColumn() > 0) {
         throw new RuntimeException(
-            "Serviciul are {$used} proiect(e). Mută sau șterge proiectele mai întâi."
+            'Serviciul are proiecte asociate. Mută sau șterge proiectele mai întâi.'
         );
     }
 
     $pdo->prepare('DELETE FROM services WHERE id = ?')->execute([$id]);
+
+    for ($i = 1; $i <= 3; $i++) {
+        deleteServiceUpload((string) ($service["image{$i}"] ?? ''));
+    }
 }
 
 // Se procesează formularul de servicii.
@@ -161,16 +250,44 @@ $services = getServices($pdo);
 function mediaCard(array $service, int $index): void
 {
     $src = (string) ($service["image{$index}"] ?? '');
-    $x = (string) ($service["image{$index}_crop_x"] ?? '50');
-    $y = (string) ($service["image{$index}_crop_y"] ?? '50');
-    $zoom = (string) ($service["image{$index}_zoom"] ?? '1');
-    $rotation = (string) ($service["image{$index}_rotation"] ?? '0');
-    $fit = (string) ($service["image{$index}_fit"] ?? 'cover');
+
+    $detail = [
+        'x' => (string) ($service["image{$index}_crop_x"] ?? '50'),
+        'y' => (string) ($service["image{$index}_crop_y"] ?? '50'),
+        'zoom' => (string) ($service["image{$index}_zoom"] ?? '1'),
+        'rotation' => (string) ($service["image{$index}_rotation"] ?? '0'),
+        'fit' => (string) ($service["image{$index}_fit"] ?? 'cover'),
+    ];
+
+    $card = $index === 1 ? [
+        'x' => (string) ($service['image1_card_crop_x'] ?? $detail['x']),
+        'y' => (string) ($service['image1_card_crop_y'] ?? $detail['y']),
+        'zoom' => (string) ($service['image1_card_zoom'] ?? $detail['zoom']),
+        'rotation' => (string) ($service['image1_card_rotation'] ?? $detail['rotation']),
+        'fit' => (string) ($service['image1_card_fit'] ?? $detail['fit']),
+    ] : null;
 ?>
-<article class="media-card" data-media-card>
+<article class="media-card" data-media-card data-slot="<?= $index ?>">
     <div class="media-card-head">
         <strong>Imagine <?= $index ?></strong>
-        <button class="mini-btn" type="button" data-adjust-media>Ajustează</button>
+
+        <div class="media-card-buttons">
+            <?php if ($index === 1): ?>
+                <button class="mini-btn" type="button" data-adjust-media="card">Card mic</button>
+                <button class="mini-btn" type="button" data-adjust-media="detail">Detalii</button>
+            <?php else: ?>
+                <button class="mini-btn" type="button" data-adjust-media="detail">Ajustează</button>
+            <?php endif; ?>
+
+            <button
+                class="mini-btn media-delete-btn"
+                type="button"
+                data-delete-media
+                <?= $src === '' ? 'hidden' : '' ?>
+            >
+                Șterge
+            </button>
+        </div>
     </div>
 
     <div class="media-preview" data-media-preview>
@@ -179,11 +296,11 @@ function mediaCard(array $service, int $index): void
             alt=""
             data-preview-element
             style="
-                --crop-x:<?= h($x) ?>%;
-                --crop-y:<?= h($y) ?>%;
-                --crop-zoom:<?= h($zoom) ?>;
-                --crop-rotation:<?= h($rotation) ?>deg;
-                --crop-fit:<?= h($fit) ?>;
+                --crop-x:<?= h($detail['x']) ?>%;
+                --crop-y:<?= h($detail['y']) ?>%;
+                --crop-zoom:<?= h($detail['zoom']) ?>;
+                --crop-rotation:<?= h($detail['rotation']) ?>deg;
+                --crop-fit:<?= h($detail['fit']) ?>;
             "
         >
     </div>
@@ -202,11 +319,21 @@ function mediaCard(array $service, int $index): void
         <small data-file-name><?= h(basename($src)) ?></small>
     </div>
 
-    <input type="hidden" name="image<?= $index ?>_crop_x" value="<?= h($x) ?>" data-meta="crop_x">
-    <input type="hidden" name="image<?= $index ?>_crop_y" value="<?= h($y) ?>" data-meta="crop_y">
-    <input type="hidden" name="image<?= $index ?>_zoom" value="<?= h($zoom) ?>" data-meta="zoom">
-    <input type="hidden" name="image<?= $index ?>_rotation" value="<?= h($rotation) ?>" data-meta="rotation">
-    <input type="hidden" name="image<?= $index ?>_fit" value="<?= h($fit) ?>" data-meta="fit">
+    <input type="hidden" name="delete_image[<?= $index ?>]" value="0" data-delete-input>
+
+    <input type="hidden" name="image<?= $index ?>_crop_x" value="<?= h($detail['x']) ?>" data-meta="detail_crop_x">
+    <input type="hidden" name="image<?= $index ?>_crop_y" value="<?= h($detail['y']) ?>" data-meta="detail_crop_y">
+    <input type="hidden" name="image<?= $index ?>_zoom" value="<?= h($detail['zoom']) ?>" data-meta="detail_zoom">
+    <input type="hidden" name="image<?= $index ?>_rotation" value="<?= h($detail['rotation']) ?>" data-meta="detail_rotation">
+    <input type="hidden" name="image<?= $index ?>_fit" value="<?= h($detail['fit']) ?>" data-meta="detail_fit">
+
+    <?php if ($index === 1): ?>
+        <input type="hidden" name="image1_card_crop_x" value="<?= h($card['x']) ?>" data-meta="card_crop_x">
+        <input type="hidden" name="image1_card_crop_y" value="<?= h($card['y']) ?>" data-meta="card_crop_y">
+        <input type="hidden" name="image1_card_zoom" value="<?= h($card['zoom']) ?>" data-meta="card_zoom">
+        <input type="hidden" name="image1_card_rotation" value="<?= h($card['rotation']) ?>" data-meta="card_rotation">
+        <input type="hidden" name="image1_card_fit" value="<?= h($card['fit']) ?>" data-meta="card_fit">
+    <?php endif; ?>
 </article>
 <?php
 }
@@ -220,7 +347,7 @@ function mediaCard(array $service, int $index): void
 <title>Servicii | ArtLife Admin</title>
 
 <?php require __DIR__ . '/../_admin_styles.php'; ?>
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=3">
 
 <style>
 .services-admin{width:min(1180px,calc(100% - 32px));margin:auto;padding:32px 0 100px}
@@ -232,6 +359,12 @@ function mediaCard(array $service, int $index): void
 .service-fields textarea{min-height:90px}
 .service-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}
 .add-service{margin-bottom:22px}
+
+/* Butoanele imaginilor */
+.media-card-buttons{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.media-delete-btn{color:#ff8c8c}
+.media-delete-btn:hover{border-color:#ff8c8c!important;color:#fff}
+
 @media(max-width:700px){
   .service-fields{grid-template-columns:1fr}
   .service-fields label.full{grid-column:auto}
@@ -410,7 +543,7 @@ function mediaCard(array $service, int $index): void
 <div class="media-editor" id="mediaEditor" hidden>
     <div class="editor-box">
         <div class="editor-head">
-            <h2>Ajustează imaginea</h2>
+            <h2 id="editorTitle">Ajustează imaginea</h2>
             <button type="button" class="btn" data-editor-close>Închide</button>
         </div>
 
@@ -443,6 +576,6 @@ function mediaCard(array $service, int $index): void
     </div>
 </div>
 
-<script src="homepage.js?v=2"></script>
+<script src="homepage.js?v=3"></script>
 </body>
 </html>

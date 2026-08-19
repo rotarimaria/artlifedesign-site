@@ -23,6 +23,16 @@ try {
             ];
         }
 
+        // Prima imagine are o ajustare separată pentru cardul mic.
+        $cardImage = [
+            'src' => (string) $service['image1'],
+            'cropX' => (float) $service['image1_card_crop_x'],
+            'cropY' => (float) $service['image1_card_crop_y'],
+            'zoom' => (float) $service['image1_card_zoom'],
+            'rotation' => (int) $service['image1_card_rotation'],
+            'fit' => (string) $service['image1_card_fit'],
+        ];
+
         return [
             'id' => (int) $service['id'],
             'slug' => (string) $service['slug'],
@@ -37,6 +47,7 @@ try {
             )),
             'btnExamples' => (string) $service['btn_examples'],
             'btnQuote' => (string) $service['btn_quote'],
+            'cardImage' => $cardImage,
             'images' => $images,
         ];
     }, getServices($pdo, true));
