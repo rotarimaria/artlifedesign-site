@@ -167,26 +167,39 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Se pregătesc separat ajustările pentru card și modal.
   function projectMediaStyle(media = {}, mode = "detail") {
     const card = mode === "card";
-
-    const x = card ? (media.cardCropX ?? media.cropX ?? 50) : (media.cropX ?? 50);
-    const y = card ? (media.cardCropY ?? media.cropY ?? 50) : (media.cropY ?? 50);
-    const zoom = card ? (media.cardZoom ?? media.zoom ?? 1) : (media.zoom ?? 1);
+    const x = Number(card ? (media.cardCropX ?? media.cropX ?? 50) : (media.cropX ?? 50));
+    const y = Number(card ? (media.cardCropY ?? media.cropY ?? 50) : (media.cropY ?? 50));
+    const zoom = Number(card ? (media.cardZoom ?? media.zoom ?? 1) : (media.zoom ?? 1));
     const fit = card ? (media.cardFit ?? media.fit ?? "contain") : (media.fit ?? "contain");
-    const rotation = card ? (media.cardRotation ?? media.rotation ?? 0) : (media.rotation ?? 0);
+    const rotation = Number(card ? (media.cardRotation ?? media.rotation ?? 0) : (media.rotation ?? 0));
 
     return [
-      `--crop-x:${Number(x)}%`,
-      `--crop-y:${Number(y)}%`,
-      `--crop-zoom:${Number(zoom)}`,
-      `--crop-fit:${fit === "cover" ? "cover" : "contain"}`,
-      `--crop-rotation:${Number(rotation)}deg`
+      `object-fit:${fit === "cover" ? "cover" : "contain"}!important`,
+      `object-position:center!important`,
+      `transform:translate(calc(50% - ${x}%),calc(50% - ${y}%)) rotate(${rotation}deg) scale(${zoom})!important`,
+      `transform-origin:center!important`
     ].join(";");
   }
 
-  // Se aplică ajustările pe imagine sau video.
+  // Se aplică ajustarea direct pe element, peste regulile vechi din CSS.
   function applyProjectMediaStyle(element, media, mode = "detail") {
     if (!element) return;
-    element.style.cssText += `;${projectMediaStyle(media, mode)}`;
+
+    const card = mode === "card";
+    const x = Number(card ? (media.cardCropX ?? media.cropX ?? 50) : (media.cropX ?? 50));
+    const y = Number(card ? (media.cardCropY ?? media.cropY ?? 50) : (media.cropY ?? 50));
+    const zoom = Number(card ? (media.cardZoom ?? media.zoom ?? 1) : (media.zoom ?? 1));
+    const fit = card ? (media.cardFit ?? media.fit ?? "contain") : (media.fit ?? "contain");
+    const rotation = Number(card ? (media.cardRotation ?? media.rotation ?? 0) : (media.rotation ?? 0));
+
+    element.style.setProperty("object-fit", fit === "cover" ? "cover" : "contain", "important");
+    element.style.setProperty("object-position", "center", "important");
+    element.style.setProperty(
+      "transform",
+      `translate(calc(50% - ${x}%),calc(50% - ${y}%)) rotate(${rotation}deg) scale(${zoom})`,
+      "important"
+    );
+    element.style.setProperty("transform-origin", "center", "important");
   }
 
   function cardMediaHTML(work) {

@@ -139,11 +139,20 @@
   function applyDisplay(media, values) {
     if (!media) return;
 
-    media.style.setProperty('--crop-x', `${values.x}%`);
-    media.style.setProperty('--crop-y', `${values.y}%`);
-    media.style.setProperty('--zoom', values.zoom);
-    media.style.setProperty('--fit', values.fit);
-    media.style.setProperty('--rotation', `${values.rotation}deg`);
+    const x = Number(values.x ?? 50);
+    const y = Number(values.y ?? 50);
+    const zoom = Number(values.zoom ?? 1);
+    const rotation = Number(values.rotation ?? 0);
+    const fit = values.fit === "cover" ? "cover" : "contain";
+
+    media.style.setProperty("object-fit", fit, "important");
+    media.style.setProperty("object-position", "center", "important");
+    media.style.setProperty(
+      "transform",
+      `translate(calc(50% - ${x}%),calc(50% - ${y}%)) rotate(${rotation}deg) scale(${zoom})`,
+      "important"
+    );
+    media.style.setProperty("transform-origin", "center", "important");
   }
 
   function usableSlots() {
