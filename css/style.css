@@ -1,5 +1,3 @@
-/* Stilurile site-ului. Păstrez ordinea regulilor ca să nu schimb aspectul. */
-/* Variabile generale: culori, spațiere și dimensiuni */
 :root{--green:#92ff22;--green-2:#76db18;--bg:#050706;--bg-soft:#090c0a;--panel:#0d110e;--panel-2:#111612;--white:#f7f4eb;--muted:rgba(247,244,235,.69);--border:rgba(247,244,235,.12);--border-green:rgba(146,255,34,.32);--radius:20px;--speed:.25s ease;--chat-safe-area:96px;}
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;background:var(--bg);}
@@ -2057,4 +2055,35 @@ body.gallery-open{overflow:hidden;}
 .service-detail-examples li::before{content:"";position:absolute;left:0;top:.82em;width:6px;height:6px;border-radius:50%;background:var(--green);transform:translateY(-50%);}
 @media (max-width:768px){
   .service-detail-examples{grid-template-columns:1fr;}
+}
+
+/* Ajustarea proiectelor: card și modal */
+.work-img>img,.work-img>video,
+.portfolio-media>img,.portfolio-media>video{
+  object-fit:var(--crop-fit,contain)!important;
+  object-position:var(--crop-x,50%) var(--crop-y,50%)!important;
+  transform:rotate(var(--crop-rotation,0deg)) scale(var(--crop-zoom,1))!important;
+  transform-origin:center!important;
+}
+
+/* Modalul folosește ajustarea salvată pentru fiecare fișier. */
+.gallery-image-stage>#galleryModalImage,
+.gallery-image-stage>#galleryModalVideo{
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:var(--crop-fit,contain)!important;
+  object-position:var(--crop-x,50%) var(--crop-y,50%)!important;
+  transform:rotate(var(--crop-rotation,0deg)) scale(var(--crop-zoom,1))!important;
+  transform-origin:center!important;
+  margin:0!important;
+}
+
+/* Miniaturile păstrează ajustarea fiecărei imagini. */
+.gallery-thumb img,.gallery-thumb video{
+  object-fit:var(--crop-fit,contain)!important;
+  object-position:var(--crop-x,50%) var(--crop-y,50%)!important;
+  transform:rotate(var(--crop-rotation,0deg)) scale(var(--crop-zoom,1))!important;
+  transform-origin:center!important;
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../config/database.php';
 
-// Se încarcă proiectele și toate imaginile/video într-un singur query.
+// Se încarcă proiectele și media într-un singur query.
 function getPublicProjects(PDO $pdo): array
 {
     $rows = $pdo->query(
@@ -16,8 +16,13 @@ function getPublicProjects(PDO $pdo): array
             COALESCE(pi.crop_x, 50) AS crop_x,
             COALESCE(pi.crop_y, 50) AS crop_y,
             COALESCE(pi.crop_zoom, 1) AS crop_zoom,
-            COALESCE(pi.fit_mode, "cover") AS fit_mode,
-            COALESCE(pi.rotation, 0) AS rotation
+            COALESCE(pi.fit_mode, "contain") AS fit_mode,
+            COALESCE(pi.rotation, 0) AS rotation,
+            COALESCE(pi.card_crop_x, pi.crop_x, 50) AS card_crop_x,
+            COALESCE(pi.card_crop_y, pi.crop_y, 50) AS card_crop_y,
+            COALESCE(pi.card_crop_zoom, pi.crop_zoom, 1) AS card_crop_zoom,
+            COALESCE(pi.card_fit_mode, pi.fit_mode, "contain") AS card_fit_mode,
+            COALESCE(pi.card_rotation, pi.rotation, 0) AS card_rotation
          FROM projects p
          LEFT JOIN project_images pi ON pi.project_id = p.id
          WHERE p.is_published = 1
@@ -57,30 +62,36 @@ function getPublicProjects(PDO $pdo): array
             ];
         }
 
-        if (!empty($row['media_id']) && !empty($row['image_path'])) {
-            $projects[$id]['media'][] = [
-                'src' => (string) $row['image_path'],
-                'type' => (string) $row['media_type'],
-                'cropX' => (float) $row['crop_x'],
-                'cropY' => (float) $row['crop_y'],
-                'zoom' => (float) $row['crop_zoom'],
-                'fit' => (string) $row['fit_mode'],
-                'rotation' => (int) $row['rotation'],
-            ];
+        if (empty($row['media_id']) || empty($row['image_path'])) {
+            continue;
         }
+
+        // Se trimit separat ajustările pentru modal și card.
+        $projects[$id]['media'][] = [
+            'src' => (string) $row['image_path'],
+            'type' => (string) $row['media_type'],
+            'cropX' => (float) $row['crop_x'],
+            'cropY' => (float) $row['crop_y'],
+            'zoom' => (float) $row['crop_zoom'],
+            'fit' => (string) $row['fit_mode'],
+            'rotation' => (int) $row['rotation'],
+            'cardCropX' => (float) $row['card_crop_x'],
+            'cardCropY' => (float) $row['card_crop_y'],
+            'cardZoom' => (float) $row['card_crop_zoom'],
+            'cardFit' => (string) $row['card_fit_mode'],
+            'cardRotation' => (int) $row['card_rotation'],
+        ];
     }
 
     $result = array_values($projects);
 
-    // Se păstrează și câmpurile vechi folosite încă în JavaScript.
+    // Se păstrează câmpurile vechi folosite încă în JavaScript.
     foreach ($result as &$project) {
         $primary = $project['media'][0] ?? null;
-
         $project['image'] = $primary['src'] ?? '';
         $project['focus'] = $primary
-            ? $primary['cropX'] . '% ' . $primary['cropY'] . '%'
+            ? $primary['cardCropX'] . '% ' . $primary['cardCropY'] . '%'
             : '50% 50%';
-
         $project['images'] = array_column($project['media'], 'src');
     }
     unset($project);
