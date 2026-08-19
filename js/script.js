@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   let works = [];
   let services = [];
 
-  // Iau datele din API și întorc doar lista de care am nevoie.
+  // Se încarcă datele necesare din API.
   async function load(url, key) {
     try {
       const response = await fetch(url, { cache: "no-store" });
@@ -134,8 +134,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const button = event.target.closest("[data-order-service]");
     if (!button) return;
 
-    // Rândurile din lista de servicii deschid detaliile serviciului,
-    // nu formularul de contact.
+    // Rândurile serviciilor deschid detaliile, nu formularul.
     if (button.closest("[data-service-card]")) return;
 
     event.preventDefault();
@@ -165,49 +164,49 @@ document.addEventListener("DOMContentLoaded", async () => {
       .replaceAll("'", "&#039;");
   }
 
+  // Se pregătesc ajustările pentru card sau modal.
+  function projectMediaStyle(media = {}, mode = "detail") {
+    const card = mode === "card";
+
+    const x = card ? (media.cardCropX ?? media.cropX ?? 50) : (media.cropX ?? 50);
+    const y = card ? (media.cardCropY ?? media.cropY ?? 50) : (media.cropY ?? 50);
+    const zoom = card ? (media.cardZoom ?? media.zoom ?? 1) : (media.zoom ?? 1);
+    const fit = card ? (media.cardFit ?? media.fit ?? "contain") : (media.fit ?? "contain");
+    const rotation = card ? (media.cardRotation ?? media.rotation ?? 0) : (media.rotation ?? 0);
+
+    return [
+      `--crop-x:${Number(x)}%`,
+      `--crop-y:${Number(y)}%`,
+      `--crop-zoom:${Number(zoom)}`,
+      `--crop-fit:${fit === "cover" ? "cover" : "contain"}`,
+      `--crop-rotation:${Number(rotation)}deg`
+    ].join(";");
+  }
+
+  // Se aplică ajustările pe imagine sau video.
+  function applyProjectMediaStyle(element, media, mode = "detail") {
+    if (!element) return;
+    element.style.cssText += `;${projectMediaStyle(media, mode)}`;
+  }
+
   function cardMediaHTML(work) {
     const media = work.media?.[0];
 
     if (!media?.src) {
-      return `
-        <div class="public-media-placeholder">
-          Fără media
-        </div>
-      `;
+      return `<div class="public-media-placeholder">Fără media</div>`;
     }
 
-    const vars = [
-      `--crop-x:${Number(media.cropX ?? 50)}%`,
-      `--crop-y:${Number(media.cropY ?? 50)}%`,
-      `--crop-zoom:${Number(media.zoom ?? 1)}`,
-      `--crop-fit:${media.fit === "contain" ? "contain" : "cover"}`,
-      `--crop-rotation:${Number(media.rotation ?? 0)}deg`
-    ].join(";");
+    const style = projectMediaStyle(media, "card");
+    const src = escapeHTML(media.src);
+    const title = escapeHTML(work.title);
 
     if (media.type === "video") {
-      return `
-        <video
-          src="${escapeHTML(media.src)}"
-          muted
-          loop
-          autoplay
-          playsinline
-          preload="metadata"
-          style="${vars}"
-          aria-label="${escapeHTML(work.title)}"
-        ></video>
-      `;
+      return `<video src="${src}" muted loop autoplay playsinline preload="metadata"
+        style="${style}" aria-label="${title}"></video>`;
     }
 
-    return `
-      <img
-        src="${escapeHTML(media.src)}"
-        alt="${escapeHTML(work.title)}"
-        loading="lazy"
-        decoding="async"
-        style="${vars}"
-      >
-    `;
+    return `<img src="${src}" alt="${title}" loading="lazy" decoding="async"
+      style="${style}">`;
   }
 
   function workCard(work, isHome = false) {
@@ -555,8 +554,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   initMobileWorksCarousel();
 
 
-
-
   function revealOnScroll() {
     const items = $$(".reveal");
 
@@ -587,7 +584,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     ].join(";");
   }
 
-  // Generez serviciile din BD, ca să nu le repet manual în HTML.
+  // Se generează serviciile din BD.
   function renderDynamicServices() {
     if (!services.length) return;
 
@@ -650,7 +647,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             </figure>
           `).join("");
 
-        // Iau exemplele direct din BD prin API.
+        // Exemplele se iau direct din BD.
         return `
           <article class="service-detail-panel" data-service-detail="${escapeHTML(s.slug)}">
             <div class="service-detail-copy">
@@ -798,7 +795,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     });
 
-    // Și linkul/titlul din interiorul rândului poate deschide explicit panoul.
+    // Se poate deschide serviciul și din titlu.
     $$("[data-open-service]").forEach((trigger) => {
       if (trigger.matches("[data-service-card]")) return;
 
@@ -816,8 +813,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     }
 
-    // Dacă pagina este deschisă cu ?serviceDetail=poligrafie etc.,
-    // deschidem direct serviciul respectiv.
+    // Se deschide direct serviciul cerut în URL.
     const params = new URLSearchParams(window.location.search);
     const serviceDetailFromUrl = params.get("serviceDetail");
 
@@ -1030,53 +1026,38 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function renderProjectMedia() {
     const media = projectMedia[projectMediaIndex];
-
     if (!media) return;
 
-    // Mai întâi ascundem ambele tipuri de media.
-    // Apoi afișăm doar elementul activ.
     if (modalImg) {
       modalImg.hidden = true;
       modalImg.removeAttribute("src");
+      modalImg.removeAttribute("style");
     }
 
     if (modalVideo) {
       modalVideo.pause();
       modalVideo.hidden = true;
       modalVideo.removeAttribute("src");
+      modalVideo.removeAttribute("style");
       modalVideo.load();
     }
 
-    if (media.type === "video") {
-      if (modalVideo) {
-        modalVideo.src = media.src;
-        modalVideo.hidden = false;
-
-        // Autoplay-ul modern funcționează sigur când video-ul
-        // pornește fără sunet. Utilizatorul poate activa sunetul
-        // din controalele playerului.
-        modalVideo.muted = true;
-        modalVideo.autoplay = true;
-        modalVideo.loop = true;
-        modalVideo.controls = true;
-        modalVideo.playsInline = true;
-
-        modalVideo.load();
-
-        const playPromise = modalVideo.play();
-
-        if (playPromise?.catch) {
-          playPromise.catch(() => {
-            // Dacă browserul blochează autoplay-ul,
-            // controalele rămân disponibile pentru Play manual.
-          });
-        }
-      }
+    if (media.type === "video" && modalVideo) {
+      modalVideo.src = media.src;
+      modalVideo.hidden = false;
+      modalVideo.muted = true;
+      modalVideo.autoplay = true;
+      modalVideo.loop = true;
+      modalVideo.controls = true;
+      modalVideo.playsInline = true;
+      applyProjectMediaStyle(modalVideo, media, "detail");
+      modalVideo.load();
+      modalVideo.play()?.catch(() => {});
     } else if (modalImg) {
       modalImg.src = media.src;
-      modalImg.alt =
-        `${modalTitle?.textContent || "Proiect ArtLife Design"} — imaginea ${projectMediaIndex + 1}`;
+      modalImg.alt = `${modalTitle?.textContent || "Proiect ArtLife Design"} — imaginea ${projectMediaIndex + 1}`;
       modalImg.hidden = false;
+      applyProjectMediaStyle(modalImg, media, "detail");
     }
 
     renderThumbnails();
@@ -1126,6 +1107,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         preview.loading = "lazy";
       }
 
+      applyProjectMediaStyle(preview, media, "detail");
       button.appendChild(preview);
 
       button.addEventListener("click", () => {
@@ -1563,7 +1545,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  // Subtle motion for the About image.
+  // Se aplică o mișcare discretă imaginii din Despre noi.
   const aboutVisual = document.querySelector("#aboutVisual img");
   if (aboutVisual && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     window.addEventListener("scroll", () => {
@@ -1576,14 +1558,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }, { passive: true });
   }
 
-  // Prefer Gmail on mobile; fall back to Gmail web if the app is unavailable.
+  // Pe telefon se încearcă aplicația Gmail, apoi varianta web.
   document.querySelectorAll(".gmail-launch").forEach((link) => {
     link.addEventListener("click", (event) => {
       const email = link.dataset.email;
       if (!email) return;
 
       const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-      if (!isMobile) return; // Desktop uses the Gmail web URL from href.
+      if (!isMobile) return; // Pe desktop se folosește linkul Gmail din href.
 
       event.preventDefault();
       const fallback = link.href;
@@ -1606,17 +1588,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 });
 
-/* =========================================================
-   ART LIFE DESIGN — BOTPRESS WEBCHAT
-   ---------------------------------------------------------
-   Design restaurat:
-   - launcher verde Art Life Design;
-   - iconiță chat în launcher;
-   - notificare albă cu avatar robot + punct online;
-   - culoare principală Botpress #1F4D3A;
-   - nu modifică designul restului site-ului;
-   - păstrează logica actuală pentru sesiune și transcript.
-   ========================================================= */
+/* Chat Botpress: launcher, notificare și păstrarea conversației. */
 
 (() => {
   "use strict";
@@ -2012,10 +1984,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         botpressInitialized = true;
         window.clearInterval(timer);
 
-        /*
-          Păstrăm resetarea sesiunii Botpress deja folosită în versiunea curentă,
-          fără a modifica stilul site-ului.
-        */
+        // Se curăță sesiunea Botpress la o vizită nouă.
         try {
           Object.keys(localStorage).forEach((key) => {
             const lower = key.toLowerCase();
