@@ -117,6 +117,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="robots" content="noindex,nofollow">
     <title>Proiect nou | ArtLife Admin</title>
     <?php require __DIR__ . '/_admin_styles.php'; ?>
+    <style>
+        /* Acțiunile media se țin compacte și aliniate. */
+        .delete-wrap{display:flex;justify-content:flex-end;margin-top:8px}
+        .delete-wrap .btn{width:auto;padding:8px 12px}
+        .slot-actions{gap:8px}
+        .slot-actions .js-card-adjust[style*="display: none"]{display:none!important}
+    </style>
 </head>
 <body>
 
@@ -232,11 +239,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </label>
 
                                 <div class="delete-wrap new-delete-wrap new-media-control" style="display:none">
-                                    <button type="button" class="js-remove-new">Șterge</button>
+                                    <button type="button" class="btn btn-ghost js-remove-new">Șterge</button>
                                 </div>
 
                                 <div class="slot-actions">
-                                    <button type="button" class="js-adjust new-media-control" data-adjust-mode="card" style="display:none">
+                                    <button type="button" class="js-adjust js-card-adjust new-media-control" data-adjust-mode="card" style="display:none">
                                         Card mic
                                     </button>
                                     <button type="button" class="js-adjust new-media-control" data-adjust-mode="detail" style="display:none">

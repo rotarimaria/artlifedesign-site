@@ -152,6 +152,21 @@
     );
   }
 
+  // Se arată ajustarea cardului mic doar la media principală.
+  function syncPrimaryControls() {
+    $$('.media-slot').forEach(slot => {
+      const existing = slot.querySelector('input[name="primary_image_id"]');
+      const fresh = slot.querySelector('.js-new-primary');
+      const cardButton = slot.querySelector('.js-card-adjust');
+      const hasMedia = slot.dataset.deleted !== '1' && !!slot.querySelector('[data-media-preview]');
+      const isPrimary = !!(existing?.checked || fresh?.checked);
+
+      if (cardButton) {
+        cardButton.style.display = hasMedia && isPrimary ? '' : 'none';
+      }
+    });
+  }
+
   function primarySlot() {
     const existing = $('.media-slot input[name="primary_image_id"]:checked')?.closest('.media-slot');
     if (existing?.dataset.deleted !== '1') return existing;
@@ -247,6 +262,7 @@
     updateSmall();
     updateModal();
     syncTags();
+    syncPrimaryControls();
   }
 
   // Se afișează un fișier nou sau înlocuit.

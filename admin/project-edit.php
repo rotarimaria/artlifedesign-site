@@ -185,6 +185,16 @@ $remaining = max(0, 4 - count($mediaItems));
     <meta name="robots" content="noindex,nofollow">
     <title>Editare proiect | ArtLife Admin</title>
     <?php require __DIR__ . '/_admin_styles.php'; ?>
+    <style>
+        /* Acțiunile media se țin compacte și aliniate. */
+        .media-file-actions{display:flex;align-items:center;gap:8px;margin-top:8px}
+        .media-file-actions .replace-wrap{flex:1;margin:0}
+        .media-file-actions .btn{width:auto;flex:0 0 auto;padding:8px 12px}
+        .delete-wrap{display:flex;justify-content:flex-end;margin-top:8px}
+        .delete-wrap .btn{width:auto;padding:8px 12px}
+        .slot-actions{gap:8px}
+        .slot-actions .js-card-adjust[style*="display: none"]{display:none!important}
+    </style>
 </head>
 <body>
 
@@ -326,15 +336,21 @@ $remaining = max(0, 4 - count($mediaItems));
                                     Principal
                                 </label>
 
-                                <label class="replace-wrap">
-                                    Schimbă imaginea
-                                    <input
-                                        type="file"
-                                        name="replace_media[<?= $id ?>]"
-                                        accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
-                                        class="js-replace-media"
-                                    >
-                                </label>
+                                <div class="media-file-actions">
+                                    <label class="replace-wrap">
+                                        Schimbă imaginea
+                                        <input
+                                            type="file"
+                                            name="replace_media[<?= $id ?>]"
+                                            accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
+                                            class="js-replace-media"
+                                        >
+                                    </label>
+
+                                    <button type="button" class="btn btn-ghost js-delete-existing">
+                                        Șterge
+                                    </button>
+                                </div>
 
                                 <!-- Ajustarea pentru modalul mare -->
                                 <input type="hidden" name="existing_crop_x[<?= $id ?>]" value="<?= e((string) ($media['crop_x'] ?? 50)) ?>" data-detail-x>
@@ -358,12 +374,8 @@ $remaining = max(0, 4 - count($mediaItems));
                                     data-media-id="<?= $id ?>"
                                 >
 
-                                <div class="delete-wrap">
-                                    <button type="button" class="js-delete-existing">Șterge</button>
-                                </div>
-
                                 <div class="slot-actions">
-                                    <button type="button" class="js-adjust" data-adjust-mode="card">Card mic</button>
+                                    <button type="button" class="js-adjust js-card-adjust" data-adjust-mode="card">Card mic</button>
                                     <button type="button" class="js-adjust" data-adjust-mode="detail">Modal mare</button>
                                 </div>
                             </div>
@@ -404,11 +416,11 @@ $remaining = max(0, 4 - count($mediaItems));
                                 </label>
 
                                 <div class="delete-wrap new-delete-wrap new-media-control" style="display:none">
-                                    <button type="button" class="js-remove-new">Șterge</button>
+                                    <button type="button" class="btn btn-ghost js-remove-new">Șterge</button>
                                 </div>
 
                                 <div class="slot-actions">
-                                    <button type="button" class="js-adjust new-media-control" data-adjust-mode="card" style="display:none">
+                                    <button type="button" class="js-adjust js-card-adjust new-media-control" data-adjust-mode="card" style="display:none">
                                         Card mic
                                     </button>
                                     <button type="button" class="js-adjust new-media-control" data-adjust-mode="detail" style="display:none">
