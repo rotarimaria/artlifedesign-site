@@ -15,18 +15,31 @@ $success = trim((string) ($_GET['success'] ?? ''));
 $where = [];
 $params = [];
 
-// Se aplică filtrele de căutare.
+// Se aplică filtrul după text.
 if ($q !== '') {
-    $where[] = '(p.title LIKE :q OR p.description LIKE :q)';
-    $params['q'] = '%' . $q . '%';
+    $where[] = '(
+        p.title LIKE :q_title
+        OR p.description LIKE :q_description
+        OR p.service LIKE :q_service
+        OR p.tags LIKE :q_tags
+    )';
+
+    $search = '%' . $q . '%';
+    $params = [
+        'q_title' => $search,
+        'q_description' => $search,
+        'q_service' => $search,
+        'q_tags' => $search,
+    ];
 }
 
+// Se aplică filtrul după categorie.
 if ($category !== '' && isset($categories[$category])) {
     $where[] = 'p.category = :category';
     $params['category'] = $category;
 }
 
-// Se ia imaginea principală și numărul de fișiere pentru fiecare proiect.
+// Se ia imaginea principală și numărul de fișiere.
 $sql = '
     SELECT
         p.*,
@@ -39,16 +52,13 @@ $sql = '
         pi.rotation,
         COALESCE(mc.media_count, 0) AS media_count
     FROM projects p
-
-    LEFT JOIN project_images pi
-        ON pi.id = (
-            SELECT pi1.id
-            FROM project_images pi1
-            WHERE pi1.project_id = p.id
-            ORDER BY pi1.is_primary DESC, pi1.sort_order ASC, pi1.id ASC
-            LIMIT 1
-        )
-
+    LEFT JOIN project_images pi ON pi.id = (
+        SELECT pi1.id
+        FROM project_images pi1
+        WHERE pi1.project_id = p.id
+        ORDER BY pi1.is_primary DESC, pi1.sort_order ASC, pi1.id ASC
+        LIMIT 1
+    )
     LEFT JOIN (
         SELECT project_id, COUNT(*) AS media_count
         FROM project_images
@@ -70,7 +80,7 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="ro">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="robots" content="noindex,nofollow">
     <title>Proiecte | ArtLife Admin</title>
     <?php require __DIR__ . '/_admin_styles.php'; ?>
@@ -103,7 +113,7 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php endif; ?>
 
     <div class="toolbar">
-        <form method="get">
+        <form method="get" action="project.php">
             <input
                 class="search"
                 type="search"
@@ -116,10 +126,7 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <option value="">Toate categoriile</option>
 
                 <?php foreach ($categories as $key => $label): ?>
-                    <option
-                        value="<?= e($key) ?>"
-                        <?= $category === $key ? 'selected' : '' ?>
-                    >
+                    <option value="<?= e($key) ?>" <?= $category === $key ? 'selected' : '' ?>>
                         <?= e($label) ?>
                     </option>
                 <?php endforeach; ?>
@@ -137,7 +144,7 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <section class="card table-wrap">
         <?php if (!$projects): ?>
-            <div class="empty">Nu există proiecte.</div>
+            <div class="empty">Nu s-au găsit proiecte.</div>
         <?php else: ?>
             <table>
                 <thead>
@@ -156,25 +163,22 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <tr>
                         <td>
                             <?php if (!empty($project['primary_media'])): ?>
-                                <div class="table-media">
-                                    <?php
-                                    $mediaStyle = sprintf(
-                                        '--crop-x:%s%%;--crop-y:%s%%;--zoom:%s;--fit:%s;--rotation:%sdeg;',
-                                        (float) ($project['crop_x'] ?? 50),
-                                        (float) ($project['crop_y'] ?? 50),
-                                        (float) ($project['crop_zoom'] ?? 1),
-                                        e((string) ($project['fit_mode'] ?? 'cover')),
-                                        (int) ($project['rotation'] ?? 0)
-                                    );
-                                    ?>
+                                <?php
+                                $mediaStyle = sprintf(
+                                    '--crop-x:%s%%;--crop-y:%s%%;--zoom:%s;--fit:%s;--rotation:%sdeg;',
+                                    (float) ($project['crop_x'] ?? 50),
+                                    (float) ($project['crop_y'] ?? 50),
+                                    (float) ($project['crop_zoom'] ?? 1),
+                                    e((string) ($project['fit_mode'] ?? 'contain')),
+                                    (int) ($project['rotation'] ?? 0)
+                                );
+                                ?>
 
+                                <div class="table-media">
                                     <?php if (($project['media_type'] ?? 'image') === 'video'): ?>
                                         <video
                                             src="../<?= e((string) $project['primary_media']) ?>"
-                                            muted
-                                            loop
-                                            autoplay
-                                            playsinline
+                                            muted loop autoplay playsinline
                                             style="<?= $mediaStyle ?>"
                                         ></video>
                                     <?php else: ?>
@@ -195,10 +199,7 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <span><?= e((string) ($project['description'] ?? '')) ?></span>
                         </td>
 
-                        <td>
-                            <?= e($categories[$project['category']] ?? (string) $project['category']) ?>
-                        </td>
-
+                        <td><?= e($categories[$project['category']] ?? (string) $project['category']) ?></td>
                         <td><?= (int) $project['media_count'] ?>/4</td>
 
                         <td>
@@ -211,17 +212,10 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                         <td>
                             <div class="row-actions">
-                                <a
-                                    class="btn"
-                                    href="project-edit.php?id=<?= (int) $project['id'] ?>"
-                                >
+                                <a class="btn" href="project-edit.php?id=<?= (int) $project['id'] ?>">
                                     Editează
                                 </a>
-
-                                <a
-                                    class="btn btn-danger"
-                                    href="project-sterge.php?id=<?= (int) $project['id'] ?>"
-                                >
+                                <a class="btn btn-danger" href="project-sterge.php?id=<?= (int) $project['id'] ?>">
                                     Șterge
                                 </a>
                             </div>
