@@ -113,7 +113,7 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php endif; ?>
 
     <div class="toolbar">
-        <form method="get" action="project.php">
+        <form method="get" action="project.php" id="projectFilters">
             <input
                 class="search"
                 type="search"
@@ -131,8 +131,6 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </option>
                 <?php endforeach; ?>
             </select>
-
-            <button class="btn" type="submit">Filtrează</button>
 
             <?php if ($q !== '' || $category !== ''): ?>
                 <a class="btn btn-ghost" href="project.php">Resetează</a>
@@ -227,6 +225,22 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endif; ?>
     </section>
 </main>
+
+<script>
+// Se filtrează automat în timp ce se scrie.
+const filters = document.querySelector('#projectFilters');
+const search = filters?.querySelector('input[name="q"]');
+const category = filters?.querySelector('select[name="category"]');
+let searchTimer;
+
+search?.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => filters?.requestSubmit(), 300);
+});
+
+// Se aplică imediat filtrul după categorie.
+category?.addEventListener('change', () => filters?.requestSubmit());
+</script>
 
 </body>
 </html>
